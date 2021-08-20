@@ -13,6 +13,7 @@
             item-value="value"
             item-text="text"
             v-bind="opts"
+            :rules="rules"
             :disabled="disabled"
         >
             <template v-slot:selection="{ item, index }">
@@ -65,6 +66,7 @@ export default {
         row: { required: true },
         value: { required: true },
         items: { type: Array, default: () => [] },
+        rules: { type: Array, default: () => [] },
         disabled: { default: false },
         options: { type: Object, default: null },
     },

@@ -112,6 +112,7 @@
                 v-model="valueLocal"
                 chips
                 v-bind="options"
+                :rules="fieldRules"
                 item-value="value"
                 item-text="text"
                 @input="onInput"
@@ -127,6 +128,7 @@
                 :items="items"
                 :row="row"
                 :options="options"
+                :rules="fieldRules"
                 @change="linkTableChange"
                 :disabled="disabled"
                 :hidden="false"
@@ -295,6 +297,7 @@ export default {
         stringToRules(rulestr) {
             if (!rulestr) return [];
             if (rulestr.length < 9) return [];
+            if (rulestr instanceof Array) return rulestr;
             return eval(rulestr);
         },
     }, //methods:
