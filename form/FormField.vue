@@ -295,9 +295,9 @@ export default {
             return eval(rules);
         },
         stringToRules(rulestr) {
+            if (rulestr instanceof Array) return rulestr;
             if (!rulestr) return [];
             if (rulestr.length < 9) return [];
-            if (rulestr instanceof Array) return rulestr;
             return eval(rulestr);
         },
     }, //methods:
