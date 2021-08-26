@@ -172,6 +172,19 @@
                 style="max-width:300px"
             ></v-text-field>
         </template>
+        
+        <template v-if="options.type == 'color' && vifCalc()">
+            <field-color
+                v-model="valueLocal"
+                v-bind="options"
+                @input="onInput"
+                :rules="fieldRules"
+                :disabled="disabled"
+                :hidden="false"
+                :name="name"
+            ></field-color>
+        </template>
+
 
     </div>
 </template>
@@ -181,6 +194,7 @@ import Vue from "vue";
 
 export default {
     components: {
+        "field-color": () => import("../LV/LvColorPicker.vue"),
         "field-images": () => import("./fields/Images.vue"),
         "field-files": () => import("./fields/Files.vue"),
         "field-select-from-table": () => import("./fields/SelectFromTable.vue"),
