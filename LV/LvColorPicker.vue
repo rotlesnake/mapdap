@@ -2,7 +2,7 @@
 <div id="lv-color-picker">
     <v-menu v-model="colorPicker" bottom allow-overflow origin="center center" transition="scale-transition" :close-on-content-click="false" z-index="250">
         <template v-slot:activator="{ on }">
-            <v-card class="my-1">
+            <v-card class="my-3">
 				<v-card-title class="py-1 ">
                     <span class="body-1 pt-1">{{label}}</span>
                     <v-spacer />
