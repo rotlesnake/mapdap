@@ -74,7 +74,7 @@
         <template v-if="options.type=='checkBox' && vifCalc()">
             <v-switch  v-model="valueLocal" 
                     v-bind="options"
-                    :label="`${options.label} (${valueLocal==1?'Да':'Нет'})`" true-value="1" false-value="0"
+                    :label="`${options.label} (${valueLocal==1?'Да':'Нет'})`" :true-value="1" :false-value="0"
                     @change="onInput"
                     :rules="fieldRules"
                     :disabled="disabled"
