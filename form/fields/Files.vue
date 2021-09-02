@@ -1,11 +1,12 @@
 <template>
     <div id="field-files" class="mb-4">
         <v-card>
-            <v-card-title class="my-2 body-1">
+            <v-sheet class="my-1 py-2 px-4 body-1" color="primary">
                 {{ label }}
-            </v-card-title>
+            </v-sheet>
 
-            <v-card-title class="py-0 mt-n3" v-for="(item, i) in filesList" :key="i">
+
+            <v-card-title class="py-0 mt-n1" v-for="(item, i) in filesList" :key="i">
                 <v-switch
                     dense
                     color="gray"
