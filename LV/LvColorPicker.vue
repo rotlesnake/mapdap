@@ -33,6 +33,11 @@ export default {
             colorPicker: false,
         }
     },
+    watch:{
+        value(){
+            this.color = this.value;
+        },
+    },
 
     methods: {
         update(color) {
