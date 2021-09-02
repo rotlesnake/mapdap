@@ -522,7 +522,7 @@ export default {
             if (head.type == "files") {
                 var files = "";
                 for (let id in value) {
-                    files += "<a href='" + value[id].url + "' >" + value[id].name + "</a> | ";
+                    files += "<a href='" + value[id].src + "' >" + value[id].name + "</a> | ";
                 }
                 value = files;
                 if (files.length > 0) value = " | " + files;
