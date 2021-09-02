@@ -162,6 +162,7 @@
                     <v-tooltip top color="green">
                         <template v-slot:activator="{ on }">
                             <v-btn
+                                color="green"
                                 class="mx-2"
                                 v-if="userHasRoles(info.add)"
                                 fab
@@ -177,6 +178,7 @@
                     <v-tooltip top color="indigo">
                         <template v-slot:activator="{ on }">
                             <v-btn
+                                color="indigo"
                                 class="mx-2"
                                 v-if="userHasRoles(info.edit)"
                                 fab
@@ -193,6 +195,7 @@
                     <v-tooltip top color="red">
                         <template v-slot:activator="{ on }">
                             <v-btn
+                                color="red"
                                 class="mx-2"
                                 v-if="userHasRoles(info.delete)"
                                 fab
