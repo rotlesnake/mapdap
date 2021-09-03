@@ -164,13 +164,12 @@ export default {
                 return;
             }
 
-            console.log(this.date_selected);
             this.date_dialog = false;
 
             if (this.isRange || this.isWeek) {
-                this.$emit("input", this.date_selected);
-            } else {
                 this.$emit("input", this.date_selected[0]);
+            } else {
+                this.$emit("input", this.date_selected);
             }
         },
     }, //methods
