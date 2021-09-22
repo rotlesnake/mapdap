@@ -1,15 +1,19 @@
 <template>
     <section id="tree-table">
-        <v-card class="mx-auto elevation-8">
+        <v-card class="mx-auto elevation-8" v-if="info">
+            <slot name="header">
             <v-card-title>
+                {{info.name}}
+                <v-spacer></v-spacer>
                 <v-btn @click="openEditDialog({ id: 0 }, 'add')">Добавить пункт</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="reloadTable()">
                     <v-icon>cached</v-icon>
                 </v-btn>
             </v-card-title>
-
             <v-divider></v-divider>
+            </slot>
+
             <v-card-text>
                 <el-tree
                     :data="menu_items"
@@ -22,9 +26,12 @@
                     :allow-drag="allowDrag"
                 >
                     <template #default="{ node, data }">
+                    <slot v-bind:item="data">
                         <span class="custom-tree-node">
                             <div @dblclick="openEditDialog(data, 'edit')">
-                                <span class="el-tree-node__label">{{ data.name }}</span>
+                                <slot name="item" v-bind:item="data">
+                                    <span class="el-tree-node__label">{{ data.name }}</span>
+                                </slot>
                             </div>
                             <div class="mb-1">
                                 <el-button
@@ -50,9 +57,13 @@
                                 ></el-button>
                             </div>
                         </span>
+                    </slot>
                     </template>
                 </el-tree>
             </v-card-text>
+
+            <slot name="footer">
+            </slot>
         </v-card>
 
         <!-- Диалог изменения пункта !-->
@@ -244,9 +255,11 @@ export default {
             }
         },
 
-        changeTreeMenu(current, parent){
-            //console.log("change", current, parent);
-            let row = {id: current.data.id, parent_id: parent.data.id, sort: current.level };
+        changeTreeMenu(current, parent, position){
+            let row = {id: current.data.id, parent_id: parent.data.id, sort: 0 };
+            if (position == "before") {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort-1; }
+            if (position == "after")  {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort+1; }
+
             this.$swal.showLoading();
             this.$api("table", "tree/"+this.tableName, "edit", current.data.id, row)
                 .then(async (response) => {

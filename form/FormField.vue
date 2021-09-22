@@ -42,7 +42,7 @@
                 :name="name"
             ></v-text-field>
         </template>
-        <template v-if="options.type == 'float' && vifCalc()">
+        <template v-if="options.type == 'float' || options.type == 'double' && vifCalc()">
             <v-text-field
                 v-model="valueLocal"
                 type="number"
