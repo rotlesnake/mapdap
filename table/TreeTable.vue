@@ -275,6 +275,17 @@ export default {
 </script>
 
 <style>
+.theme--dark .el-tree {
+  background: var(--v-background-lighten2);
+  color:#fff;
+}
+.theme--dark .el-tree-node__content:hover, .theme--dark .el-tree-node:focus .el-tree-node__content {
+  background: var(--v-background-lighten3);
+}
+.theme--dark .is-current {
+  background: var(--v-background-lighten3);
+}
+
 #tree-table .custom-tree-node {
     flex: 1;
     display: flex;
