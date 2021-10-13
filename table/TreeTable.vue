@@ -20,7 +20,7 @@
                     node-key="id"
                     empty-text="Меню нет"
                     default-expand-all
-                    draggable
+                    :draggable="draggable"
                     @node-drop="changeTreeMenu"
                     :allow-drop="allowDrop"
                     :allow-drag="allowDrag"
@@ -91,8 +91,10 @@ export default {
     },
 
     props: {
+        draggable: { type: Boolean, default: true },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
+        afterReloadTable: { type: Function, default: null },
     },
 
     data() {
@@ -133,6 +135,7 @@ export default {
             this.showLoader(true);
             this.$api("table", "tree", this.tableName)
                 .then((response) => {
+                    if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.showLoader(false);
                     this.menu_items = response.rows;
                     this.info = response.info;

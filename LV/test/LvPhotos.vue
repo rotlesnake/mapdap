@@ -96,6 +96,7 @@ export default {
                 this.$store.commit("SHOW_LOADER", false);
                 if (response.error==0) {
                     this.filesList[response.index].url = response.url;
+                    this.updateUrl();
                 }
             }).catch(e=>{
                 this.$store.commit("SHOW_LOADER", false);
