@@ -5,7 +5,7 @@
             <v-card-title>
                 {{info.name}}
                 <v-spacer></v-spacer>
-                <v-btn @click="openEditDialog({ id: 0 }, 'add')">Добавить пункт</v-btn>
+                <v-btn color="primary" @click="openEditDialog({ id: 0 }, 'add')">Добавить пункт</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn icon @click="reloadTable()">
                     <v-icon>cached</v-icon>
@@ -95,6 +95,7 @@ export default {
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         afterReloadTable: { type: Function, default: null },
+        customEditDialog: { type: Function, default: null },
     },
 
     data() {
@@ -195,7 +196,12 @@ export default {
                     right: { text: "Удалить", color: "red", icon: "delete" },
                 };
             }
-            this.editDialog.visible = true;
+            
+            if (this.customEditDialog) {
+                this.customEditDialog( JSON.parse(JSON.stringify(this.editDialog)) );
+            } else {
+                this.editDialog.visible = true;
+            }
         },
 
         saveEditDialog(row) {

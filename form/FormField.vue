@@ -136,6 +136,21 @@
             ></field-select-from-table>
         </template>
 
+
+        <template v-if="options.type == 'json' && vifCalc()">
+            <json-table
+                v-model="valueLocal"
+                :row="row"
+                :options="options"
+                :rules="fieldRules"
+                @input="onInput"
+                :disabled="disabled"
+                :hidden="false"
+                :name="name"
+            ></json-table>
+        </template>
+
+
         <!-- PICKERS !-->
         <template v-if="(options.type == 'date' || options.type == 'dateTime' || options.type == 'timestamp') && vifCalc()">
             <field-date
@@ -200,6 +215,7 @@ export default {
         "field-select-from-table": () => import("./fields/SelectFromTable.vue"),
         "field-date": () => import("./fields/Date.vue"),
         "field-date-range": () => import("./fields/DateRange.vue"),
+        "json-table": () => import("./fields/JsonTable.vue"),
     },
     props: {
         row: { required: true },

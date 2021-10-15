@@ -312,7 +312,8 @@ export default {
         tableFilter() {
             this.reloadTable();
         },
-        tableParent() {
+        tableParent(oldval,newval) {
+            if (oldval.field == newval.field && oldval.value == newval.value) return;
             this.reloadTable();
         },
         value() {

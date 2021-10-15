@@ -24,7 +24,8 @@
         </v-select>
 
         <v-dialog v-model="display">
-            <v-card>
+            <!-- TABLE !-->
+            <v-card v-if="typeSelect == 'table'">
                 <v-card-text class="pa-2" v-if="display && opts">
                     <mdp-table
                         ref="TableSelector"
@@ -51,6 +52,46 @@
                     </mdp-table>
                 </v-card-text>
             </v-card>
+            <!-- TABLE !-->
+
+            <!-- TREE !-->
+            <v-card v-if="typeSelect == 'tree'">
+                <mdp-tree
+                        ref="TableSelector"
+                        v-model="values"
+                        v-bind="opts.options || {}"
+                        :tableCaption="opts.label"
+                        :tableName="opts.table"
+                        :multiple="opts.multiple"
+                        @select="rowSelected"
+                >
+                    <template v-slot:header="{ info }">
+                        <v-card-title class="pa-0 ma-0">
+                            <v-toolbar dense color="primary" elevation="0">
+                                <v-toolbar-title class="white--text">{{info.name}}</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="display = false"><v-icon>close</v-icon></v-btn>
+                            </v-toolbar>
+                        </v-card-title>
+                     </template>
+
+                     <template v-slot:footer>
+                         <v-divider />
+                         <v-card-actions class="pa-4">
+                            <v-btn
+                                elevation="4"
+                                color="primary"
+                                @click="finishSelect()"
+                                :disabled="selected.length == 0"
+                                >Выбрать</v-btn
+                            >
+                            <v-spacer />
+                            <v-btn class="float-right mr-4" color="red" @click="display = false">Закрыть</v-btn>
+                         </v-card-actions>
+                     </template>
+                </mdp-tree>
+            </v-card>
+            <!-- TREE !-->
         </v-dialog>
     </div>
 </template>
@@ -61,6 +102,7 @@ import Vue from "vue";
 export default {
     components: {
         "mdp-table": () => import("../../table/Table"),
+        "mdp-tree": () => import("./SelectFromTree.vue"),
     },
     props: {
         row: { required: true },
@@ -86,6 +128,7 @@ export default {
     },
     data() {
         return {
+            typeSelect: 'table',
             display: false,
             selected: [],
             opts: null,
@@ -104,6 +147,9 @@ export default {
         },
         refresh() {
             this.opts = JSON.parse(JSON.stringify(this.options));
+
+            this.typeSelect = "table";
+            if (this.opts.typeSelect && this.opts.typeSelect=="tree") this.typeSelect = this.opts.typeSelect;
 
             if (this.opts.options) {
                 //спецопции для таблицы
@@ -143,22 +189,21 @@ export default {
             this.finishSelect();
         },
         finishSelect() {
-            let items = [];
-            this.values = [];
-
-            for (let item of this.selected) {
-                let text = "";
-                if (this.opts.field.indexOf("[") == -1) {
-                    text = item[this.opts.field];
-                } else {
-                    text = this.opts.field.replace(/\[(.*?)\]/gi, (match, name) => item[name]);
+                let items = [];
+                this.values = [];
+                for (let item of this.selected) {
+                    let text = "";
+                    if (this.opts.field.indexOf("[") == -1) {
+                        text = item[this.opts.field];
+                    } else {
+                        text = this.opts.field.replace(/\[(.*?)\]/gi, (match, name) => item[name]);
+                    }
+                    items.push({
+                        value: item.id,
+                        text: text,
+                    });
+                    this.values.push(item.id);
                 }
-                items.push({
-                    value: item.id,
-                    text: text,
-                });
-                this.values.push(item.id);
-            }
 
             this.$emit("change", this.values, items, this.selected);
             this.display = false;
