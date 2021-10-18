@@ -18,7 +18,7 @@
                 <el-tree
                     :data="menu_items"
                     node-key="id"
-                    empty-text="Меню нет"
+                    :empty-text="emptyText"
                     default-expand-all
                     :draggable="draggable"
                     @node-drop="changeTreeMenu"
@@ -94,6 +94,7 @@ export default {
         draggable: { type: Boolean, default: true },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
+        emptyText: {type: String, default:"Нет данных"},
         tableFilter: { type: Object, default: null },
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },

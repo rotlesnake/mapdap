@@ -37,6 +37,7 @@ export default {
         tableCaption: { type: String, default: "" },
         afterReloadTable: { type: Function, default: null },
         expandFirstLevel: { type: Boolean, default: true },
+        multiple: { type: Boolean, default: false },
     },
     watch: {
         tableName() {
@@ -82,6 +83,11 @@ export default {
         },
 
         changeSelect(vals) {
+            if (!this.multiple && vals.length>1) {
+                vals = [ vals[vals.length-1] ];
+                this.selected_tree_items = vals;
+            }
+
             const sels = [];
             const cb = (e) => {
                 if (vals.includes(e.id)) sels.push(e);
