@@ -221,6 +221,12 @@ export default {
         saveEditDialog(row) {
             if (this.editDialog.parentId) row.parent_id = this.editDialog.parentId;
 
+            if (this.tableParent) {
+                this.tableParent.forEach((e) => {
+                    if (!row[e.field]) row[e.field] = e.value;
+                });
+            }
+
             this.$swal.showLoading();
             this.$api("table", "tree/"+this.editDialog.tableName, this.editDialog.action, this.editDialog.rowId, row)
                 .then(async (response) => {
@@ -259,7 +265,10 @@ export default {
             if (this.editDialog.action == "edit") {
                 const cb = (e) => {
                     if (e.id == item.id) {
+                        let child=null; 
+                        if (e.children) child = e.children.map(cb);
                         e = item;
+                        e.children = child;
                         return e;
                     }
                     if (e.children) e.children = e.children.map(cb);
