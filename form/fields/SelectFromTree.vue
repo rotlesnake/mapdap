@@ -9,7 +9,7 @@
                     <v-text-field v-model="tree_search" label="Поиск" dark flat dense solo-inverted hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
                 </v-sheet>
                 <v-card-text>
-                    <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click @input="changeSelect">
+                    <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
                          <template v-slot:label="{ item }">
                             <slot name="item" v-bind:info="item">
                                 <span class="subtitle">{{ item.name }}</span>
@@ -36,6 +36,7 @@ export default {
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         afterReloadTable: { type: Function, default: null },
+        expandFirstLevel: { type: Boolean, default: true },
     },
     watch: {
         tableName() {
@@ -44,6 +45,7 @@ export default {
     },
     data() {
         return {
+            opened: [],
             info: null,
             columns: [],
             tree_items: [],
@@ -69,10 +71,10 @@ export default {
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.showLoader(false);
                     this.tree_items = response.rows;
-                    //console.log(this.value)
                     this.selected_tree_items = this.value;
                     this.info = response.info;
                     this.columns = response.info.columns;
+                    this.tree_items.forEach((e) => { this.opened.push(e.id) });
                 })
                 .catch(() => {
                     this.showLoader(false);

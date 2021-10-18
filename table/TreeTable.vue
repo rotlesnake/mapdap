@@ -94,6 +94,7 @@ export default {
         draggable: { type: Boolean, default: true },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
+        tableFilter: { type: Object, default: null },
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },
     },
@@ -119,6 +120,9 @@ export default {
         tableName() {
             this.reloadTable();
         },
+        tableFilter() {
+            this.reloadTable();
+        },
     },
     mounted() {
         this.reloadTable();
@@ -134,7 +138,10 @@ export default {
             if (!this.tableName) return;
 
             this.showLoader(true);
-            this.$api("table", "tree", this.tableName)
+            let filter = {};
+            if (this.tableFilter) filter = this.tableFilter;
+
+            this.$api("table", "tree", this.tableName, "get", filter)
                 .then((response) => {
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.showLoader(false);
