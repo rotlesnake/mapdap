@@ -97,6 +97,8 @@ export default {
         tableFilter: { type: Object, default: null },
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },
+
+        tableParent: { type: Array, default: null },
     },
 
     data() {
@@ -123,6 +125,10 @@ export default {
         tableFilter() {
             this.reloadTable();
         },
+        tableParent(oldval,newval) {
+            if (oldval.field == newval.field && oldval.value == newval.value) return;
+            this.reloadTable();
+        },
     },
     mounted() {
         this.reloadTable();
@@ -141,7 +147,7 @@ export default {
             let filter = {};
             if (this.tableFilter) filter = this.tableFilter;
 
-            this.$api("table", "tree", this.tableName, "get", filter)
+            this.$api("table", "tree", this.tableName, "get", { parent: this.tableParent, ...filter })
                 .then((response) => {
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.showLoader(false);
@@ -275,6 +281,12 @@ export default {
             let row = {id: current.data.id, parent_id: parent.data.id, sort: 0 };
             if (position == "before") {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort-1; }
             if (position == "after")  {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort+1; }
+
+            if (this.tableParent) {
+                this.tableParent.forEach((e) => {
+                    if (!row[e.field]) row[e.field] = e.value;
+                });
+            }
 
             this.$swal.showLoading();
             this.$api("table", "tree/"+this.tableName, "edit", current.data.id, row)

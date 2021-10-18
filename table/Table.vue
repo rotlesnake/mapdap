@@ -46,13 +46,16 @@
                     <v-toolbar-title class="mx-2">{{ caption }}</v-toolbar-title>
 
                     <v-divider inset vertical></v-divider>
-                    <v-btn color="primary" class="mx-2" @click="rowFilterDialog = true">
+                    <v-btn color="primary" class="ml-2" @click="rowFilterDialog = true">
                         <v-icon>search</v-icon> Фильтр
                     </v-btn>
+                    <v-btn color="red" class="ml-1" fab x-small v-if="tableFilter" @click.stop="tableFilter = null; rowFilterValues = {};">
+                        <v-icon>close</v-icon>
+                    </v-btn>
 
-                    <v-divider inset vertical></v-divider>
+                    <v-divider class="mx-2" inset vertical></v-divider>
+
                     <v-text-field
-                        class="mx-3"
                         v-model="localTextFilter"
                         append-icon="search"
                         :label="pagination.totalItems > 0 ? 'Используйте ФИЛЬТР' : 'Поиск...'"
