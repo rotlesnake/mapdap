@@ -19,8 +19,12 @@
                     <td v-for="(col,i) in options.json.columns" :key="i">
                         <input
                             v-model="dataList[ndx][col.name]"
+                            :placeholder="col.placeholder || col.label"
                             @input="change"
                         />
+                        <div v-if="col.buttons" class="d-flex">
+                            <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(btn, $event)">{{btn}}</div>
+                        </div>
                     </td>
                     <td>
                         <v-btn fab x-small color="red" @click="deleteRow(ndx)"><v-icon>delete</v-icon></v-btn>
@@ -28,17 +32,32 @@
                 </tr>
             </table>
 
-            <div v-else class="d-flex flex-wrap">
-                <div v-for="(dataRow,ndx) in dataList" :key="ndx" class="d-flex flex-wrap" >
+            <table v-if="!options.multiple && dataList.length > 0 && options.json.columns.length <= 8" class="">
+                <tr>
+                    <td v-for="(col,i) in options.json.columns" :key="i">
+                        <label>{{col.label}}</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td v-for="(col,i) in options.json.columns" :key="i">
+                        <input
+                            v-model="dataList[0][col.name]"
+                            :placeholder="col.placeholder || col.label"
+                            @input="change"
+                        />
+                    </td>
+                </tr>
+            </table>
+
+            <div v-if="!options.multiple && dataList.length > 0 && options.json.columns.length > 8" class="d-flex flex-wrap">
                     <div v-for="(col,i) in options.json.columns" :key="i" class="d-flex flex-wrap ml-2 mr-1 mb-1" style="width:140px">
                         <label>{{col.label}}</label>
                         <input
-                            v-model="dataList[ndx][col.name]"
-                            :placeholder="col.label"
+                            v-model="dataList[0][col.name]"
+                            :placeholder="col.placeholder || col.label"
                             @input="change"
                         />
                     </div>
-                </div>
             </div>
 
         </v-card>
@@ -98,6 +117,12 @@ export default {
             });
             this.change();
         },
+
+        addText(txt, obj){
+            const el = obj.target.parentElement.parentElement.children[0];
+            el.value = el.value + txt + " ";
+        },
+
         change(){
             this.$emit("input", JSON.stringify(this.dataList));
         },
@@ -143,4 +168,9 @@ tr:not(:last-child) {
     border-width:1px; border-style:solid; border-color: var(--v-primary-base); border-radius:4px;  
 }
 
+#json-table .click-btns { background:var(--v-background-darken2); margin:2px 1px 0 3px; padding:1px 5px; border-radius:4px; cursor:pointer; 
+    height: 18px;
+    font-size: 12px;
+    line-height: 16px;
+}
 </style>
