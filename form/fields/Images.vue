@@ -1,6 +1,11 @@
 <template>
     <div id="field-photos" class="mb-4">
-        <v-card>
+        <v-card v-if="isAvatar" :style="'width:' + width + '; height:' + height + ';'">
+            <v-img v-if="filesList.length > 0" :src="filesList[0].src" contain style="width:100%; height:100%; cursor:pointer" @click="$refs.file.click()" />
+            <input type="file" ref="file" v-show="false" @change="avatarSelected" accept="image/*" />
+        </v-card>
+
+        <v-card v-else>
             <v-sheet class="my-1 py-2 px-4 body-1" color="primary">
                 {{ label }}
             </v-sheet>
@@ -76,6 +81,10 @@
 <script>
 export default {
     props: {
+        isAvatar: { type: Boolean, default: false },
+        width: { type: String, default: "100%" },
+        height: { type: String, default: "100px" },
+
         label: { type: String, default: null },
         value: { required: true },
         multiple: { type: Boolean, default: false },
@@ -126,6 +135,12 @@ export default {
         updateItem() {
             this.$forceUpdate();
             this.$emit("input", this.filesList);
+        },
+
+        avatarSelected(event) {
+            if (!event.target.files) return;
+            this.file = event.target.files[0];
+            this.onFileLoad(0);
         },
 
         onFileLoad(index) {
