@@ -199,6 +199,11 @@ export default {
                 this.editDialog.parentId = item && item.id>0 ? item.id : 0;
                 this.editDialog.row.name = "";
             }
+            if (action == "copy") {
+                this.editDialog.rowId = 0;
+                this.editDialog.rowIndex = 0;
+                this.editDialog.title = "Дублирование записи";
+            }
             if (action == "edit") {
                 this.editDialog.title = "Изменение записи";
             }
@@ -228,6 +233,7 @@ export default {
             }
 
             this.$swal.showLoading();
+            if (this.editDialog.action=="copy") this.editDialog.action="add";
             this.$api("table", "tree/"+this.editDialog.tableName, this.editDialog.action, this.editDialog.rowId, row)
                 .then(async (response) => {
                     this.$swal.close();

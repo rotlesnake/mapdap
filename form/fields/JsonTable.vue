@@ -17,7 +17,7 @@
 
                 <tr v-for="(dataRow,ndx) in dataList" :key="ndx">
                     <td v-for="(col,i) in options.json.columns" :key="i">
-                        <input
+                        <textarea rows="1"
                             v-model="dataList[ndx][col.name]"
                             :placeholder="col.placeholder || col.label"
                             @input="change"
@@ -40,7 +40,7 @@
                 </tr>
                 <tr>
                     <td v-for="(col,i) in options.json.columns" :key="i">
-                        <input
+                        <textarea rows="1"
                             v-model="dataList[0][col.name]"
                             :placeholder="col.placeholder || col.label"
                             @input="change"
@@ -52,7 +52,7 @@
             <div v-if="!options.multiple && dataList.length > 0 && options.json.columns.length > 8" class="d-flex flex-wrap">
                     <div v-for="(col,i) in options.json.columns" :key="i" class="d-flex flex-wrap ml-2 mr-1 mb-1" style="width:140px">
                         <label>{{col.label}}</label>
-                        <input
+                        <textarea rows="1"
                             v-model="dataList[0][col.name]"
                             :placeholder="col.placeholder || col.label"
                             @input="change"
@@ -85,6 +85,10 @@ export default {
     },
     mounted() {
         this.refresh();
+        setTimeout(()=>{
+            const elems = document.querySelectorAll("#json-table textarea");
+            elems.forEach((el)=>{ this.resizeTextArea(el); });
+        },100);
     },
 
     methods: {
@@ -123,8 +127,13 @@ export default {
             el.value = el.value + txt + " ";
         },
 
-        change(){
+        change(evt){
             this.$emit("input", JSON.stringify(this.dataList));
+            this.$nextTick(this.resizeTextArea(evt.target));
+        },
+        resizeTextArea(el){
+            el.style.cssText = "height:auto;";
+            el.style.cssText = "height:" + el.scrollHeight + "px;";
         },
 
     },
@@ -163,8 +172,9 @@ tr:not(:last-child) {
 }
 
 #json-table  label { padding-left:2px; }
-#json-table  input { 
+#json-table  textarea { 
     width:100%; padding:4px; 
+    overflow:hidden;
     border-width:1px; border-style:solid; border-color: var(--v-primary-base); border-radius:4px;  
 }
 
