@@ -9,6 +9,7 @@
                 </v-card-title>
             </v-sheet>
 
+            <!-- multi line table !-->
             <table v-if="options.multiple">
                 <tr>
                     <th v-for="(item,i) in options.json.columns" :key="i">{{item.label}}</th>
@@ -16,14 +17,14 @@
                 </tr>
 
                 <tr v-for="(dataRow,ndx) in dataList" :key="ndx">
-                    <td v-for="(col,i) in options.json.columns" :key="i">
+                    <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
                         <textarea rows="1"
                             v-model="dataList[ndx][col.name]"
                             :placeholder="col.placeholder || col.label"
                             @input="change"
                         />
                         <div v-if="col.buttons" class="d-flex">
-                            <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(btn, $event)">{{btn}}</div>
+                            <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(ndx, col, btn, $event)">{{btn}}</div>
                         </div>
                     </td>
                     <td>
@@ -32,9 +33,10 @@
                 </tr>
             </table>
 
+            <!-- single line table short !-->
             <table v-if="!options.multiple && dataList.length > 0 && options.json.columns.length <= 8" class="">
                 <tr>
-                    <td v-for="(col,i) in options.json.columns" :key="i">
+                    <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
                         <label>{{col.label}}</label>
                     </td>
                 </tr>
@@ -49,6 +51,7 @@
                 </tr>
             </table>
 
+            <!-- single line table long !-->
             <div v-if="!options.multiple && dataList.length > 0 && options.json.columns.length > 8" class="d-flex flex-wrap">
                     <div v-for="(col,i) in options.json.columns" :key="i" class="d-flex flex-wrap ml-2 mr-1 mb-1" style="width:140px">
                         <label>{{col.label}}</label>
@@ -122,14 +125,16 @@ export default {
             this.change();
         },
 
-        addText(txt, obj){
-            const el = obj.target.parentElement.parentElement.children[0];
-            el.value = el.value + txt + " ";
+        addText(ndx, col, btn, event){
+            //const el = event.target.parentElement.parentElement.children[0];
+            //el.value = el.value + btn + " ";
+            this.dataList[ndx][col.name] = this.dataList[ndx][col.name] + btn + " ";
+            this.change();
         },
 
         change(evt){
             this.$emit("input", JSON.stringify(this.dataList));
-            this.$nextTick(this.resizeTextArea(evt.target));
+            if (evt) this.$nextTick(this.resizeTextArea(evt.target));
         },
         resizeTextArea(el){
             el.style.cssText = "height:auto;";

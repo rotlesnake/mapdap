@@ -16,15 +16,15 @@
         <v-row justify="center">
             <div class="title text-center">
                 <div class="d-flex">
-                    <v-btn class="mt-1" icon @click="prev" v-if="showButton"><v-icon>mdi-arrow-left-thick</v-icon></v-btn>
-                    <v-card outlined class="mx-1 px-2 py-1 elevation-1 d-flex" @click="date_dialog = true">
-                        <v-icon v-if="!showHome" color="indigo" style="margin:-2px 5px 0 0;">mdi-calendar-clock</v-icon>
+                    <v-btn class="mt-1" :color="color" icon @click="prev" v-if="showButton"><v-icon>mdi-arrow-left-thick</v-icon></v-btn>
+                    <v-card outlined :color="color" class="mx-1 px-2 py-1 elevation-1 d-flex justify-center" @click="date_dialog = true" :style="(width ? 'width:'+width+';' : '')">
+                        <v-icon v-if="showIcon" color="indigo" style="margin:-2px 5px 0 0;">mdi-calendar-clock</v-icon>
                         {{ date_text }}
                         <div v-if="showHome">
                             <v-btn icon small style="margin:-4px 0 0 2px;" @click.stop="setToday"><v-icon color="indigo">mdi-calendar-cursor</v-icon></v-btn>
                         </div>
                     </v-card>
-                    <v-btn class="mt-1" icon @click="next" v-if="showButton"><v-icon>mdi-arrow-right-thick</v-icon></v-btn>
+                    <v-btn class="mt-1" :color="color" icon @click="next" v-if="showButton"><v-icon>mdi-arrow-right-thick</v-icon></v-btn>
                 </div>
             </div>
         </v-row>
@@ -36,11 +36,14 @@ export default {
     components: {},
     props: {
         value: { type: String, default: "" },
+        width: { type: String, default: "" },
+        color: { type: String, default: "" },
         isWeek: { type: Boolean, default: false }, //Выбрать неделю
         isMonth: { type: Boolean, default: false }, //Выбрать месяц
         isRange: { type: Boolean, default: false }, //Выбрать диапазон
         showButton: { type: Boolean, default: true }, //Показывать кнопки лево/право
         showHome: { type: Boolean, default: true }, //Показывать кнопки Сегодня
+        showIcon: { type: Boolean, default: true }, //Показывать кнопки Календаря
     },
     data() {
         return {
@@ -68,6 +71,7 @@ export default {
 
     mounted() {
         this.init();
+        this.changeDate();
     },
 
     methods: {
@@ -80,7 +84,7 @@ export default {
             if (!dt || dt.length < 10) dt = this.$moment().format("YYYY-MM-DD");
             if (this.isRange) this.date_selected = [dt, dt];
             if (!this.isRange && !this.isWeek) this.date_selected = dt;
-            this.changeDate(dt);
+            this.applyDate(dt);
         },
 
         prev() {
@@ -141,7 +145,7 @@ export default {
             this.changeDate(dt);
         },
 
-        changeDate(val) {
+        applyDate(val) {
             if (!this.isRange && !this.isWeek) this.date_selected = val;
 
             if (this.isWeek) {
@@ -164,7 +168,13 @@ export default {
                 return;
             }
 
+            if (this.date_selected.length < 9)  this.date_selected = this.date_selected + "-01";
+
             this.date_dialog = false;
+        },
+
+        changeDate(val) {
+            if (val) this.applyDate(val);
 
             if (this.isRange || this.isWeek) {
                 this.$emit("input", this.date_selected[0]);
