@@ -304,6 +304,7 @@ export default {
                     this.items = [{ value: parseInt(this.value), text: this.row[this.options.name + "_text"] }];
                 }
             }
+
             this.$forceUpdate();
         },
 

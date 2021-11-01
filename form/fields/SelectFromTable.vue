@@ -166,8 +166,10 @@ export default {
                 }
             }
 
-            this.values = this.value;
-            if (typeof this.value != "object") this.values = [parseInt(this.value)];
+            if (this.value) {
+                this.values = this.value;
+                if (typeof this.value != "object") this.values = [parseInt(this.value)];
+            }
         },
         onchange() {
             //console.log(this.values);
