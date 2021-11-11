@@ -532,13 +532,25 @@ export default {
                     files += "<a href='" + value[id].src + "' >" + value[id].name + "</a> | ";
                 }
                 value = files;
-                if (files.length > 0) value = " | " + files;
             }
             if (head.type == "float")
                 value = parseFloat(value)
                     .toFixed(2)
                     .toString()
                     .replace(/\d(?=(\d{3})+\.)/g, "$& ");
+
+            if (head.type == "json") {
+                let json = value || [];
+                let values = "";
+                json.forEach(row=>{
+                    values += "<div class='v-chip theme--light v-size--small'>";
+                    Object.keys(row).forEach(key=>{
+                        values += row[key]+";";
+                    });
+                    values += "</div>";
+                });
+                value = values;
+            }
 
             if (this.customRenderItem) {
                 let newvalue = this.customRenderItem(head, item, isFooter);
