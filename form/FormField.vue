@@ -15,6 +15,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                @click:append="showTooltip($event, options)"
             ></v-text-field>
         </template>
 
@@ -27,6 +28,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                @click:append="showTooltip($event, options)"
             ></v-textarea>
         </template>
 
@@ -40,6 +42,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                @click:append="showTooltip($event, options)"
             ></v-text-field>
         </template>
         <template v-if="options.type == 'float' || options.type == 'double' && vifCalc()">
@@ -52,6 +55,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                @click:append="showTooltip($event, options)"
             ></v-text-field>
         </template>
 
@@ -119,6 +123,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                @click:append="showTooltip($event, options)"
             ></v-select>
         </template>
 
@@ -185,6 +190,7 @@
                 :hidden="false"
                 :name="name"
                 style="max-width:300px"
+                @click:append="showTooltip($event, options)"
             ></v-text-field>
         </template>
         
@@ -201,6 +207,14 @@
         </template>
 
 
+        <v-menu
+            v-model="popupTooltip.visible"
+            :position-x="popupTooltip.x"
+            :position-y="popupTooltip.y"
+            absolute>
+            <v-card v-html="popupTooltip.html" class="pa-2 primary--text">
+            </v-card>
+        </v-menu>
     </div>
 </template>
 
@@ -245,6 +259,12 @@ export default {
             itemsAll: [],
             items_laded: true,
             show_password: false,
+            popupTooltip:{
+                visible: false,
+                x: 0,
+                y: 0,
+                html: "",
+            },
             fieldRules: [],
             fileRules: [
                 (files) =>
@@ -264,6 +284,17 @@ export default {
     },
 
     methods: {
+        showTooltip(evt, options) {
+            evt.preventDefault();
+            this.popupTooltip.visible = false;
+            this.popupTooltip.x = evt.clientX;
+            this.popupTooltip.y = evt.clientY;
+            this.popupTooltip.html = options["append-icon-text"];
+            this.$nextTick(() => {
+                this.popupTooltip.visible = true;
+            });
+        },
+
         onInput(value) {
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, this.valueLocal);
@@ -321,6 +352,7 @@ export default {
             let rules = this.options.vif;
             rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
                 if (!this.row[name]) return 0;
+                if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
                 return this.row[name];
             });
             return eval(rules);

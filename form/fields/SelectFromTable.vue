@@ -1,9 +1,30 @@
 <template>
-    <div>
+    <div v-if="opts">
+        <v-select v-if="typeSelect == 'combobox'"
+            clearable
+            @click:clear.prevent="onClear"
+            :items="comboItems"
+            v-model="values"
+            :multiple="opts.multiple"
+            chips
+            @change="changeCombobox"
+            v-bind="opts"
+            item-value="id"
+            :item-text="opts.field"
+            :rules="rules"
+            :disabled="disabled"
+            :loading="comboItems.length==0"
+        >
+            <template v-slot:selection="{ item, index }">
+                <v-chip :small="opts.dense">
+                    <span>{{ item[opts.field] }}</span>
+                </v-chip>
+            </template>
+        </v-select>
         <v-select
+            v-else
             @mouseup="open()"
             clearable
-            @change="onchange()"
             readonly
             @click:clear.prevent="onClear"
             :items="items"
@@ -114,30 +135,32 @@ export default {
     },
     watch: {
         row() {
-            this.refresh();
+            this.postRefresh();
         },
         options() {
-            this.refresh();
+            this.postRefresh();
         },
         value() {
-            this.refresh();
+            this.postRefresh();
         },
         items() {
-            this.refresh();
+            this.postRefresh();
         },
     },
     data() {
         return {
+            needRefresh: false,
             typeSelect: 'table',
             display: false,
             selected: [],
             opts: null,
+            comboItems: [],
             values: [],
             labels: "",
         };
     },
     mounted() {
-        this.refresh();
+        this.postRefresh();
     },
     computed: {},
     methods: {
@@ -145,11 +168,17 @@ export default {
            if (this.disabled) return;
            this.display = true;
         },
+        postRefresh() {
+            this.needRefresh = true;
+            this.$nextTick(this.refresh);
+        },
         refresh() {
+            if (!this.needRefresh) return;
+            this.needRefresh = false;
             this.opts = JSON.parse(JSON.stringify(this.options));
 
             this.typeSelect = "table";
-            if (this.opts.typeSelect && this.opts.typeSelect=="tree") this.typeSelect = this.opts.typeSelect;
+            if (this.opts.typeSelect) this.typeSelect = this.opts.typeSelect;
 
             if (this.opts.options) {
                 //спецопции для таблицы
@@ -170,13 +199,22 @@ export default {
                 this.values = this.value;
                 if (typeof this.value != "object") this.values = [parseInt(this.value)];
             }
+            if (this.typeSelect == "combobox") {
+                if (!this.values || this.values.length==0) this.values = 0;
+                if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
+                if (this.comboItems.length > 0) return;
+                this.comboItems = [];
+                this.$api("table", this.opts.table, "get", {fast:true, fields:["id", this.opts.field] }).then(response=>{
+                    this.comboItems = response.rows;
+                });
+            }
         },
-        onchange() {
-            //console.log(this.values);
+        changeCombobox() {
+            this.$emit("change", this.values, []);
         },
         onClear() {
-            this.$emit("change", [], []);
             this.$nextTick().then(() => {
+                this.$emit("change", [], []);
                 this.display = false;
             });
         },

@@ -1,6 +1,6 @@
 <template>
     <v-dialog v-model="visible" scrollable persistent max-width="990px">
-        <v-card>
+        <v-card v-if="visible">
             <v-card-title class="pa-0">
                 <v-toolbar dense :color="titleColor" elevation="0">
                     <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>

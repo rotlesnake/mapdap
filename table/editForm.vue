@@ -1,5 +1,5 @@
 <template>
-    <v-card>
+    <v-card v-if="visible">
         <v-card-text style="padding:20px 20px 10px 20px;">
             <v-form ref="form" v-model="form_valid">
                 <template v-for="(item, i) in columns">
@@ -101,7 +101,7 @@ export default {
             if (this.rowId == 0) return;
 
             this.isLoading = true;
-            this.$api("table", this.tableName, this.rowId)
+            this.$api("table", this.tableName, this.rowId + "/?mini=true")
                 .then((response) => {
                     this.isLoading = false;
                     if (response.rows[0]) this.row = response.rows[0];

@@ -278,6 +278,7 @@ export default {
         fixedHeader: { type: Boolean, default: true },
         hideDefaultHeader: { type: Boolean, default: false },
         hideDefaultFooter: { type: Boolean, default: false },
+        editFormTitle: { type: String, default: "" },
     },
 
     data() {
@@ -568,7 +569,7 @@ export default {
             this.editDialog.rowIndex = this.rows.indexOf(this.selected[0]);
             this.editDialog.row = this.selected[0] ? this.selected[0] : {};
             this.editDialog.titleColor = "primary";
-            this.editDialog.title = "Добавление записи";
+            this.editDialog.title = this.editFormTitle || "Добавление записи";
             this.editDialog.buttons = {
                 left: { text: "Отмена", color: "red", icon: "close" },
                 right: { text: "Сохранить", color: "primary", icon: "save" },
@@ -580,7 +581,7 @@ export default {
                 this.editDialog.row = {};
             }
             if (action == "edit") {
-                this.editDialog.title = "Изменение записи";
+                this.editDialog.title = this.editFormTitle || "Изменение записи";
             }
             if (action == "delete") {
                 this.editDialog.titleColor = "red";
