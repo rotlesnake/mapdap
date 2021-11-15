@@ -9,7 +9,7 @@
                         :name="item.name"
                         v-model="row[item.name]"
                         :row="row"
-                        :disabled="item.protected"
+                        :disabled="item.protected || item.disabled"
                         @change="fieldChange"
                     />
                 </template>

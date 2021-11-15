@@ -635,3 +635,20 @@ export default {
     }, //methods
 };
 </script>
+
+<style>
+.v-data-table-header th {
+    color: var(--v-primary-base) !important;
+}
+.v-data-table td {
+}
+
+.theme--light.v-data-table .v-data-table__divider {
+    border-left: thin solid rgba(0, 0, 0, 0.12);
+    border-right: none;
+}
+.theme--dark.v-data-table .v-data-table__divider {
+    border-left: thin solid rgba(0, 0, 0, 0.12);
+    border-right: none;
+}
+</style>

@@ -20,6 +20,10 @@
                     <span>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
+            <template v-slot:append v-if="opts['append-icon']">
+                <v-icon @click.prevent="showTooltip($event, opts)">{{opts['append-icon']}}</v-icon>
+                <v-icon>mdi-menu-down</v-icon>
+            </template>
         </v-select>
         <v-select
             v-else
@@ -41,6 +45,10 @@
                 <v-chip :small="opts.dense">
                     <span>{{ item.text }}</span>
                 </v-chip>
+            </template>
+            <template v-slot:append v-if="opts['append-icon']">
+                <v-icon @click.prevent="showTooltip($event, opts)">{{opts['append-icon']}}</v-icon>
+                <v-icon>mdi-menu-down</v-icon>
             </template>
         </v-select>
 
@@ -132,6 +140,7 @@ export default {
         rules: { type: Array, default: () => [] },
         disabled: { default: false },
         options: { type: Object, default: null },
+        clickAppend: { type: Function, default: null },
     },
     watch: {
         row() {
@@ -164,6 +173,10 @@ export default {
     },
     computed: {},
     methods: {
+        showTooltip(evt, options){
+            if (this.clickAppend) this.clickAppend(evt, options);
+            this.$nextTick(()=>{ this.$refs.combobox.isMenuActive = false; this.display = false; });
+        },
         open(){ 
            if (this.disabled) return;
            this.display = true;

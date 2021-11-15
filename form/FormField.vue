@@ -138,6 +138,7 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
+                :clickAppend="showTooltip"
             ></field-select-from-table>
         </template>
 
@@ -353,8 +354,11 @@ export default {
             rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
                 if (!this.row[name]) return 0;
                 if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
+                if (typeof this.row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+this.row[name]+"]";
                 return this.row[name];
             });
+            rules = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; "+rules;
+
             return eval(rules);
         },
         stringToRules(rulestr) {
