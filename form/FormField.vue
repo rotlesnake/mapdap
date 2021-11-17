@@ -1,8 +1,7 @@
 <template>
-    <div>
-        <template v-if="options.divider && vifCalc()">
-            <v-divider class="mt-6"></v-divider>
-            <p class="text-center title mb-4">{{ options.divider }}</p>
+    <div v-if="options && options.name" :style="(options.formWidth ? 'width:calc('+options.formWidth+' - 12px); margin:0 6px;' : 'width:100%;')">
+        <template v-if="options.caption && vifCalc()">
+            <div class="title mb-1">{{ options.caption }}</div>
         </template>
 
         <!-- SIMPLE !-->
@@ -335,6 +334,14 @@ export default {
                 } else {
                     this.items = [{ value: parseInt(this.value), text: this.row[this.options.name + "_text"] }];
                 }
+            }
+
+            if (this.options.defaultFront && this.options.defaultFront.length>0 && !this.valueLocal) {
+                this.valueLocal = this.options.defaultFront;
+                if (this.options.type == "select") this.valueLocal = parseInt(this.options.defaultFront);
+                if (this.options.type == "linkTable") { const val = this.options.defaultFront.split("."); this.items = [{ value: parseInt(val[0]), text: val[1] }]; this.valueLocal = [parseInt(val[0])]; }
+                if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
+                if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD")+" 00:00:00";
             }
 
             this.$forceUpdate();

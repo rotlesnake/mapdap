@@ -1,7 +1,7 @@
 <template>
-    <div id="field-files" class="mb-4">
+    <div id="field-files" class="mb-8">
         <v-card>
-            <v-sheet class="my-1 py-2 px-4 body-1" color="primary">
+            <v-sheet class="py-2 px-4 body-1" color="primary">
                 {{ label }}
             </v-sheet>
 

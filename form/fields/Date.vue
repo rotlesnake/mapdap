@@ -1,15 +1,15 @@
 <template>
     <div id="field-date" class="mb-1">
-        <label class="v-label">{{ label }}</label>
         <div class="d-flex">
             <v-text-field
                 :value="formatDate(date)"
                 prepend-inner-icon="mdi-calendar"
                 readonly
                 @mouseup="open()"
-                dense
                 :hide-details="hideDetails"
+                :label="label"
                 :outlined="outlined"
+                :dense="dense"
                 :rules="rules"
                 :style="[type == 'date' ? '' : 'max-width:140px']"
                 :clearable="clearable"
@@ -25,12 +25,13 @@
                 v-if="type == 'dateTime' || type == 'timestamp'"
                 prepend-inner-icon="mdi-clock-time-seven-outline"
                 type="time"
+                label="Время"
                 @input="changeDate()"
-                dense
                 :hide-details="hideDetails"
                 :outlined="outlined"
+                :dense="dense"
                 :rules="rules"
-                class="ml-4"
+                class="ml-3"
                 style="max-width:150px"
                 step="2"
             ></v-text-field>
@@ -60,6 +61,7 @@ export default {
         max: { type: String, default: null },
         clearable: { type: Boolean, default: true },
         outlined: { type: Boolean, default: false },
+        dense: { type: Boolean, default: false },
         hideDetails: { type: Boolean, default: false },
         disabled: { type: Boolean, default: false },
         rules: { type: Array, default: () => [] },
@@ -88,6 +90,7 @@ export default {
         refresh() {
             if (!this.value) {
                 this.date = this.$moment().format("YYYY-MM-DD");
+                this.time = "00:00:00";
                 return;
             }
             this.date = this.value.substr(0, 10);

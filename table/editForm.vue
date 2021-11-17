@@ -1,8 +1,12 @@
 <template>
     <v-card v-if="visible">
         <v-card-text style="padding:20px 20px 10px 20px;">
-            <v-form ref="form" v-model="form_valid">
-                <template v-for="(item, i) in columns">
+            <v-form ref="form" v-model="form_valid" class="d-flex flex-wrap">
+                <template v-for="(item, i) in columnsFiltered">
+                    <div style="width:100%" v-if="item.divider">
+                        <v-divider class="mt-5"></v-divider>
+                        <p class="text-center title mb-4">{{ item.divider }}</p>
+                    </div>
                     <mdp-form-field
                         :options="item"
                         :key="i"
@@ -15,17 +19,6 @@
                 </template>
             </v-form>
         </v-card-text>
-
-        <v-divider></v-divider>
-        <v-card-actions>
-            <v-btn class="mx-2" :color="buttons.left.color" @click="$emit('close')">
-                <v-icon left>{{ buttons.left.icon }}</v-icon> {{ buttons.left.text }}
-            </v-btn>
-            <v-spacer></v-spacer>
-            <v-btn class="mx-2" :color="buttons.right.color" :disabled="!can_save" @click="save">
-                <v-icon left>{{ buttons.right.icon }}</v-icon> {{ buttons.right.text }}
-            </v-btn>
-        </v-card-actions>
 
         <v-overlay :absolute="true" :value="isLoading"> </v-overlay>
     </v-card>
@@ -45,6 +38,7 @@ export default {
         tableName: { type: String, default: "" },
         tableInfo: { type: Object, default: null },
         rowId: { type: Number, default: 0 },
+        page: { type: Number, default: 1 },
         buttons: {
             type: Object,
             default: () => {
@@ -73,12 +67,23 @@ export default {
 
     data() {
         return {
+            pagination: false,
             form_valid: true,
             can_save: false,
             columns: [],
             isLoading: false,
             row: {},
         };
+    },
+
+    computed:{
+        columnsFiltered(){
+            if (!this.pagination) return this.columns;
+            return this.columns.filter(e=>{ 
+               if (!e.page) return true;
+               return e.page == this.page;
+            });
+        },
     },
 
     mounted() {
@@ -97,6 +102,9 @@ export default {
             this.row = {};
             this.columns = [];
             this.columns = this.convertColumns(this.tableInfo.columns);
+            this.pagination = this.tableInfo.pagination || 0;
+            this.pagination = parseInt(this.pagination) > 1 ? parseInt(this.pagination) : 0;
+            this.$emit("setpagination", this.pagination);
             this.row = JSON.parse(JSON.stringify(this.row));
             if (this.rowId == 0) return;
 
@@ -127,6 +135,7 @@ export default {
 
         fieldChange(name, value, text) {
             this.can_save = true;
+            this.$emit("change");
         },
 
         onKeyUp(event){

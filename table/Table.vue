@@ -336,7 +336,7 @@ export default {
             }
         },
         calcTableHeight() {
-            let h = 315 + this.subHeight;
+            let h = 290 + this.subHeight;
             if (!this.showTop) h -= 60;
             if (!this.showFooter) h -= 60;
             if (this.hideDefaultFooter) h -= 55;
@@ -648,7 +648,7 @@ export default {
     border-right: none;
 }
 .theme--dark.v-data-table .v-data-table__divider {
-    border-left: thin solid rgba(0, 0, 0, 0.12);
+    border-left: thin solid rgba(200, 200, 200, 0.12);
     border-right: none;
 }
 </style>
