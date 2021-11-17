@@ -11,8 +11,8 @@
                 </v-toolbar>
             </v-card-title>
 
-            <v-card-title class="pa-1">
-                <v-stepper  non-linear v-if="pagination" style="width:100%;" v-model="page">
+            <v-card-title class="pa-0">
+                <v-stepper non-linear flat v-if="pagination" style="width:100%; height:48px; background:var(--v-toolbar-base)" v-model="page">
                     <v-stepper-header>
                         <template v-for="page in pagination-1">
                             <v-stepper-step editable :step="page"></v-stepper-step>
@@ -126,3 +126,12 @@ export default {
     },
 };
 </script>
+
+<style>
+.v-stepper__header {
+    height: 48px !important;
+}
+.v-stepper__step {
+   padding: 2px 24px !important;
+}
+</style>
