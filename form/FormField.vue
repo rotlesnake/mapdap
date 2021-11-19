@@ -298,6 +298,7 @@ export default {
         onInput(value) {
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, this.valueLocal);
+            if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
         linkTableChange(values, items, rows) {
             this.valueLocal = values;
@@ -306,6 +307,7 @@ export default {
             this.row[this.options.name + "_text"] = items[0] ? items[0].text : "";
             this.$emit("input", values);
             this.$emit("change", this.name, values, items, rows);
+            if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
 
         refresh() {
@@ -347,11 +349,25 @@ export default {
             this.$forceUpdate();
         },
 
-        selectFilter(val) {
-            if (val) {
-                this.items = this.itemsAll.filter((item) => item.name.toLowerCase().indexOf(val) !== -1);
-            } else {
-                this.items = this.itemsAll;
+        afterChangeField(fldName) {
+            if (this.options.afterChange && this.options.afterChange.length>1) {
+                let rules = this.options.afterChange;
+                rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
+                    if (!this.row[name]) return 0;
+                    if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
+                    if (typeof this.row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+this.row[name]+"]";
+                    return this.row[name];
+                });
+
+                var thisContext = this;
+                rules = rules.split(" ;; ");
+                rules.forEach(e=>{
+                    e = "let result = function(){ if ("+e.replace(' ? ', ') return ')+"; return null; }();";
+                    let calc = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; ";
+                       calc += "function SET(fld,val,txt){ thisContext.$emit('changeRowField', fld, val, txt); }; "+e;
+                    eval(calc);
+                });
+
             }
         },
 

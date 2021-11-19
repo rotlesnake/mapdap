@@ -15,6 +15,7 @@
                         :row="row"
                         :disabled="item.protected || item.disabled"
                         @change="fieldChange"
+                        @changeRowField="changeRowField"
                     />
                 </template>
             </v-form>
@@ -138,6 +139,12 @@ export default {
             this.$emit("change");
         },
 
+        changeRowField(name, value, text){
+            this.row[name] = value;
+            if (text) this.row[name+'_text'] = text;
+            this.$forceUpdate();
+        },
+
         onKeyUp(event){
             //console.log(event)
             if (event.key=="Escape") {
@@ -148,9 +155,13 @@ export default {
             }
         },
 
-        save() {
+        isFormValid() {
             this.$refs.form.validate();
-            if (!this.form_valid) {
+            return this.form_valid;
+        },
+
+        save() {
+            if (!this.isFormValid()) {
                 this.$swal.toastError("Заполните все поля правильно", "center-center", 1500);
                 return;
             }
