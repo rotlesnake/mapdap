@@ -188,6 +188,9 @@ export default {
         refresh() {
             if (!this.needRefresh) return;
             this.needRefresh = false;
+            if (this.opts && this.opts.table != this.options.table) {
+                this.comboItems = [];
+            }
             this.opts = JSON.parse(JSON.stringify(this.options));
 
             this.typeSelect = "table";
