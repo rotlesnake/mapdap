@@ -211,10 +211,9 @@ export default {
                 }
             }
 
-            if (this.value) {
-                this.values = this.value;
-                if (typeof this.value != "object") this.values = [parseInt(this.value)];
-            }
+            this.values = this.value || [];
+            if (typeof this.value != "object") this.values = [parseInt(this.value)];
+
             if (this.typeSelect == "combobox") {
                 if (!this.values || this.values.length==0) this.values = 0;
                 if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
