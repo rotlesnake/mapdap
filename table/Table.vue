@@ -45,15 +45,15 @@
                     <v-divider inset vertical></v-divider>
                     <v-toolbar-title class="mx-2">{{ caption }}</v-toolbar-title>
 
-                    <v-divider inset vertical></v-divider>
-                    <v-btn color="primary" class="ml-2" @click="rowFilterDialog = true">
+                    <v-divider inset vertical></v-divider v-if="showOldFilter">
+                    <v-btn color="primary" class="ml-2"  v-if="showOldFilter" @click="rowFilterDialog = true">
                         <v-icon>search</v-icon> Фильтр
                     </v-btn>
-                    <v-btn color="red" class="ml-1" fab x-small v-if="tableFilter" @click.stop="tableFilter = null; rowFilterValues = {};">
+                    <v-btn color="red" class="ml-1" fab x-small v-if="tableFilter && showOldFilter" @click.stop="tableFilter = null; rowFilterValues = {};">
                         <v-icon>close</v-icon>
                     </v-btn>
 
-                    <v-divider class="mx-2" inset vertical></v-divider>
+                    <v-divider class="mx-2" inset vertical  v-if="showOldFilter"></v-divider>
 
                     <v-text-field
                         v-model="localTextFilter"
@@ -67,7 +67,26 @@
                         @click:clear.prevent="localTextFilter = ''"
                     ></v-text-field>
 
-                    <v-divider inset vertical></v-divider>
+                    <v-divider inset vertical class="mx-1" v-if="!showOldFilter"></v-divider>
+                    <v-tooltip top color="primary" v-if="!showOldFilter">
+                        <template v-slot:activator="{ on }">
+                            <v-btn v-on="on" color="primary" icon @click="filterDrawer = !filterDrawer">
+                                <v-icon>mdi-filter</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Фильтр</span>
+                    </v-tooltip>
+                    <v-divider class="mx-1" inset vertical></v-divider>
+
+                    <v-tooltip top color="primary">
+                        <template v-slot:activator="{ on }">
+                            <v-btn v-on="on" icon @click="exportToXlsx">
+                                <v-icon>mdi-microsoft-excel</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Выгрузить в Excel</span>
+                    </v-tooltip>
+                    <v-divider inset vertical class="mx-1"></v-divider>
                     <v-tooltip top color="indigo">
                         <template v-slot:activator="{ on }">
                             <v-btn v-on="on" icon @click="columnFilterDialog = true">
@@ -244,11 +263,47 @@
             @close="rowFilterDialog = false"
             @change="rowFilterDialog = false"
         />
+
+        <v-navigation-drawer v-model="filterDrawer" right app color="toolbar" class="pa-2" width="300">
+            <v-btn class="mt-2" color="primary" outlined block @click="applyFilter()">
+                <v-icon left>mdi-filter-plus-outline</v-icon>
+                <h1 class="body-1">Применить</h1>
+            </v-btn>
+            <v-btn class="mt-4" color="primary" outlined block @click="clearFilter()">
+                <v-icon left>mdi-filter-remove-outline</v-icon>
+                <h1 class="body-1">Сбросить все фильтры</h1>
+            </v-btn>
+            <v-divider class="mt-4 mb-8" />
+
+            <template v-for="(item, i) in filterFields">
+                <mdp-form-field
+                    :options="item"
+                    :key="i"
+                    :name="item.name"
+                    v-model="filterRow[item.name]"
+                    :row="filterRow"
+                />
+            </template>
+
+            <v-divider class="my-4" />
+
+            <v-btn class="mt-2" color="primary" outlined block @click="applyFilter()">
+                <v-icon left>mdi-filter-plus-outline</v-icon>
+                <h1 class="body-1">Применить</h1>
+            </v-btn>
+            <v-btn class="mt-4" color="primary" outlined block @click="clearFilter()">
+                <v-icon left>mdi-filter-remove-outline</v-icon>
+                <h1 class="body-1">Сбросить все фильтры</h1>
+            </v-btn>
+            <v-divider class="my-4" />
+        </v-navigation-drawer>
+
     </section>
 </template>
 
 <script>
 import { mapActions } from "vuex";
+import XLSX from 'xlsx'
 
 export default {
     name:"table-editor",
@@ -256,6 +311,7 @@ export default {
         "mdp-edit-dialog": () => import("./editDialog.vue"),
         "mdp-column-filter": () => import("./columnFilterDialog.vue"),
         "mdp-row-filter": () => import("./rowFilterDialog.vue"),
+        "mdp-form-field": () => import("../form/FormField.vue"),
     },
 
     props: {
@@ -276,6 +332,7 @@ export default {
         multiple: { type: Boolean, default: false },
         value: { type: Array, default: null },
         fixedHeader: { type: Boolean, default: true },
+        showOldFilter: { type: Boolean, default: false },
         hideDefaultHeader: { type: Boolean, default: false },
         hideDefaultFooter: { type: Boolean, default: false },
         editFormTitle: { type: String, default: "" },
@@ -304,6 +361,9 @@ export default {
                 rowId: 0,
             },
             columnFilterDialog: false,
+            filterDrawer: false,
+            filterFields: [],
+            filterRow: {},
             rowFilterDialog: false,
             rowFilterValues: {},
         };
@@ -400,6 +460,7 @@ export default {
                     this.pagination = response.pagination;
                     this.rows = response.rows;
                     this.info = JSON.parse(JSON.stringify(response.info));
+                    this.getFilterFields();
                     this.columns = this.convertColumns(this.info.columns);
                     this.localColumns = this.convertColumns(response.info.columns, true);
                     if (this.tableCaption == "") {
@@ -408,7 +469,6 @@ export default {
                         this.caption = this.tableCaption;
                     }
                     this.selectRows(this.value);
-
                     if (this.showChildrens && this.info.showChildrens && this.info.childrenTables) { 
                         this.tableExpandable = this.showChildrens; 
                     }
@@ -509,8 +569,11 @@ export default {
             let rules = vif;
             rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
                 if (!row[name]) return 0;
+                if (typeof row[name] == "object" && row[name].length==0) return 0;
+                if (typeof row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+row[name]+"]";
                 return row[name];
             });
+            rules = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; "+rules;
             return eval(rules);
         },
 
@@ -632,22 +695,93 @@ export default {
             this.rows = JSON.parse(JSON.stringify(this.rows));
             this.$forceUpdate();
         },
+
+        getFilterFields() {
+            this.filterFields = [];
+            for (let key in this.info.filter) {
+                let item = { ...this.info.filter[key] };
+                item.name = key;
+                item.type = this.info.columns[key].type;
+                if (this.info.columns[key].items) item.items = this.info.columns[key].items;
+                if (this.info.columns[key].table) item.table = this.info.columns[key].table;
+                if (this.info.columns[key].field) item.field = this.info.columns[key].field;
+                item.typeSelect = "combobox";
+                item.outlined = true;
+                item.dense = true;
+                this.filterFields.push(item);
+            }
+        },
+        clearFilter() {
+            this.filterRow={};
+            this.applyFilter();
+        },
+        applyFilter() {
+            this.tableFilter = [];
+            this.filterFields.forEach(e => {
+                this.tableFilter.push({field: e.name, oper: e.filterType, value:this.filterRow[e.name]});
+            });
+        },
+
+        setVisibleFields(fields){
+            fields = fields || [];
+            this.localColumns.forEach(e => {
+                e.sortIndex = fields.indexOf(e.name);
+                if (e.sortIndex < 0) e.sortIndex = 999;
+                e.hidden = true;
+                fields.forEach((fe)=>{
+                    if (e.name==fe || fe+'_text'==e.name) e.hidden = false;
+                });
+            });
+
+            this.localColumns.sort((a, b) => {
+                return a.sortIndex - b.sortIndex;
+            });
+        },
+
+        exportToXlsx() {
+            let filename = this.tableName+".xlsx";
+
+            const wb = XLSX.utils.book_new();
+            let xl_head = [];
+            let xl_rows = [];
+            let data = [];
+                for (let item in this.columnsFiltered) {
+                    if (this.columnsFiltered[item].type=="files" || this.columnsFiltered[item].type=="images") continue;
+                    let item_name = this.columnsFiltered[item].label;
+                    xl_head.push(item_name);
+                }
+                for (let row in this.rows) {
+                    let xl_row = [];
+                    for (let item in this.columnsFiltered) {
+                        if (this.columnsFiltered[item].type=="files" || this.columnsFiltered[item].type=="images") continue;
+                        let item_name = this.columnsFiltered[item].name;
+                        xl_row.push(this.rows[row][item_name]);
+                    }
+                    xl_rows.push(xl_row);
+                }
+            data = [xl_head, ...xl_rows];
+
+            let ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, this.caption);
+            XLSX.writeFile(wb, filename);
+        },
+
     }, //methods
 };
 </script>
 
 <style>
-.v-data-table-header th {
+#table .v-data-table-header th {
     color: var(--v-primary-base) !important;
 }
-.v-data-table td {
+#table .v-data-table td {
 }
 
-.theme--light.v-data-table .v-data-table__divider {
+#table .theme--light.v-data-table .v-data-table__divider {
     border-left: thin solid rgba(0, 0, 0, 0.12);
     border-right: none;
 }
-.theme--dark.v-data-table .v-data-table__divider {
+#table .theme--dark.v-data-table .v-data-table__divider {
     border-left: thin solid rgba(200, 200, 200, 0.12);
     border-right: none;
 }

@@ -143,8 +143,10 @@ export default {
         clickAppend: { type: Function, default: null },
     },
     watch: {
-        row() {
-            this.postRefresh();
+        row:{
+            immediate: true,
+            deep: true,
+            handler(newVal, oldVal) { this.postRefresh(); }
         },
         options() {
             this.postRefresh();
@@ -173,6 +175,14 @@ export default {
     },
     computed: {},
     methods: {
+        trimStr(str) {
+            str = str.replace(/^\s+|\s+$/g,"");
+            if (str.indexOf('[') > -1) {
+                str = str.replace(/\[/gi, "").replace(/\]/gi, "");
+                return str.split(",");
+            }
+            return str;
+        },
         showTooltip(evt, options){
             if (this.clickAppend) this.clickAppend(evt, options);
             this.$nextTick(()=>{ this.$refs.combobox.isMenuActive = false; this.display = false; });
@@ -213,6 +223,25 @@ export default {
 
             this.values = this.value || [];
             if (typeof this.value != "object") this.values = [parseInt(this.value)];
+
+            if (this.opts.tableFilter && this.opts.tableFilter.length>2) {
+                if (!this.opts.options) this.opts.options = {};
+                this.opts.options.tableFilter = [];
+                let rules = this.opts.tableFilter;
+                rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
+                    if (!this.row[name]) return 0;
+                    if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
+                    if (typeof this.row[name] == "object" && rules.indexOf("'in'")>-1 ) return "["+this.row[name]+"]";
+                    return this.row[name];
+                });
+                var thisContext = this;
+                rules = rules.split(" ;; ");
+                rules.forEach(e=>{
+                    let str = e.replace(/\(/gi, "").replace(/\)/gi, "").replace(/\'/gi, "");
+                    let arr = str.split(",");
+                    this.opts.options.tableFilter.push({field:this.trimStr(arr[0]), oper:this.trimStr(arr[1]), value:this.trimStr(arr[2])});
+                });
+            }
 
             if (this.typeSelect == "combobox") {
                 if (!this.values || this.values.length==0) this.values = 0;
