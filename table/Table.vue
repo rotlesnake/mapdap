@@ -422,10 +422,10 @@ export default {
             this.reloadTable();
         });
 
-        document.addEventListener('keyup', this.onKeyUp);
+//        document.addEventListener('keyup', this.onKeyUp);
     },
     beforeDestroy() {
-        document.removeEventListener('keyup', this.onKeyUp);
+//        document.removeEventListener('keyup', this.onKeyUp);
     },
 
     methods: {
@@ -460,9 +460,9 @@ export default {
                     this.pagination = response.pagination;
                     this.rows = response.rows;
                     this.info = JSON.parse(JSON.stringify(response.info));
-                    this.getFilterFields();
                     this.columns = this.convertColumns(this.info.columns);
                     this.localColumns = this.convertColumns(response.info.columns, true);
+                    this.getFilterFields();
                     if (this.tableCaption == "") {
                         this.caption = response.info.name;
                     } else {
