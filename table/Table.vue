@@ -722,14 +722,16 @@ export default {
             });
         },
 
-        setVisibleFields(fields){
+        setVisibleFields(fields) {
             fields = fields || [];
-            this.localColumns.forEach(e => {
-                e.sortIndex = fields.indexOf(e.name);
-                if (e.sortIndex < 0) e.sortIndex = 999;
+            this.localColumns.forEach((e) => {
+                e.sortIndex = 999;
                 e.hidden = true;
-                fields.forEach((fe)=>{
-                    if (e.name==fe || fe+'_text'==e.name) e.hidden = false;
+                fields.forEach((fe, fi) => {
+                    if (e.name == fe || e.name == fe + "_text") {
+                        e.hidden = false;
+                        e.sortIndex = fi;
+                    }
                 });
             });
 

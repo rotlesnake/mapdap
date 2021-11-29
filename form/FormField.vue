@@ -122,8 +122,17 @@
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
-                @click:append="showTooltip($event, options)"
-            ></v-select>
+            >
+            <template v-slot:selection="{ item, index }">
+                <v-chip :small="options.dense">
+                    <span>{{ item.text }}</span>
+                </v-chip>
+            </template>
+            <template v-slot:append v-if="options['append-icon']">
+                <v-icon @click.prevent="showTooltip($event, options)">{{options['append-icon']}}</v-icon>
+                <v-icon>mdi-menu-down</v-icon>
+            </template>
+            </v-select>
         </template>
 
         <template v-if="options.type == 'linkTable' && vifCalc()">
