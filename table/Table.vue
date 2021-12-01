@@ -342,7 +342,7 @@ export default {
         return {
             isLoading: false,
             localTextFilter: "",
-            pagination: { page:1, sortBy:[], sortDesc:[], itemsPerPage:100, totalItems: -1 },
+            pagination: { page:1, sortBy:[], sortDesc:[], itemsPerPage:0, totalItems: -1 },
 
             tableExpandable: false,
             caption: "",
