@@ -200,6 +200,8 @@
                 :name="name"
                 style="max-width:300px"
                 @click:append="showTooltip($event, options)"
+                clearable
+                @click:clear.prevent="onClear"
             ></v-text-field>
         </template>
         
@@ -303,7 +305,11 @@ export default {
                 this.popupTooltip.visible = true;
             });
         },
-
+        onClear() {
+            this.$nextTick().then(() => {
+                this.valueLocal=''; this.onInput('');
+            });
+        },
         onInput(value) {
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, this.valueLocal);
