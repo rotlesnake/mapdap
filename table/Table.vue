@@ -265,6 +265,11 @@
         />
 
         <v-navigation-drawer v-model="filterDrawer" right app color="toolbar" class="pa-2" width="300">
+            <v-btn class="mt-2" color="red" outlined block @click="filterDrawer = false">
+                <v-icon left>close</v-icon>
+                <h1 class="body-1">Закрыть</h1>
+            </v-btn>
+
             <v-btn class="mt-2" color="primary" outlined block @click="applyFilter()">
                 <v-icon left>mdi-filter-plus-outline</v-icon>
                 <h1 class="body-1">Применить</h1>
@@ -604,6 +609,7 @@ export default {
                     .replace(/\d(?=(\d{3})+\.)/g, "$& ");
 
             if (head.type == "json") {
+                if (typeof(value) == "string") value = JSON.parse(value);
                 let json = value || [];
                 let values = "";
                 json.forEach(row=>{
