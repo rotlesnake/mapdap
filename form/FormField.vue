@@ -342,7 +342,11 @@ export default {
                 for (let item in this.options.items) {
                     this.items.push({ value: parseInt(item), text: this.options.items[item] });
                 }
-                this.valueLocal = parseInt(this.value) || 0;
+                if (this.options.multiple) {
+                    if (typeof this.valueLocal == 'object') { this.valueLocal = this.valueLocal; } else { this.valueLocal = []; }
+                } else {
+                    this.valueLocal = parseInt(this.value) || 0;
+                }
             }
             if (this.options.type == "linkTable") {
                 this.items = [];
