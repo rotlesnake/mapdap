@@ -67,8 +67,8 @@
                         @click:clear.prevent="localTextFilter = ''"
                     ></v-text-field>
 
-                    <v-divider inset vertical class="mx-1" v-if="!showOldFilter"></v-divider>
-                    <v-tooltip top color="primary" v-if="!showOldFilter">
+                    <v-divider inset vertical class="mx-1" v-if="showNewFilter"></v-divider>
+                    <v-tooltip top color="primary" v-if="showNewFilter">
                         <template v-slot:activator="{ on }">
                             <v-btn v-on="on" color="primary" icon @click="filterDrawer = !filterDrawer">
                                 <v-icon>mdi-filter</v-icon>
@@ -338,6 +338,7 @@ export default {
         value: { type: Array, default: null },
         fixedHeader: { type: Boolean, default: true },
         showOldFilter: { type: Boolean, default: false },
+        showNewFilter: { type: Boolean, default: true },
         hideDefaultHeader: { type: Boolean, default: false },
         hideDefaultFooter: { type: Boolean, default: false },
         editFormTitle: { type: String, default: "" },
