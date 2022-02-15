@@ -170,6 +170,7 @@
             <field-date
                 v-model="valueLocal"
                 v-bind="options"
+                :rules="fieldRules"
                 @input="onInput"
                 :disabled="disabled"
                 :hidden="false"
