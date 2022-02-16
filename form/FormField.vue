@@ -364,6 +364,7 @@ export default {
                 if (this.options.type == "linkTable") { const val = this.options.defaultFront.split("."); this.items = [{ value: parseInt(val[0]), text: val[1] }]; this.valueLocal = [parseInt(val[0])]; }
                 if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
                 if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD")+" 00:00:00";
+                this.onInput(this.valueLocal);
             }
 
             this.$forceUpdate();
