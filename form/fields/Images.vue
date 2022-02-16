@@ -1,7 +1,8 @@
 <template>
     <div id="field-photos" class="mb-4">
         <v-card v-if="isAvatar" :style="'width:' + width + '; height:' + height + ';'">
-            <v-img v-if="filesList.length > 0" :src="filesList[0].src" contain style="width: 100%; height: 100%; cursor: pointer" @click="$refs.file.click()" />
+            <v-img v-if="filesList.length > 0 && !disabled" :src="filesList[0].src" contain style="width: 100%; height: 100%; cursor: pointer" @click="$refs.file.click()" />
+            <v-img v-if="filesList.length > 0 && disabled" :src="filesList[0].src" contain style="width: 100%; height: 100%;" />
             <input type="file" ref="file" v-show="false" @change="avatarSelected" accept="image/*" />
         </v-card>
 
@@ -16,8 +17,8 @@
                     <img :src="item.src" style="max-height: 50px; max-width: 50px; margin: 0 10px 0 0" />
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
                     <v-spacer />
-                    <input class="comment" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" />
-                    <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)"><v-icon>close</v-icon></v-btn>
+                    <input class="comment my-2" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
+                    <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)" v-if="!disabled"><v-icon>close</v-icon></v-btn>
                 </template>
                 <template v-else>
                     <v-switch dense color="gray" v-model="item.type" :true-value="2" :false-value="1" :label="item.type == 1 ? 'файл' : ' URL '"></v-switch>
@@ -36,21 +37,22 @@
                             hide-details
                             outlined
                             dense
+                            :disabled="disabled"
                         ></v-file-input>
                     </template>
                     <template v-else>
-                        <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()"></v-text-field>
+                        <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()" :disabled="disabled"></v-text-field>
                     </template>
 
                     <img :src="item.src" style="max-height: 50px; max-width: 50px; margin: -4px -6px -4px 2px; float: right" />
-                    <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" />
+                    <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
                 </template>
             </v-card-title>
 
             <v-divider v-if="multiple" />
             <v-card-actions v-if="multiple" class="py-0">
                 <v-spacer />
-                <v-btn fab small color="green" class="ma-1" dark @click.stop="addPhotoInList"><v-icon>add</v-icon></v-btn>
+                <v-btn fab small color="green" class="ma-1" dark @click.stop="addPhotoInList" :disabled="disabled"><v-icon>add</v-icon></v-btn>
             </v-card-actions>
         </v-card>
     </div>
@@ -66,6 +68,7 @@ export default {
         label: { type: String, default: null },
         value: { required: true },
         multiple: { type: Boolean, default: false },
+        disabled: { default: false },
     },
     data() {
         return {

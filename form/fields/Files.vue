@@ -11,8 +11,8 @@
                     <!-- Отображаем загруженный файл  -->
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
                     <v-spacer />
-                    <input class="comment" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" />
-                    <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)"><v-icon>close</v-icon></v-btn>
+                    <input class="comment my-2" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
+                    <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)" v-if="!disabled"><v-icon>close</v-icon></v-btn>
                 </template>
                 <template v-else>
                     <!-- Форма загрузки файла -->
@@ -31,21 +31,22 @@
                             hide-details
                             outlined
                             dense
+                            :disabled="disabled"
                         ></v-file-input>
-                        <v-btn v-if="multiple" class="mx-1" x-small fab color="red" dark @click.stop="deleteItem(i)"><v-icon>close</v-icon></v-btn>
+                        <v-btn v-if="multiple" class="mx-1" x-small fab color="red" dark @click.stop="deleteItem(i)" :disabled="disabled"><v-icon>close</v-icon></v-btn>
                     </template>
                     <template v-else>
-                        <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()"></v-text-field>
+                        <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()" :disabled="disabled"></v-text-field>
                     </template>
 
-                    <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" />
+                    <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
                 </template>
             </v-card-title>
 
             <v-divider v-if="multiple" />
             <v-card-actions v-if="multiple" class="py-0">
                 <v-spacer />
-                <v-btn fab small color="green" class="ma-1 mr-2" dark @click.stop="addItem()"><v-icon>add</v-icon></v-btn>
+                <v-btn fab small color="green" class="ma-1 mr-2" dark @click.stop="addItem()" :disabled="disabled"><v-icon>add</v-icon></v-btn>
             </v-card-actions>
         </v-card>
     </div>
@@ -57,6 +58,7 @@ export default {
         label: { type: String, default: null },
         value: { required: true },
         multiple: { type: Boolean, default: false },
+        disabled: { default: false },
     },
     data() {
         return {
