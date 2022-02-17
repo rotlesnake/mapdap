@@ -7,12 +7,13 @@
         </v-card>
 
         <v-card v-else>
-            <v-sheet class="my-1 py-2 px-4 body-1 white--text" color="primary">
-                {{ label }}
+            <v-sheet class="py-1 px-4 body-1 white--text d-flex justify-space-between" color="primary">
+                <div class="title">{{ label }}</div>
+                <v-btn v-if="multiple" fab small color="green" dark @click.stop="addPhotoInList()"><v-icon>add</v-icon></v-btn>
             </v-sheet>
 
-            <v-card-title class="py-0 mt-n1" v-for="(item, i) in filesList" :key="i">
-                <template v-if="item.src">
+            <v-card-title class="py-0" v-for="(item, i) in filesList" :key="i">
+                <template v-if="item.src && item.src.length>9">
                     <!-- Отображаем загруженный файл  -->
                     <img :src="item.src" style="max-height: 50px; max-width: 50px; margin: 0 10px 0 0" />
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
@@ -28,12 +29,12 @@
                             class="ml-1"
                             chips
                             label="Файл фотографии"
-                            v-model="file"
+                            v-model="rawFiles[i]"
                             accept="image/*"
                             show-size
                             :rules="[(v) => !v || (v && !v.size) || (v && v.size < 2 * 1024 * 1024) || 'Размер файла должен быть не более 2 MB']"
                             prepend-icon=""
-                            @change="onFileLoad(i)"
+                            @change="onFileItemChange(i)"
                             hide-details
                             outlined
                             dense
@@ -73,7 +74,7 @@ export default {
     data() {
         return {
             filesList: [],
-            file: [],
+            rawFiles: [],
         };
     },
     watch: {
@@ -105,7 +106,6 @@ export default {
         addPhotoInList() {
             this.filesList.push({ type: 1, src: "", name: "", caption: "" });
         },
-
         deleteItem(index) {
             this.filesList = this.filesList.filter((obj, ndx) => {
                 return ndx !== index;
@@ -124,28 +124,28 @@ export default {
             this.onFileLoad(0);
         },
 
-        onFileLoad(index) {
+        onFileItemChange(index) {
             this.filesList[index].src = "";
-            if (!this.file) return;
-            if (this.file.size > 2 * 1024 * 1024) return;
-            this.file.index = index;
-            this.readFileToVariable();
+            if (!this.rawFiles[index]) return;
+            if (this.rawFiles[index].size > 3 * 1024 * 1024) return;
+            this.rawFiles[index].index = index;
+
+            this.readFileToVariable(this.rawFiles[index]);
         },
-        readFileToVariable() {
+        readFileToVariable(fileObject) {
             var reader = new FileReader();
             reader.onload = (e) => {
-                this.file.src = e.target.result;
-                this.uploadPhoto({ name: this.file.name, index: this.file.index, src: this.file.src });
+                fileObject.src = e.target.result;
+                this.fileLoaded({ name: fileObject.name, index: fileObject.index, src: fileObject.src });
             };
-            reader.readAsDataURL(this.file);
+            reader.readAsDataURL(fileObject);
         },
-
-        uploadPhoto(data) {
+        fileLoaded(data) {
             this.filesList[data.index].name = data.name;
             this.filesList[data.index].src = data.src;
-            this.$forceUpdate();
-            this.$emit("input", this.filesList);
+            this.updateItem();
         },
+
     },
 };
 </script>
