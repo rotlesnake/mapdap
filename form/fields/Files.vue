@@ -7,7 +7,7 @@
             </v-sheet>
 
             <v-card-title class="py-0" v-for="(item, i) in filesList" :key="i">
-                <template v-if="item.src">
+                <template v-if="item.src && item.src.length>9">
                     <!-- Отображаем загруженный файл  -->
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
                     <v-spacer />
@@ -23,9 +23,8 @@
                             chips
                             label="Файл"
                             v-model="rawFiles[i]"
-                            accept="image/*"
                             show-size
-                            :rules="[(v) => !v || (v && !v.size) || (v && v.size < 35 * 1024 * 1024) || 'Размер файла должен быть не более 35 MB']"
+                            :rules="[(v) => !v || (v && !v.size) || (v && v.size < 35 * 1024 * 1024) || 'Размер файла должен быть не более 3 MB']"
                             prepend-icon=""
                             @change="onFileItemChange(i)"
                             hide-details
@@ -37,6 +36,7 @@
                     </template>
                     <template v-else>
                         <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()" :disabled="disabled"></v-text-field>
+                        <v-btn v-if="multiple" class="mx-1" x-small fab color="red" dark @click.stop="deleteItem(i)" :disabled="disabled"><v-icon>close</v-icon></v-btn>
                     </template>
 
                     <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
@@ -110,7 +110,7 @@ export default {
         onFileItemChange(index) {
             this.filesList[index].src = "";
             if (!this.rawFiles[index]) return;
-            if (this.rawFiles[index].size > 2 * 1024 * 1024) return;
+            if (this.rawFiles[index].size > 3 * 1024 * 1024) return;
             this.rawFiles[index].index = index;
 
             this.readFileToVariable(this.rawFiles[index]);
