@@ -246,11 +246,29 @@ export default {
             if (this.typeSelect == "combobox") {
                 if (!this.values || this.values.length==0) this.values = 0;
                 if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
+                if (this.opts.field.indexOf('[') > -1) {
+                    this.opts.fieldraw = this.opts.field;
+                    this.opts.field = "text";
+                }
                 if (this.comboItems.length > 0) return;
-                this.comboItems = [];
-                this.$api("table", this.opts.table, "get", {fast:true, fields:["id", this.opts.field] }).then(response=>{
-                    this.comboItems = response.rows;
-                });
+                if (this.opts.fieldraw && this.opts.fieldraw.indexOf('[') > -1) {
+                    this.comboItems = [];
+                    this.opts.fields = [];
+                    this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => {
+                        this.opts.fields.push(name);
+                    });
+                    this.$api("table", this.opts.table, "get", {fast:true, fields:["id", ...this.opts.fields] }).then(response=>{
+                        this.comboItems = response.rows.map(e=>{
+                            e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]);
+                            return e;
+                        });
+                    });
+                } else {
+                    this.comboItems = [];
+                    this.$api("table", this.opts.table, "get", {fast:true, fields:["id", this.opts.field] }).then(response=>{
+                        this.comboItems = response.rows;
+                    });
+                }
             }
         },
         changeCombobox() {

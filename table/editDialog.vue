@@ -67,9 +67,11 @@
                 <v-btn v-if="pagination && page<pagination" class="mx-2" color="primary" outlined @click="nextPage">
                     Далее <v-icon right>mdi-chevron-double-right</v-icon>
                 </v-btn>
-                <v-btn v-else class="mx-2" :color="buttons.right.color"  :disabled="!can_save" @click="$refs.mdpEditForm.save()">
-                    <v-icon left>{{ buttons.right.icon }}</v-icon> {{ buttons.right.text }}
-                </v-btn>
+                <template v-else>
+                    <v-btn v-if="action != 'view'" class="mx-2" :color="buttons.right.color"  :disabled="!can_save" @click="$refs.mdpEditForm.save()">
+                        <v-icon left>{{ buttons.right.icon }}</v-icon> {{ buttons.right.text }}
+                    </v-btn>
+                </template>
             </v-card-actions>
         </v-card>
     </v-dialog>

@@ -13,7 +13,7 @@
                         :name="item.name"
                         v-model="row[item.name]"
                         :row="row"
-                        :disabled="item.protected || item.disabled"
+                        :disabled="item.protected || item.disabled || action=='view'"
                         @change="fieldChange"
                         @changeRowField="changeRowField"
                     />
