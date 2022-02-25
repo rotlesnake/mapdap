@@ -251,8 +251,12 @@ export default {
         disabled: { type: Boolean, default: false },
     },
     watch: {
-        options() {
-            this.refresh();
+        options: {
+            immediate: true,
+            deep: true,
+            handler(newVal, oldVal) {
+                this.refresh();
+            },
         },
         name() {
             this.refresh();
@@ -260,8 +264,12 @@ export default {
         value() {
             this.refresh();
         },
-        row() {
-            this.refresh();
+        row: {
+            immediate: true,
+            deep: true,
+            handler(newVal, oldVal) {
+                this.refresh();
+            },
         },
     },
     data() {
@@ -385,7 +393,8 @@ export default {
                 rules.forEach(e=>{
                     e = "let result = function(){ if ("+e.replace(' ? ', ') return ')+"; return null; }();";
                     let calc = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; ";
-                       calc += "function SET(fld,val,txt){ thisContext.$emit('changeRowField', fld, val, txt); }; "+e;
+                    calc += "function OPTION(fld,opt,val){ thisContext.$emit('changeFieldOption', fld, opt, val); }; ";
+                    calc += "function SET(fld,val,txt){ thisContext.$emit('changeRowField', fld, val, txt); }; " + e;
                     eval(calc);
                 });
 

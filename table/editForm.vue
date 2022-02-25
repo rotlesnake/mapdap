@@ -16,6 +16,7 @@
                         :disabled="item.protected || item.disabled || action=='view'"
                         @change="fieldChange"
                         @changeRowField="changeRowField"
+                        @changeFieldOption="changeFieldOption"
                     />
                 </template>
             </v-form>
@@ -142,6 +143,13 @@ export default {
         changeRowField(name, value, text){
             this.row[name] = value;
             if (text) this.row[name+'_text'] = text;
+            this.$forceUpdate();
+        },
+
+        changeFieldOption(fld, opt, val) {
+            this.columns.forEach((e) => {
+                if (e.name == fld) e[opt] = val;
+            });
             this.$forceUpdate();
         },
 
