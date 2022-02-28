@@ -222,7 +222,7 @@ export default {
             }
 
             this.values = this.value || [];
-            if (typeof this.value != "object") this.values = [parseInt(this.value)];
+            if (typeof this.value != "object" && !isNaN(parseInt(this.value))) this.values = [parseInt(this.value)];
 
             if (this.opts.tableFilter && this.opts.tableFilter.length>2) {
                 if (!this.opts.options) this.opts.options = {};

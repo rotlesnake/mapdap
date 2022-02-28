@@ -375,6 +375,8 @@ export default {
                 this.onInput(this.valueLocal);
             }
 
+            if (this.valueLocal && this.options.afterChange && this.options.afterChange.length > 1) this.afterChangeField(this.name);
+
             this.$forceUpdate();
         },
 
@@ -402,6 +404,7 @@ export default {
         },
 
         vifCalc() {
+            this.options.vifResult = true;
             if (!this.options.vif || this.options.vif.length < 2) return true;
             let rules = this.options.vif;
             rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
@@ -412,7 +415,8 @@ export default {
             });
             rules = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; "+rules;
 
-            return eval(rules);
+            this.options.vifResult = eval(rules);
+            return this.options.vifResult;
         },
         stringToRules(rulestr) {
             if (rulestr instanceof Array) return rulestr;

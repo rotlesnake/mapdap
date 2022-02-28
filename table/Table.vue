@@ -725,6 +725,8 @@ export default {
         applyFilter() {
             this.tableFilter = [];
             this.filterFields.forEach(e => {
+                if (!this.filterRow[e.name]) return;
+                if (this.filterRow[e.name].length == 0) return;
                 this.tableFilter.push({field: e.name, oper: e.filterType, value:this.filterRow[e.name]});
             });
         },

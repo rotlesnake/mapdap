@@ -3,7 +3,7 @@
         <v-card-text style="padding:20px 20px 10px 20px;">
             <v-form ref="form" v-model="form_valid" class="d-flex flex-wrap">
                 <template v-for="(item, i) in columnsFiltered">
-                    <div style="width:100%" v-if="item.divider">
+                    <div style="width:100%" v-if="item.divider && item.vifResult">
                         <v-divider class="mt-5"></v-divider>
                         <p class="text-center title mb-4">{{ item.divider }}</p>
                     </div>
@@ -115,6 +115,10 @@ export default {
                 .then((response) => {
                     this.isLoading = false;
                     if (response.rows[0]) this.row = response.rows[0];
+
+                    this.$nextTick().then(() => {
+                        this.$forceUpdate();
+                    });
                 })
                 .catch((error) => {
                     this.isLoading = false;
@@ -128,6 +132,7 @@ export default {
                 if (obj.protected && !obj.visible) {
                     continue;
                 }
+                obj.vifResult = true;
                 obj.name = item;
                 rez.push(obj);
                 if (!this.row[item]) this.row[item] = null;
