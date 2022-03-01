@@ -13,6 +13,7 @@
                         :style="[type == 'date' ? '' : 'max-width:140px']"
                         :clearable="clearable"
                         :disabled="disabled"
+                        placeholder="ДД.ММ.ГГГГ"
                         pre-pend-inner-icon="mdi-calendar"
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
@@ -95,7 +96,7 @@ export default {
             this.date_dialog = true;
         },
         refresh() {
-            if (!this.value) {
+            if (!this.value || this.value.length < 10) {
                 this.date = "";
                 this.time = "00:00:00";
                 this.dateEditFinish();
@@ -146,20 +147,12 @@ export default {
         },
 
         dateToSql(dt) {
-            if (!dt || dt.length < 10) {
-                let date = new Date();
-                date = date.getFullYear() + "-" + ("00" + (date.getMonth() + 1)).slice(-2) + "-" + ("00" + date.getDate()).slice(-2);
-                return date;
-            }
+            if (!dt || dt.length < 10) return "";
             if (dt.substr(0, 5).indexOf("-") > -1) return dt;
             return dt.substr(6, 4) + "-" + dt.substr(3, 2) + "-" + dt.substr(0, 2);
         },
         dateToDate(dt) {
-            if (!dt || dt.length < 10) {
-                let date = new Date();
-                date = ("00" + date.getDate()).slice(-2) + "." + ("00" + (date.getMonth() + 1)).slice(-2) + "." + date.getFullYear();
-                return date;
-            }
+            if (!dt || dt.length < 10) return "";
             if (dt.substr(0, 3).indexOf(".") > -1) return dt;
             return dt.substr(8, 2) + "." + dt.substr(5, 2) + "." + dt.substr(0, 4);
         },
