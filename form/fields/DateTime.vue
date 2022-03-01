@@ -13,7 +13,7 @@
                         :style="[type == 'date' ? '' : 'max-width:140px']"
                         :clearable="clearable"
                         :disabled="disabled"
-                        prepend-inner-icon="mdi-calendar"
+                        pre-pend-inner-icon="mdi-calendar"
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
                         @blur="dateEditFinish"
@@ -98,10 +98,12 @@ export default {
             if (!this.value) {
                 this.date = "";
                 this.time = "00:00:00";
+                this.dateEditFinish();
                 return;
             }
             this.date = this.value.substr(0, 10);
             this.time = this.value.substr(11);
+            this.dateEditFinish();
         },
 
         dateInputMask_up(e) {
@@ -162,7 +164,7 @@ export default {
             return dt.substr(8, 2) + "." + dt.substr(5, 2) + "." + dt.substr(0, 4);
         },
         dateEditFinish() {
-            this.date = this.dateToSql(this.dateEdt);
+            if (this.dateEdt) this.date = this.dateToSql(this.dateEdt);
             if (this.min && this.date < this.min) this.date = "";
             if (this.max && this.date > this.max) this.date = "";
             this.dateEdt = this.dateToDate(this.date);
