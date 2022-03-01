@@ -18,6 +18,7 @@
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
                         @blur="dateEditFinish"
+                        @keyup.enter="dateEditFinish"
                         ref="masked_datetime"
                     ></v-text-field>
                 </template>
