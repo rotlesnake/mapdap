@@ -111,7 +111,10 @@ export default {
         },
 
         dateToSql(dt) {
-            if (!dt || dt.length < 10) return "";
+            dt = dt.replace(/_/g,"");
+            let dta = dt.split(".");
+            if (!dt) return "";
+            if (dt.length < 10 && dta[2]) dt = dta[0]+"."+String(dta[1])+"."+(parseInt(2000)+parseInt(dta[2]));
             if (dt.substr(0, 5).indexOf("-") > -1) return dt;
             let val = moment(dt.substr(6, 4) + "-" + dt.substr(3, 2) + "-" + dt.substr(0, 2)).format("YYYY-MM-DD");
             if (val=="Invalid date") return "";
