@@ -15,12 +15,10 @@
                         :disabled="disabled"
                         prepend-inner-icon="mdi-calendar"
                         append-icon="mdi-calendar"
-                        @click:clear.prevent="
-                            date = '';
-                            changeDate();
-                        "
                         @click:append="date_dialog = true"
                         @blur="dateEditFinish"
+                        @keyup="dateInputMask_up"
+                        @keydown="dateInputMask_down"
 
                     ></v-text-field>
                 </template>
@@ -106,6 +104,44 @@ export default {
             this.time = this.value.substr(11);
         },
 
+        dateInputMask_up(e) {
+            let v = e.target.value;
+            if (e.keyCode != 8) {
+                if (v.match(/^\d{2}$/) !== null) {
+                    e.target.value = v + ".";
+                } else if (v.match(/^\d{2}.\d{2}$/) !== null) {
+                    e.target.value = v + ".";
+                }
+            }
+            if (e.keyCode == 13) {
+                this.dateEditFinish();
+            }
+            e.target.value = e.target.value.replace(/\s/g, "");
+        },
+        dateInputMask_down(e) {
+            let len = e.target.value.length;
+            if (
+                e.keyCode == 46 ||
+                e.keyCode == 8 ||
+                e.keyCode == 9 ||
+                e.keyCode == 27 ||
+                // Разрешаем: Ctrl+A
+                (e.keyCode == 65 && e.ctrlKey === true) ||
+                // Разрешаем: home, end, влево, вправо
+                (e.keyCode >= 35 && e.keyCode <= 39)
+            ) {
+                // Ничего не делаем
+                return;
+            } else {
+                // Запрещаем все, кроме цифр на основной клавиатуре, а так же Num-клавиатуре
+                if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
+                    e.preventDefault();
+                }
+            }
+            if (len >= 10) {
+                e.preventDefault();
+            }
+        },
 
         dateToSql(dt) {
             if (!dt || dt.length < 10) {
@@ -134,7 +170,7 @@ export default {
         },
 
 
-        changeDate(date) {
+        changeDate() {
             let datetime = this.date;
             if (this.type == "dateTime" || this.type == "timestamp") datetime += " " + this.time;
             this.$emit("input", datetime);
