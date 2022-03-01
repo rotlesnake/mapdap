@@ -18,9 +18,7 @@
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
                         @blur="dateEditFinish"
-                        @keyup="dateInputMask_up"
-                        @keydown="dateInputMask_down"
-
+                        ref="masked_datetime"
                     ></v-text-field>
                 </template>
 
@@ -30,7 +28,7 @@
                     :min="min"
                     :max="max"
                     @input="
-                        dateEdt = dateToDate(date);
+                        dateEdt = dateToDate($event);
                         changeDate();
                         date_dialog = false;
                     "
@@ -58,6 +56,8 @@
 </template>
 
 <script>
+import Inputmask from "inputmask";
+import moment from "moment";
 export default {
     props: {
         type: { type: String, default: "date" },
@@ -88,6 +88,9 @@ export default {
     },
     mounted() {
         this.refresh();
+
+        let el = this.$refs.masked_datetime.$refs.input;
+        Inputmask({ mask: "99.99.9999", autoUnmask: false }).mask(el);
     },
 
     methods: {
@@ -107,54 +110,19 @@ export default {
             this.dateEditFinish();
         },
 
-        dateInputMask_up(e) {
-            let v = e.target.value;
-            if (e.keyCode != 8) {
-                if (v.match(/^\d{2}$/) !== null) {
-                    e.target.value = v + ".";
-                } else if (v.match(/^\d{2}.\d{2}$/) !== null) {
-                    e.target.value = v + ".";
-                }
-            }
-            if (e.keyCode == 13) {
-                this.dateEditFinish();
-            }
-            e.target.value = e.target.value.replace(/\s/g, "");
-        },
-        dateInputMask_down(e) {
-            let len = e.target.value.length;
-            if (
-                e.keyCode == 46 ||
-                e.keyCode == 8 ||
-                e.keyCode == 9 ||
-                e.keyCode == 27 ||
-                // Разрешаем: Ctrl+A
-                (e.keyCode == 65 && e.ctrlKey === true) ||
-                // Разрешаем: home, end, влево, вправо
-                (e.keyCode >= 35 && e.keyCode <= 39)
-            ) {
-                // Ничего не делаем
-                return;
-            } else {
-                // Запрещаем все, кроме цифр на основной клавиатуре, а так же Num-клавиатуре
-                if ((e.keyCode < 48 || e.keyCode > 57) && (e.keyCode < 96 || e.keyCode > 105)) {
-                    e.preventDefault();
-                }
-            }
-            if (len >= 10) {
-                e.preventDefault();
-            }
-        },
-
         dateToSql(dt) {
             if (!dt || dt.length < 10) return "";
             if (dt.substr(0, 5).indexOf("-") > -1) return dt;
-            return dt.substr(6, 4) + "-" + dt.substr(3, 2) + "-" + dt.substr(0, 2);
+            let val = moment(dt.substr(6, 4) + "-" + dt.substr(3, 2) + "-" + dt.substr(0, 2)).format("YYYY-MM-DD");
+            if (val=="Invalid date") return "";
+            return val;
         },
         dateToDate(dt) {
             if (!dt || dt.length < 10) return "";
             if (dt.substr(0, 3).indexOf(".") > -1) return dt;
-            return dt.substr(8, 2) + "." + dt.substr(5, 2) + "." + dt.substr(0, 4);
+            let val = moment(dt).format("DD.MM.YYYY");
+            if (val=="Invalid date") return "";
+            return val;
         },
         dateEditFinish() {
             if (this.dateEdt) this.date = this.dateToSql(this.dateEdt);
