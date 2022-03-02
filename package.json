@@ -1,6 +1,6 @@
 {
   "name": "mapdap",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "mapdap frontend components",
   "main": "index.js",
   "scripts": {
@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/rotlesnake/mapdap/issues"
   },
-  "homepage": "https://github.com/rotlesnake/mapdap#readme"
+  "homepage": "https://github.com/rotlesnake/mapdap#readme",
+  "dependencies": {
+    "inputmask": "^5.0.7",
+    "xlsx": "^0.17.5"
+  }
 }

@@ -239,7 +239,7 @@ export default {
         "field-images": () => import("./fields/Images.vue"),
         "field-files": () => import("./fields/Files.vue"),
         "field-select-from-table": () => import("./fields/SelectFromTable.vue"),
-        "field-date": () => import("./fields/Date.vue"),
+        "field-date": () => import("./fields/DateTime.vue"),
         "field-date-range": () => import("./fields/DateRange.vue"),
         "json-table": () => import("./fields/JsonTable.vue"),
     },
