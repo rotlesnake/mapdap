@@ -80,6 +80,9 @@ export default {
         },
 
         init() {
+            if (this.date_selected == this.value) return;
+            if (this.isWeek && this.date_selected[0] == this.value) return;
+
             let dt = this.value;
             if (!dt || dt.length < 10) dt = moment().format("YYYY-MM-DD");
             if (this.isRange) this.date_selected = [dt, dt];
