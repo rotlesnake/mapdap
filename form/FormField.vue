@@ -7,6 +7,7 @@
         <!-- SIMPLE !-->
         <template v-if="options.type == 'string' && vifCalc()">
             <v-text-field
+                ref="inpfld"
                 v-model="valueLocal"
                 v-bind="options"
                 @input="onInput"
@@ -20,6 +21,7 @@
 
         <template v-if="options.type == 'text' && vifCalc()">
             <v-textarea
+                ref="inpfld"
                 v-model="valueLocal"
                 v-bind="options"
                 @input="onInput"
@@ -33,8 +35,9 @@
 
         <template v-if="(options.type == 'integer' || options.type == 'bigInteger') && vifCalc()">
             <v-text-field
+                ref="inpfld"
                 v-model="valueLocal"
-                type="number"
+                :type="options.mask ? 'text' : 'number'"
                 v-bind="options"
                 @input="onInput"
                 :rules="fieldRules"
@@ -46,8 +49,9 @@
         </template>
         <template v-if="options.type == 'float' || options.type == 'double' && vifCalc()">
             <v-text-field
+                ref="inpfld"
                 v-model="valueLocal"
-                type="number"
+                :type="options.mask ? 'text' : 'number'"
                 v-bind="options"
                 @input="onInput"
                 :rules="fieldRules"
@@ -232,6 +236,7 @@
 
 <script>
 import Vue from "vue";
+import Inputmask from "inputmask";
 
 export default {
     components: {
@@ -299,7 +304,9 @@ export default {
             ],
         }; //return
     },
-    created() {
+
+    mounted() {
+        this.init();
         this.refresh();
     },
 
@@ -332,6 +339,35 @@ export default {
             this.$emit("input", values);
             this.$emit("change", this.name, values, items, rows);
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
+        },
+
+        init() {
+            if (this.options.placeholder) {
+                this.options["persistent-placeholder"]=true;
+            }
+
+            if (this.options.mask && this.$refs.inpfld) {
+                this.options["persistent-placeholder"]=true;
+                let el = this.$refs.inpfld.$refs.input;
+                if (this.options.mask.substr(0,3)=="int") {
+                    Inputmask({regex: "[0-9]*", placeholder:this.options.maskplaceholder }).mask(el);
+                    el = null;
+                }
+                if (this.options.mask=="float") {
+                    Inputmask('decimal', { rightAlign: false }).mask(el);
+                    el = null;
+                }
+                if (this.options.mask=="email") {
+                    Inputmask({mask: "*{1,20}[.*{1,20}][.*{1,20}][.*{1,20}]@*{1,20}[.*{2,6}][.*{1,2}]", placeholder:this.options.maskplaceholder}).mask(el);
+                    el = null;
+                }
+                if (this.options.mask=="amount") {
+                    Inputmask({mask: "9{1,20}.9{1,2}", placeholder:this.options.maskplaceholder}).mask(el);
+                    el = null;
+                }
+
+                if (el) Inputmask({ mask: this.options.mask, autoUnmask: this.options.unmask, placeholder:this.options.maskplaceholder }).mask(el);
+            }
         },
 
         refresh() {

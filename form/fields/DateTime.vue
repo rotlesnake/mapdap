@@ -13,8 +13,8 @@
                         :style="[type == 'date' ? '' : 'max-width:140px']"
                         :clearable="clearable"
                         :disabled="disabled"
-                        placeholder="ДД.ММ.ГГГГ"
-                        pre-pend-inner-icon="mdi-calendar"
+                        placeholder="дд.мм.гггг"
+                        persistent-placeholder
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
                         @blur="dateEditFinish"
@@ -91,7 +91,7 @@ export default {
         this.refresh();
 
         let el = this.$refs.masked_datetime.$refs.input;
-        Inputmask({ mask: "99.99.9999", autoUnmask: false }).mask(el);
+        Inputmask({ mask: "99.99.9999", autoUnmask: false, placeholder:"дд.мм.гггг" }).mask(el);
     },
 
     methods: {
@@ -113,6 +113,7 @@ export default {
 
         dateToSql(dt) {
             dt = dt.replace(/_/g,"");
+            dt = dt.replace(/г/g,"");
             let dta = dt.split(".");
             if (!dt) return "";
             if (dt.length < 10 && dta[2]) dt = dta[0]+"."+String(dta[1])+"."+(parseInt(2000)+parseInt(dta[2]));
