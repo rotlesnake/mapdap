@@ -257,15 +257,19 @@ export default {
                     this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => {
                         this.opts.fields.push(name);
                     });
-                    this.$api("table", this.opts.table, "get", {fast:true, fields:["id", ...this.opts.fields] }).then(response=>{
+                    let filter = [];
+                    if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
+                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:["id", ...this.opts.fields], filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
                             e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]);
                             return e;
                         });
                     });
                 } else {
+                    let filter = [];
+                    if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
                     this.comboItems = [];
-                    this.$api("table", this.opts.table, "get", {fast:true, fields:["id", this.opts.field] }).then(response=>{
+                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:["id", this.opts.field], filter }).then(response=>{
                         this.comboItems = response.rows;
                     });
                 }
