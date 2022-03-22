@@ -280,6 +280,7 @@ export default {
     data() {
         return {
             valueLocal: "",
+            valueLocalRows: [],
             items: [],
             itemsAll: [],
             items_laded: true,
@@ -333,6 +334,7 @@ export default {
         },
         linkTableChange(values, items, rows) {
             this.valueLocal = values;
+            this.valueLocalRows = rows;
             this.items = items;
             this.row[this.options.name + "_values"] = items;
             this.row[this.options.name + "_text"] = items[0] ? items[0].text : "";
@@ -417,25 +419,30 @@ export default {
         },
 
         afterChangeField(fldName) {
-            if (this.options.afterChange && this.options.afterChange.length>1) {
+            if (this.options.afterChange && this.options.afterChange.length > 1) {
                 let rules = this.options.afterChange;
                 rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
                     if (!this.row[name]) return 0;
-                    if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
-                    if (typeof this.row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+this.row[name]+"]";
+                    if (typeof this.row[name] == "object" && this.row[name].length == 0) return 0;
+                    if (typeof this.row[name] == "object" && rules.indexOf("IN(") > -1) return "[" + this.row[name] + "]";
                     return this.row[name];
+                });
+                rules = rules.replace(/\{(.*?)\}/gi, (match, name) => {
+                    if (!this.valueLocalRows || this.valueLocalRows.length == 0) return 0;
+                    if (typeof this.valueLocalRows[0][name] == "string") return "'" + this.valueLocalRows[0][name] + "'";
+                    return this.valueLocalRows[0][name];
                 });
 
                 var thisContext = this;
                 rules = rules.split(" ;; ");
-                rules.forEach(e=>{
-                    e = "let result = function(){ if ("+e.replace(' ? ', ') return ')+"; return null; }();";
+                rules.forEach((e) => {
+                    if (e.indexOf(" ? ") < 0) e += " ? ";
+                    e = "let result = function(){ if (" + e.replace(" ? ", ") return ") + "; return null; }();";
                     let calc = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; ";
                     calc += "function OPTION(fld,opt,val){ thisContext.$emit('changeFieldOption', fld, opt, val); }; ";
                     calc += "function SET(fld,val,txt){ thisContext.$emit('changeRowField', fld, val, txt); }; " + e;
                     eval(calc);
                 });
-
             }
         },
 

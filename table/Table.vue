@@ -402,6 +402,7 @@ export default {
             }
         },
         calcTableHeight() {
+            if (this.minHeight == "auto") return "";
             let h = 290 + this.subHeight;
             if (!this.showTop) h -= 60;
             if (!this.showFooter) h -= 60;
