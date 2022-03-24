@@ -708,7 +708,7 @@ export default {
             for (let key in this.info.filter) {
                 let item = { ...this.info.filter[key] };
                 item.name = key;
-                item.type = this.info.columns[key].type;
+                if (!item.type) item.type = this.info.columns[key].type;
                 if (this.info.columns[key].items) item.items = this.info.columns[key].items;
                 if (this.info.columns[key].table) item.table = this.info.columns[key].table;
                 if (this.info.columns[key].field) item.field = this.info.columns[key].field;
