@@ -259,7 +259,9 @@ export default {
                     });
                     let filter = [];
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
-                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:["id", ...this.opts.fields], filter }).then(response=>{
+                    let fields = ["id", ...this.opts.fields];
+                    if (this.opts.afterChange) fields = null;
+                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
                             e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]);
                             return e;
@@ -269,14 +271,16 @@ export default {
                     let filter = [];
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
                     this.comboItems = [];
-                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:["id", this.opts.field], filter }).then(response=>{
+                    let fields = ["id", this.opts.field];
+                    if (this.opts.afterChange) fields = null;
+                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
                         this.comboItems = response.rows;
                     });
                 }
             }
         },
         changeCombobox() {
-            this.$emit("change", this.values, []);
+            this.$emit("change", this.values, this.comboItems.filter((e) => e.id == this.values);
         },
         onClear() {
             this.$nextTick().then(() => {
