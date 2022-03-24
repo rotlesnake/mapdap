@@ -11,8 +11,8 @@
                         :options="item"
                         :key="i"
                         :name="item.name"
-                        v-model="row[item.name]"
-                        :row="row"
+                        v-model="localRow[item.name]"
+                        :row="localRow"
                         :disabled="item.protected || item.disabled || action=='view'"
                         @change="fieldChange"
                         @changeRowField="changeRowField"
@@ -31,7 +31,7 @@ import { mapActions } from "vuex";
 
 export default {
     components: {
-        "mdp-form-field": () => import("../form/FormField.vue"),
+        "mdp-form-field": () => import("mapdap/form/FormField.vue"),
     },
 
     props: {
@@ -40,6 +40,7 @@ export default {
         tableName: { type: String, default: "" },
         tableInfo: { type: Object, default: null },
         rowId: { type: Number, default: 0 },
+        row: { type: Object, default: null },
         page: { type: Number, default: 1 },
         buttons: {
             type: Object,
@@ -74,7 +75,7 @@ export default {
             can_save: false,
             columns: [],
             isLoading: false,
-            row: {},
+            localRow: {},
         };
     },
 
@@ -101,20 +102,20 @@ export default {
             this.can_save = false;
             if (this.action == "delete") this.can_save = true;
 
-            this.row = {};
+            this.localRow = this.row || {};
             this.columns = [];
             this.columns = this.convertColumns(this.tableInfo.columns);
             this.pagination = this.tableInfo.pagination || 0;
             this.pagination = parseInt(this.pagination) > 1 ? parseInt(this.pagination) : 0;
             this.$emit("setpagination", this.pagination);
-            this.row = JSON.parse(JSON.stringify(this.row));
+            this.localRow = JSON.parse(JSON.stringify(this.localRow));
             if (this.rowId == 0) return;
 
             this.isLoading = true;
             this.$api("table", this.tableName, this.rowId + "/?mini=true")
                 .then((response) => {
                     this.isLoading = false;
-                    if (response.rows[0]) this.row = response.rows[0];
+                    if (response.rows[0]) this.localRow = response.rows[0];
 
                     this.$nextTick().then(() => {
                         this.$forceUpdate();
@@ -135,7 +136,7 @@ export default {
                 obj.vifResult = true;
                 obj.name = item;
                 rez.push(obj);
-                if (!this.row[item]) this.row[item] = null;
+                if (!this.localRow[item]) this.localRow[item] = null;
             }
             return rez;
         },
@@ -146,8 +147,8 @@ export default {
         },
 
         changeRowField(name, value, text){
-            this.row[name] = value;
-            if (text) this.row[name+'_text'] = text;
+            this.localRow[name] = value;
+            if (text) this.localRow[name+'_text'] = text;
             this.$forceUpdate();
         },
 
@@ -179,7 +180,7 @@ export default {
                 return;
             }
 
-            this.$emit("save", this.row);
+            this.$emit("save", this.localRow);
         },
     },
 };
