@@ -280,7 +280,7 @@ export default {
             }
         },
         changeCombobox() {
-            this.$emit("change", this.values, this.comboItems.filter((e) => e.id == this.values);
+            this.$emit("change", this.values, this.comboItems.filter((e) => e.id == this.values));
         },
         onClear() {
             this.$nextTick().then(() => {
