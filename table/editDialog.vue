@@ -43,6 +43,7 @@
                     :tableName="tableName"
                     :tableInfo="tableInfo"
                     :rowId="rowId"
+                    :row="row"
                     :buttons="buttons"
                     :page="page"
                     @close="$emit('close')"
@@ -93,6 +94,7 @@ export default {
         tableName: { type: String, default: "" },
         tableInfo: { type: Object, default: null },
         rowId: { type: Number, default: 0 },
+        row: { type: Object, default: null },
         buttons: {
             type: Object,
             default: () => {
