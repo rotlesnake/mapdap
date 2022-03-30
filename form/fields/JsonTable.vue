@@ -5,7 +5,7 @@
                 <v-card-title class="pa-0">
                     {{ options.label }}
                     <v-spacer />
-                    <v-btn v-if="options.multiple" fab small color="green" @click="addNewRow"><v-icon>add</v-icon></v-btn>
+                    <v-btn v-if="options.multiple && !options.json.readonly" fab small color="green" @click="addNewRow"><v-icon>add</v-icon></v-btn>
                 </v-card-title>
             </v-sheet>
 
@@ -18,14 +18,14 @@
 
                 <tr v-for="(dataRow,ndx) in dataList" :key="ndx">
                     <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
-                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" />
-                        <textarea v-else rows="1" v-model="dataList[ndx][col.name]" :placeholder="col.placeholder || col.label" @input="change" />
+                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly" />
+                        <textarea v-else rows="1" v-model="dataList[ndx][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly" />
                         <div v-if="col.buttons" class="d-flex">
                             <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(ndx, col, btn, $event)">{{btn}}</div>
                         </div>
                     </td>
                     <td>
-                        <v-btn fab x-small color="red" @click="deleteRow(ndx)"><v-icon>delete</v-icon></v-btn>
+                        <v-btn v-if="!options.json.readonly" fab x-small color="red" @click="deleteRow(ndx)"><v-icon>delete</v-icon></v-btn>
                     </td>
                 </tr>
             </table>
@@ -39,8 +39,8 @@
                 </tr>
                 <tr>
                     <td v-for="(col,i) in options.json.columns" :key="i">
-                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" />
-                        <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" />
+                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly" />
+                        <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly" />
                     </td>
                 </tr>
             </table>
@@ -49,8 +49,8 @@
             <div v-if="!options.multiple && dataList.length > 0 && options.json.columns.length > 8" class="d-flex flex-wrap">
                     <div v-for="(col,i) in options.json.columns" :key="i" class="d-flex flex-wrap ml-2 mr-1 mb-1" style="width:140px">
                         <label>{{col.label}}</label>
-                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" />
-                        <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" />
+                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly" />
+                        <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly" />
                     </div>
             </div>
 
@@ -99,15 +99,25 @@ export default {
             } else {
                 this.dataList = this.value || [];
             }
+
+            if (this.options.json.rows && this.options.json.rows.length > 0 && this.dataList.length == 0) {
+                this.options.json.rows.forEach((e) => {
+                    this.addNewRow(e);
+                });
+            }
+
             if (!this.options.multiple && this.dataList.length == 0) {
                 this.addNewRow();
             }
+
+            this.change();
         },
 
-        addNewRow() {
+        addNewRow(data) {
             const line = {};
-            this.options.json.columns.forEach(e=>{
-                line[e.name] = "";
+            if (!this.options.json) return;
+            this.options.json.columns.forEach((e) => {
+                line[e.name] = data && data[e.name] ? data[e.name] : "";
             });
             this.dataList.push(line);
         },
@@ -120,14 +130,12 @@ export default {
         },
 
         addText(ndx, col, btn, event){
-            //const el = event.target.parentElement.parentElement.children[0];
-            //el.value = el.value + btn + " ";
             this.dataList[ndx][col.name] = this.dataList[ndx][col.name] + btn + " ";
             this.change();
         },
 
         change(evt){
-            this.$emit("input", JSON.stringify(this.dataList));
+            this.$emit("input", this.dataList);
             if (evt) this.$nextTick(this.resizeTextArea(evt.target));
         },
         resizeTextArea(el){
