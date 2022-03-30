@@ -323,6 +323,7 @@ export default {
         customRenderItem: { type: Function, default: null },
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },
+        tableRequestUrl: { type: String, default: "" },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         tableFilter: { type: Array, default: null },
@@ -460,7 +461,8 @@ export default {
                 this.rowFilterValues = { ...this.rowFilterValues, ...newValues };
             }
 
-            this.$api("table", this.tableName, "get", { page: this.pagination.page, limit: this.pagination.itemsPerPage, sortBy: this.pagination.sortBy, sortDesc: this.pagination.sortDesc, filter: this.tableFilter, parent: this.tableParent })
+            let reqUrl = this.tableRequestUrl || "/table/"+this.tableName+"/get";
+            this.$axios.post(reqUrl, { page: this.pagination.page, limit: this.pagination.itemsPerPage, sortBy: this.pagination.sortBy, sortDesc: this.pagination.sortDesc, filter: this.tableFilter, parent: this.tableParent })
                 .then((response) => {
                     this.isLoading = false;
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
