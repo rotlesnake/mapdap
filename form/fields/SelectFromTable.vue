@@ -25,8 +25,38 @@
                 <v-icon>mdi-menu-down</v-icon>
             </template>
         </v-select>
+
+        <v-autocomplete
+            v-if="typeSelect == 'autocomplete'"
+            ref="combobox"
+            clearable
+            @click:clear.prevent="onClear"
+            :menu-props="{ bottom: true, offsetY: true }"
+            :items="comboItems"
+            v-model="values"
+            :search-input.sync="autocompleteSearch"
+            :multiple="opts.multiple"
+            chips
+            @change="changeCombobox"
+            v-bind="opts"
+            item-value="id"
+            :item-text="opts.field"
+            :rules="rules"
+            :disabled="disabled"
+        >
+            <template v-slot:selection="{ item, index }">
+                <v-chip :small="opts.dense" class="mt-1">
+                    <span>{{ item[opts.field] }}</span>
+                </v-chip>
+            </template>
+            <template v-slot:append v-if="opts['append-icon']">
+                <v-icon @click.prevent="showTooltip($event, opts)">{{ opts["append-icon"] }}</v-icon>
+                <v-icon>mdi-menu-down</v-icon>
+            </template>
+        </v-autocomplete>
+
         <v-select
-            v-else
+            v-if="typeSelect == 'table'"
             @mouseup="open()"
             clearable
             readonly
@@ -157,6 +187,9 @@ export default {
         items() {
             this.postRefresh();
         },
+        autocompleteSearch(val) {
+            val && val !== this.values && this.autocompleteQuery(val);
+        },
     },
     data() {
         return {
@@ -166,6 +199,8 @@ export default {
             selected: [],
             opts: null,
             comboItems: [],
+            autocompleteSearch: null,
+            comboboxSelectedItems: [],
             values: [],
             labels: "",
         };
@@ -278,10 +313,51 @@ export default {
                     });
                 }
             }
+
+            if (this.typeSelect == "autocomplete") {
+                const values = this.row[this.opts.name + "_values"];
+                if (values && values.length > 0) {
+                    this.comboItems = [];
+                    this.comboboxSelectedItems = [];
+                    if (values)
+                        values.forEach((e) => {
+                            const el = {};
+                            el.id = e.value;
+                            el[this.opts.field] = e.text;
+                            this.comboItems.push(el);
+                            this.comboboxSelectedItems.push(el);
+                        });
+                }
+            }
+
         },
+
+        autocompleteQuery(searchValue) {
+            if (searchValue.length == 0) return;
+            let fields = ["id", this.opts.field];
+            if (this.opts.afterChange) fields = null;
+            this.comboItems = [];
+            let filter = this.opts.options && this.opts.options.tableFilter ? this.opts.options.tableFilter : [];
+            filter.push({ field: this.opts.field, oper: "like", value: searchValue });
+            this.$api("table", this.opts.table, "get", {
+                fast: true,
+                fields: fields,
+                filter,
+                limit: 200,
+            }).then((response) => {
+                this.comboItems = [...this.comboboxSelectedItems, ...response.rows];
+            });
+        },
+
         changeCombobox() {
-            this.$emit("change", this.values, this.comboItems.filter((e) => e.id == this.values));
+            if (this.opts.multiple) {
+                this.comboboxSelectedItems = this.comboItems.filter((e) => this.values.includes(e.id));
+            } else {
+                this.comboboxSelectedItems = this.comboItems.filter((e) => this.values == e.id);
+            }
+            this.$emit("change", this.values, [], this.comboboxSelectedItems);
         },
+
         onClear() {
             this.$nextTick().then(() => {
                 this.$emit("change", [], []);

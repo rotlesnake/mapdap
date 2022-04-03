@@ -12,7 +12,7 @@
                     <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
                          <template v-slot:label="{ item }">
                             <slot name="item" v-bind:info="item">
-                                <span class="subtitle">{{ item.name }}</span>
+                                <div class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.name }}</div>
                             </slot>
                          </template>
                     </v-treeview>
