@@ -56,7 +56,7 @@
         </v-autocomplete>
 
         <v-select
-            v-if="typeSelect == 'table'"
+            v-if="typeSelect == 'table' || typeSelect == 'tree'"
             @mouseup="open()"
             clearable
             readonly
