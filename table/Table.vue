@@ -565,7 +565,7 @@ export default {
             this.$emit("dblSelect", this.selected);
         },
         changeOptions(pageOpts){
-            if (this.pagination.page == pageOpts.page && this.pagination.itemsPerPage == pageOpts.itemsPerPage && pageOpts.sortBy.length == 0 && pageOpts.sortDesc.length == 0) return;
+            if (this.pagination.page == pageOpts.page && this.pagination.itemsPerPage == pageOpts.itemsPerPage && pageOpts.sortBy.length==0) return;
             this.pagination.page = pageOpts.page;
             this.pagination.sortBy = pageOpts.sortBy;
             this.pagination.sortDesc = pageOpts.sortDesc;
