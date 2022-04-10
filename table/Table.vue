@@ -464,6 +464,7 @@ export default {
             let reqUrl = this.tableRequestUrl || "/table/"+this.tableName+"/get";
             this.$axios.post(reqUrl, { page: this.pagination.page, limit: this.pagination.itemsPerPage, sortBy: this.pagination.sortBy, sortDesc: this.pagination.sortDesc, filter: this.tableFilter, parent: this.tableParent })
                 .then((response) => {
+                    response = response.data;
                     this.isLoading = false;
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.pagination = response.pagination;
@@ -564,7 +565,6 @@ export default {
             this.$emit("dblSelect", this.selected);
         },
         changeOptions(pageOpts){
-            if (this.pagination.page == pageOpts.page && this.pagination.itemsPerPage == pageOpts.itemsPerPage && this.pagination.totalItems < 0) return;
             if (this.pagination.page == pageOpts.page && this.pagination.itemsPerPage == pageOpts.itemsPerPage && pageOpts.sortBy.length == 0 && pageOpts.sortDesc.length == 0) return;
             this.pagination.page = pageOpts.page;
             this.pagination.sortBy = pageOpts.sortBy;
