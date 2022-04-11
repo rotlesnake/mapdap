@@ -33,6 +33,17 @@
             ></v-textarea>
         </template>
 
+        <template v-if="options.type == 'html' && vifCalc()">
+                        <vue-editor
+                            v-model="valueLocal"
+                            @input="onInput"
+                            :disabled="disabled"
+                            :name="name"
+                            v-bind="options"
+                            >
+                        </vue-editor>
+        </template>
+
         <template v-if="(options.type == 'integer' || options.type == 'bigInteger') && vifCalc()">
             <v-text-field
                 ref="inpfld"
@@ -237,6 +248,7 @@
 <script>
 import Vue from "vue";
 import Inputmask from "inputmask";
+import  {  VueEditor  }  from  "vue2-editor" ; 
 
 export default {
     components: {
@@ -247,6 +259,7 @@ export default {
         "field-date": () => import("./fields/DateTime.vue"),
         "field-date-range": () => import("./fields/DateRange.vue"),
         "json-table": () => import("./fields/JsonTable.vue"),
+        VueEditor,
     },
     props: {
         row: { required: true },
