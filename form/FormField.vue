@@ -426,14 +426,15 @@ export default {
                 this.onInput(this.valueLocal);
             }
 
-            if (this.valueLocal && this.options.afterChange && this.options.afterChange.length > 1) this.afterChangeField(this.name);
+            if (this.valueLocal && this.options.afterChange && this.options.afterChange.length > 1) this.afterChangeField(this.name, true);
 
             this.$forceUpdate();
         },
 
-        afterChangeField(fldName) {
+        afterChangeField(fldName, isInit) {
             if (this.options.afterChange && this.options.afterChange.length > 1) {
                 let rules = this.options.afterChange;
+                if (isInit && rules.indexOf("{") > 0) return;
                 rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
                     if (!this.row[name]) return 0;
                     if (typeof this.row[name] == "object" && this.row[name].length == 0) return 0;
