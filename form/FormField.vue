@@ -34,6 +34,7 @@
         </template>
 
         <template v-if="options.type == 'html' && vifCalc()">
+                        <label v-if="options.label">{{options.label}}</label>
                         <vue-editor
                             v-model="valueLocal"
                             @input="onInput"
@@ -400,12 +401,19 @@ export default {
             if (this.options.type == "select") {
                 this.items = [];
                 for (let item in this.options.items) {
-                    this.items.push({ value: parseInt(item), text: this.options.items[item] });
+                    if (isNaN(parseInt(item))) { 
+                        this.items.push({ value: item, text: this.options.items[item] });
+                    } else {
+                        this.items.push({ value: parseInt(item), text: this.options.items[item] });
+                    }
                 }
                 if (this.options.multiple) {
                     if (typeof this.valueLocal == 'object') { this.valueLocal = this.valueLocal; } else { this.valueLocal = []; }
                 } else {
-                    this.valueLocal = parseInt(this.value) || 0;
+                    this.valueLocal = 0;
+                    if (this.value) {
+                        this.valueLocal = isNaN(parseInt(this.value)) ? this.value : parseInt(this.value);
+                    }
                 }
             }
             if (this.options.type == "linkTable") {
