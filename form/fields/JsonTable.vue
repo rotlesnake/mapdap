@@ -67,6 +67,7 @@ export default {
         value: { required: true },
         options: { type: Object, default: null },
         row: { required: true },
+        rules: { type: Array, default: null },
         disabled: { default: false },
     },
     data() {
@@ -82,6 +83,7 @@ export default {
     },
     mounted() {
         this.refresh();
+        this.$parent.$parent.register(this); //for check validate();
         setTimeout(()=>{
             const elems = document.querySelectorAll("#json-table textarea");
             elems.forEach((el)=>{ this.resizeTextArea(el); });
@@ -141,6 +143,22 @@ export default {
         resizeTextArea(el){
             el.style.cssText = "height:auto;";
             el.style.cssText = "height:" + el.scrollHeight + "px;";
+        },
+
+
+        validate() {
+            if (this.disabled) return true;
+            if (this.rules) {
+                for (let index = 0; index < this.rules.length; index++) {
+                    const rule = this.rules[index];
+                    const valid = typeof rule === 'function' ? rule(this.dataList) : rule;
+          
+                    if (valid === false || typeof valid === 'string') {
+                        trurn false
+                    }
+                }
+            }
+            return true;
         },
 
     },

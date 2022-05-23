@@ -170,8 +170,7 @@ export default {
         },
 
         isFormValid() {
-            this.$refs.form.validate();
-            return this.form_valid;
+            return this.$refs.form.validate();
         },
 
         save() {
