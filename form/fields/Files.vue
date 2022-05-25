@@ -58,6 +58,7 @@ export default {
         label: { type: String, default: null },
         value: { required: true },
         multiple: { type: Boolean, default: false },
+        rules: { type: Array, default: null },
         disabled: { default: false },
     },
     data() {
@@ -73,6 +74,7 @@ export default {
     },
     mounted() {
         this.refresh();
+        if (this.rules) this.$parent.$parent.register(this); //for check validate();
     },
 
     methods: {
@@ -127,6 +129,22 @@ export default {
             this.filesList[data.index].name = data.name;
             this.filesList[data.index].src = data.src;
             this.updateItem();
+        },
+
+
+        validate() {
+            if (this.disabled) return true;
+            if (this.rules) {
+                for (let index = 0; index < this.rules.length; index++) {
+                    const rule = this.rules[index];
+                    const valid = typeof rule === 'function' ? rule(this.filesList) : rule;
+          
+                    if (valid === false || typeof valid === 'string') {
+                        return false
+                    }
+                }
+            }
+            return true;
         },
     },
 };

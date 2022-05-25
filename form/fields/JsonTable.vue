@@ -154,7 +154,7 @@ export default {
                     const valid = typeof rule === 'function' ? rule(this.dataList) : rule;
           
                     if (valid === false || typeof valid === 'string') {
-                        trurn false
+                        return false
                     }
                 }
             }
