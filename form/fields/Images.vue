@@ -38,6 +38,7 @@
                             hide-details
                             outlined
                             dense
+                            :error="hasError"
                             :disabled="disabled"
                         ></v-file-input>
                     </template>
@@ -76,6 +77,7 @@ export default {
         return {
             filesList: [],
             rawFiles: [],
+            hasError: false,
         };
     },
     watch: {
@@ -150,6 +152,7 @@ export default {
 
 
         validate() {
+            this.hasError = false;
             if (this.disabled) return true;
             if (this.rules) {
                 for (let index = 0; index < this.rules.length; index++) {
@@ -157,10 +160,12 @@ export default {
                     const valid = typeof rule === 'function' ? rule(this.filesList) : rule;
           
                     if (valid === false || typeof valid === 'string') {
-                        return false
+                        this.hasError = true;
+                        return false;
                     }
                 }
             }
+            this.hasError = false;
             return true;
         },
 
