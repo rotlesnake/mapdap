@@ -147,9 +147,10 @@ export default {
         },
 
         changeRowField(name, value, text){
+            if (this.localRow[name] == value) return;
             this.localRow[name] = value;
             if (text) this.localRow[name+'_text'] = text;
-            this.$forceUpdate();
+            this.localRow = JSON.parse(JSON.stringify(this.localRow));
         },
 
         changeFieldOption(fld, opt, val) {
