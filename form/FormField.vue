@@ -107,6 +107,7 @@
             <field-images
                 v-model="valueLocal"
                 v-bind="options"
+                :rules="fieldRules"
                 @input="onInput"
                 :disabled="disabled"
                 :hidden="false"
@@ -117,6 +118,7 @@
             <field-files
                 v-model="valueLocal"
                 v-bind="options"
+                :rules="fieldRules"
                 @input="onInput"
                 :disabled="disabled"
                 :hidden="false"
