@@ -76,7 +76,7 @@ export default {
     },
     mounted() {
         this.refresh();
-        if (this.rules) this.$parent.$parent.register(this); //for check validate();
+        if (this.rules && this.$parent.$parent.register) this.$parent.$parent.register(this); //for check validate();
     },
 
     methods: {
