@@ -83,7 +83,7 @@ export default {
     },
     mounted() {
         this.refresh();
-        this.$parent.$parent.register(this); //for check validate();
+        if (this.rules && this.$parent.$parent.register) this.$parent.$parent.register(this);
         setTimeout(()=>{
             const elems = document.querySelectorAll("#json-table textarea");
             elems.forEach((el)=>{ this.resizeTextArea(el); });
