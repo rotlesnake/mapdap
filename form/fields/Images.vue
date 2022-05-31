@@ -19,6 +19,8 @@
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
                     <v-spacer />
                     <input class="comment my-2" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
+                    <v-btn class="mx-2 my-2" small fab color="green" dark @click.stop="cropItem(i)" v-if="!disabled"><v-icon>edit</v-icon></v-btn>
+                    <v-divider class="mx-1" vertical />
                     <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)" v-if="!disabled"><v-icon>close</v-icon></v-btn>
                 </template>
                 <template v-else>
@@ -57,10 +59,45 @@
                 <v-btn fab small color="green" class="ma-1" dark @click.stop="addPhotoInList" :disabled="disabled"><v-icon>add</v-icon></v-btn>
             </v-card-actions>
         </v-card>
+
+        <v-dialog v-model="dialogCropper.active" scrollable style="width:calc(100vw - 50px); height:calc(100vh - 20px)">
+            <v-card v-if="dialogCropper.active">
+                <v-card-text class="pa-0 d-flex" style="overflow: hidden;">
+                    <div style="width: 50px; background:#116; padding:8px">
+                        <v-btn @click="cropperResize(2,2)" class="my-1" icon><v-icon color="white">mdi-fullscreen</v-icon></v-btn>
+                        <v-btn @click="cropperResize(0.5,0.5)" class="my-1" icon><v-icon color="white">mdi-fullscreen-exit</v-icon></v-btn>
+
+                        <v-btn @click="$refs.cropper.zoom(2)" class="my-1" icon><v-icon color="white">mdi-magnify-plus-outline</v-icon></v-btn>
+                        <v-btn @click="$refs.cropper.zoom(0.5)" class="my-1" icon><v-icon color="white">mdi-magnify-minus-outline</v-icon></v-btn>
+                        <v-btn @click="$refs.cropper.flip(true, false)" class="my-1" icon><v-icon color="white">mdi-flip-horizontal</v-icon></v-btn>
+                        <v-btn @click="$refs.cropper.flip(false, true)" class="my-1" icon><v-icon color="white">mdi-flip-vertical</v-icon></v-btn>
+                        <v-btn @click="$refs.cropper.rotate(-45)" class="my-1" icon><v-icon color="white">mdi-rotate-left</v-icon></v-btn>
+                        <v-btn @click="$refs.cropper.rotate(45)" class="my-1" icon><v-icon color="white">mdi-rotate-right</v-icon></v-btn>
+                    </div>
+                    <cropper
+                        class="cropper"
+                        ref="cropper"
+                        :src="filesList[dialogCropper.fileIndex].src"
+                        :stencil-props="{
+                            
+                        }"
+                    />
+                </v-card-text>
+
+                <v-card-actions style="background:#116">
+                    <v-btn @click="dialogCropper.active = false" color="red">Закрыть</v-btn>
+                    <v-spacer />
+                    <v-btn @click="cropperSave" color="green">Применить</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
 <script>
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
+
 export default {
     props: {
         isAvatar: { type: Boolean, default: false },
@@ -78,6 +115,7 @@ export default {
             filesList: [],
             rawFiles: [],
             hasError: false,
+            dialogCropper:{active:false, fileIndex:0}
         };
     },
     watch: {
@@ -87,7 +125,7 @@ export default {
     },
     mounted() {
         this.refresh();
-        if (this.rules) this.$parent.$parent.register(this); //for check validate();
+        if (this.rules && this.$parent.$parent.register) this.$parent.$parent.register(this); //for check validate();
     },
 
     methods: {
@@ -128,6 +166,8 @@ export default {
             this.onFileLoad(0);
         },
 
+
+
         onFileItemChange(index) {
             this.filesList[index].src = "";
             if (!this.rawFiles[index]) return;
@@ -150,6 +190,33 @@ export default {
             this.updateItem();
         },
 
+        cropItem(index) {
+            this.dialogCropper.active = true;
+            this.dialogCropper.fileIndex = index;
+        },
+
+        cropperSave() {
+            this.dialogCropper.active = false;
+            const { coordinates, canvas, } = this.$refs.cropper.getResult();
+			console.log(coordinates, canvas)
+			this.filesList[this.dialogCropper.fileIndex].src = canvas.toDataURL();            
+		},
+        cropperResize(width = 1, height = 1) {
+			let startCoordinates;
+			this.$refs.cropper.setCoordinates([
+				({ coordinates, imageSize }) => {
+					startCoordinates = coordinates;
+					return {
+						width: coordinates.width * width,
+						height: coordinates.height * height,
+					};
+				},
+				({ coordinates, imageSize }) => ({
+					left: startCoordinates.left + (startCoordinates.width - coordinates.width) / 2,
+					top: startCoordinates.top + (startCoordinates.height - coordinates.height) / 2,
+				}),
+			]);
+		},
 
         validate() {
             this.hasError = false;
@@ -190,4 +257,11 @@ export default {
     border: 1px solid #777;
     border-radius: 4px;
 }
+
+.cropper {
+    width:calc(100vw - 50px); 
+    height:calc(100vh - 20px);	
+    background: #000;
+}
 </style>
+
