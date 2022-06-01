@@ -127,7 +127,7 @@
         </template>
 
         <!-- SELECTABLE !-->
-        <template v-if="options.type == 'select' && vifCalc()">
+        <template v-if="(options.type == 'select' || options.type == 'selectText') && vifCalc()">
             <v-select
                 :items="items"
                 v-model="valueLocal"
@@ -400,7 +400,7 @@ export default {
                 this.options.placeholder = this.options.default;
             }
 
-            if (this.options.type == "select") {
+            if (this.options.type == "select" || this.options.type == "selectText") {
                 this.items = [];
                 for (let item in this.options.items) {
                     if (isNaN(parseInt(item))) { 
