@@ -40,6 +40,9 @@ export default {
         multiple: { type: Boolean, default: false },
     },
     watch: {
+        value() {
+            this.selected_tree_items = this.value;
+        },
         tableName() {
             this.reloadTable();
         },
