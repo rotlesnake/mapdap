@@ -72,7 +72,7 @@
             :disabled="disabled"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense">
+                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
                     <span>{{ item.text }}</span>
                 </v-chip>
             </template>
@@ -115,6 +115,14 @@
 
             <!-- TREE !-->
             <v-card v-if="typeSelect == 'tree'">
+                        <v-card-title class="pa-0 ma-0">
+                            <v-toolbar dense color="primary" elevation="0">
+                                <v-toolbar-title class="white--text">Выберите:</v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn icon dark @click="display = false"><v-icon>close</v-icon></v-btn>
+                            </v-toolbar>
+                        </v-card-title>
+                <v-card-text>
                 <mdp-tree
                         ref="TableSelector"
                         v-model="values"
@@ -124,17 +132,8 @@
                         :multiple="opts.multiple"
                         @select="rowSelected"
                 >
-                    <template v-slot:header="{ info }">
-                        <v-card-title class="pa-0 ma-0">
-                            <v-toolbar dense color="primary" elevation="0">
-                                <v-toolbar-title class="white--text">{{info.name}}</v-toolbar-title>
-                                <v-spacer></v-spacer>
-                                <v-btn icon dark @click="display = false"><v-icon>close</v-icon></v-btn>
-                            </v-toolbar>
-                        </v-card-title>
-                     </template>
-
-                     <template v-slot:footer>
+                </mdp-tree>
+                </v-card-text>
                          <v-divider />
                          <v-card-actions class="pa-4">
                             <v-btn
@@ -147,10 +146,9 @@
                             <v-spacer />
                             <v-btn class="float-right mr-4" color="red" @click="display = false">Закрыть</v-btn>
                          </v-card-actions>
-                     </template>
-                </mdp-tree>
             </v-card>
             <!-- TREE !-->
+
         </v-dialog>
     </div>
 </template>
@@ -362,6 +360,15 @@ export default {
             this.$nextTick().then(() => {
                 this.$emit("change", [], []);
                 this.display = false;
+            });
+        },
+        removeItem(evt, item, index) {
+            this.disabled = true;
+            this.items.splice(index, 1);
+            this.$nextTick(()=>{ 
+                 this.$refs.combobox.isMenuActive = false; 
+                 this.display = false; 
+                 this.disabled = false;
             });
         },
         rowSelected(rows) {
