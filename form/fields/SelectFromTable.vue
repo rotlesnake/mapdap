@@ -365,7 +365,7 @@ export default {
         removeItem(evt, item, index) {
             if (isNaN(parseInt(index))) return;
             this.disabled = true;
-            this.items.splice(index, 1);
+            this.values.splice(index, 1);
             this.$nextTick(()=>{ 
                  this.$refs.combobox.isMenuActive = false; 
                  this.display = false; 
