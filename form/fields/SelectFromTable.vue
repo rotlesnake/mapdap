@@ -1,6 +1,7 @@
 <template>
     <div v-if="opts">
         <v-select v-if="typeSelect == 'combobox'"
+            ref="combobox"
             clearable
             @click:clear.prevent="onClear"
             :items="comboItems"
@@ -27,7 +28,7 @@
         </v-select>
 
         <v-autocomplete
-            v-if="typeSelect == 'autocomplete'"
+            v-if="typeSelect == 'autocomplete' || typeSelect == 'tree'"
             ref="combobox"
             clearable
             @click:clear.prevent="onClear"
@@ -45,18 +46,18 @@
             :disabled="disabled"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense" class="mt-1">
+                <v-chip :small="opts.dense" class="mt-1" close @click:close="removeItem($event,item,index)">
                     <span>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
-            <template v-slot:append v-if="opts['append-icon']">
-                <v-icon @click.prevent="showTooltip($event, opts)">{{ opts["append-icon"] }}</v-icon>
-                <v-icon>mdi-menu-down</v-icon>
+            <template v-slot:append>
+                <v-btn v-if="typeSelect == 'tree'" @click.prevent="open()" fab x-small color="primary"><v-icon color="white">mdi-menu-down</v-icon></v-btn>
             </template>
         </v-autocomplete>
 
         <v-select
-            v-if="typeSelect == 'table' || typeSelect == 'tree'"
+            ref="combobox"
+            v-if="typeSelect == 'table'"
             @mouseup="open()"
             clearable
             readonly
@@ -70,6 +71,7 @@
             v-bind="opts"
             :rules="rules"
             :disabled="disabled"
+            :deletable-chips="true"
         >
             <template v-slot:selection="{ item, index }">
                 <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
@@ -82,7 +84,7 @@
             </template>
         </v-select>
 
-        <v-dialog v-model="display">
+        <v-dialog v-model="display" scrollable fullscreen>
             <!-- TABLE !-->
             <v-card v-if="typeSelect == 'table'">
                 <v-card-text class="pa-2" v-if="display && opts">
@@ -119,7 +121,7 @@
                             <v-toolbar dense color="primary" elevation="0">
                                 <v-toolbar-title class="white--text">Выберите:</v-toolbar-title>
                                 <v-spacer></v-spacer>
-                                <v-btn icon dark @click="display = false"><v-icon>close</v-icon></v-btn>
+                                <v-btn icon @click="display = false"><v-icon color="white">close</v-icon></v-btn>
                             </v-toolbar>
                         </v-card-title>
                 <v-card-text>
@@ -148,7 +150,6 @@
                          </v-card-actions>
             </v-card>
             <!-- TREE !-->
-
         </v-dialog>
     </div>
 </template>
@@ -312,7 +313,7 @@ export default {
                 }
             }
 
-            if (this.typeSelect == "autocomplete") {
+            if (this.typeSelect == "autocomplete" || this.typeSelect == "tree") {
                 const values = this.row[this.opts.name + "_values"];
                 if (values && values.length > 0) {
                     this.comboItems = [];
@@ -364,13 +365,7 @@ export default {
         },
         removeItem(evt, item, index) {
             if (isNaN(parseInt(index))) return;
-            this.disabled = true;
             this.values.splice(index, 1);
-            this.$nextTick(()=>{ 
-                 this.$refs.combobox.isMenuActive = false; 
-                 this.display = false; 
-                 this.disabled = false;
-            });
         },
         rowSelected(rows) {
             this.selected = rows;
