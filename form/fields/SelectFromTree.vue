@@ -6,7 +6,13 @@
 
             <v-card-text class="pa-0">
                 <v-sheet class="py-2 px-4 green lighten-3">
-                    <v-text-field v-model="tree_search" label="Поиск" dark flat dense solo-inverted hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
+                    <v-card-title class="pa-0">
+                      <v-text-field v-model="tree_search" label="Поиск" dark flat dense solo-inverted hide-details clearable clear-icon="mdi-close-circle-outline"></v-text-field>
+                      <div class="ml-4">
+                          <v-btn @click="openAll" fab small><v-icon>mdi-expand-all</v-icon></v-btn>
+                          <v-btn @click="closeAll" fab small><v-icon>mdi-collapse-all</v-icon></v-btn>
+                      </div>
+                    </v-card-title>
                 </v-sheet>
                 <v-card-text>
                     <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
@@ -78,12 +84,14 @@ export default {
                     this.selected_tree_items = this.value;
                     this.info = response.info;
                     this.columns = response.info.columns;
-                    this.tree_items.forEach((e) => { this.opened.push(e.id) });
                 })
                 .catch(() => {
                     this.showLoader(false);
                 });
         },
+
+        openAll(){ this.tree_items.forEach((e) => { this.opened.push(e.id) }); },
+        closeAll(){ this.opened = [] },
 
         changeSelect(vals) {
             if (!this.multiple && vals.length>1) {
