@@ -58,10 +58,9 @@
         <v-select
             ref="combobox"
             v-if="typeSelect == 'table'"
-            @mouseup="open()"
             clearable
-            readonly
             @click:clear.prevent="onClear"
+            @click="open()"
             :items="items"
             v-model="values"
             :multiple="true"
@@ -80,7 +79,7 @@
             </template>
             <template v-slot:append v-if="opts['append-icon']">
                 <v-icon @click.prevent="showTooltip($event, opts)">{{opts['append-icon']}}</v-icon>
-                <v-icon>mdi-menu-down</v-icon>
+                <v-btn @click.prevent="open()" fab x-small color="primary"><v-icon color="white">mdi-menu-down</v-icon></v-btn>
             </template>
         </v-select>
 
