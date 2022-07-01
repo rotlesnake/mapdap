@@ -60,7 +60,7 @@
             v-if="typeSelect == 'table'"
             clearable
             @click:clear.prevent="onClear"
-            @click="open()"
+            @click.prevent="open()"
             :items="items"
             v-model="values"
             :multiple="true"
@@ -73,7 +73,7 @@
             :deletable-chips="true"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
+                <v-chip v-if="item.value || item.text" :small="opts.dense" close @click:close="removeItem($event,item,index)">
                     <span>{{ item.text }}</span>
                 </v-chip>
             </template>
@@ -223,6 +223,7 @@ export default {
         open(){ 
            if (this.disabled) return;
            this.display = true;
+           this.$nextTick(()=>{ this.$refs.combobox.isMenuActive = false; });
         },
         postRefresh() {
             this.needRefresh = true;
