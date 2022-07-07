@@ -223,14 +223,14 @@ export default {
                 const { canvas, image } = this.$refs.cropper.getResult();
                 this.limitations.width = image.width;
                 this.limitations.height = image.height;
-                console.log(this.limitations);
+                //console.log(this.limitations);
             },900);
         },
 
         cropperSave() {
             this.dialogCropper.active = false;
             const { coordinates, canvas, } = this.$refs.cropper.getResult();
-            console.log(coordinates, canvas)
+            //console.log(coordinates, canvas)
             this.filesList[this.dialogCropper.fileIndex].src = canvas.toDataURL();            
         },
         cropperResize(width = 1, height = 1) {
