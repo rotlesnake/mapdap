@@ -46,12 +46,12 @@
             :disabled="disabled"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense" class="mt-1" close @click:close="removeItem($event,item,index)">
+                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
                     <span>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
             <template v-slot:append>
-                <v-btn v-if="typeSelect == 'tree'" @click.prevent="open()" fab x-small color="primary"><v-icon color="white">mdi-menu-down</v-icon></v-btn>
+                <v-btn class="mt-n1" v-if="typeSelect == 'tree'" @click.prevent="open()" fab x-small color="primary"><v-icon color="white">mdi-menu-down</v-icon></v-btn>
             </template>
         </v-autocomplete>
 
