@@ -73,14 +73,18 @@
                         <v-btn @click="$refs.cropper.flip(false, true)" class="my-1" icon><v-icon color="white">mdi-flip-vertical</v-icon></v-btn>
                         <v-btn @click="$refs.cropper.rotate(-45)" class="my-1" icon><v-icon color="white">mdi-rotate-left</v-icon></v-btn>
                         <v-btn @click="$refs.cropper.rotate(45)" class="my-1" icon><v-icon color="white">mdi-rotate-right</v-icon></v-btn>
+                        <v-btn @click="showDialogResize" class="my-1" icon><v-icon color="white">mdi-arrow-top-right-bottom-left</v-icon></v-btn>
                     </div>
                     <cropper
                         class="cropper"
                         ref="cropper"
                         :src="filesList[dialogCropper.fileIndex].src"
                         :stencil-props="{
-                            
                         }"
+                        :canvas="{
+				width: limitations.width,
+				height: limitations.height,
+			}"
                     />
                 </v-card-text>
 
@@ -91,6 +95,22 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="dialogResize.active" width="320">
+            <v-card>
+                <v-card-title>Размер изображения <v-spacer /> <v-btn icon @click="dialogResize.active=false"><v-icon>close</v-icon></v-btn> </v-card-title>
+                <v-card-text>
+                    <v-text-field label="Ширина (Width)" v-model="limitations.width" dense hide-details :outlined="true" />
+                    <v-text-field label="Высота (Height)" v-model="limitations.height" dense hide-details :outlined="true" class="pt-4" />
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer />
+                    <v-btn color="primary" @click="dialogResize.active=false"><v-icon left>save</v-icon> Применить </v-btn>
+                    <v-spacer />
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
     </div>
 </template>
 
@@ -115,7 +135,9 @@ export default {
             filesList: [],
             rawFiles: [],
             hasError: false,
-            dialogCropper:{active:false, fileIndex:0}
+            limitations:{width:800, height:800},
+            dialogCropper:{active:false, fileIndex:0},
+            dialogResize:{active:false},
         };
     },
     watch: {
@@ -190,17 +212,27 @@ export default {
             this.updateItem();
         },
 
+        showDialogResize(){
+            this.dialogResize.active = true;
+        },
+
         cropItem(index) {
             this.dialogCropper.active = true;
             this.dialogCropper.fileIndex = index;
+            setTimeout(()=>{
+                const { canvas, image } = this.$refs.cropper.getResult();
+                this.limitations.width = image.width;
+                this.limitations.height = image.height;
+                console.log(this.limitations);
+            },900);
         },
 
         cropperSave() {
             this.dialogCropper.active = false;
             const { coordinates, canvas, } = this.$refs.cropper.getResult();
-			console.log(coordinates, canvas)
-			this.filesList[this.dialogCropper.fileIndex].src = canvas.toDataURL();            
-		},
+            console.log(coordinates, canvas)
+            this.filesList[this.dialogCropper.fileIndex].src = canvas.toDataURL();            
+        },
         cropperResize(width = 1, height = 1) {
 			let startCoordinates;
 			this.$refs.cropper.setCoordinates([
