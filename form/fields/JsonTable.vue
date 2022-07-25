@@ -141,6 +141,7 @@ export default {
             if (evt) this.$nextTick(this.resizeTextArea(evt.target));
         },
         resizeTextArea(el){
+            if (!el) return;
             el.style.cssText = "height:auto;";
             el.style.cssText = "height:" + el.scrollHeight + "px;";
         },
