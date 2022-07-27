@@ -327,6 +327,7 @@ export default {
                             this.comboboxSelectedItems.push(el);
                         });
                 }
+                if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
             }
 
         },
@@ -354,7 +355,15 @@ export default {
             } else {
                 this.comboboxSelectedItems = this.comboItems.filter((e) => this.values == e.id);
             }
-            this.$emit("change", this.values, [], this.comboboxSelectedItems);
+
+            let items = [];
+            for (let item of this.comboboxSelectedItems) {
+                    items.push({
+                        value: item.id,
+                        text: item[this.opts.field],
+                    });
+            }
+            this.$emit("change", this.values, items, this.comboboxSelectedItems);
         },
 
         onClear() {
@@ -365,6 +374,7 @@ export default {
         },
         removeItem(evt, item, index) {
             if (isNaN(parseInt(index))) return;
+            if (!this.opts.multiple) { this.values = null; return; }
             this.values.splice(index, 1);
         },
         rowSelected(rows) {
