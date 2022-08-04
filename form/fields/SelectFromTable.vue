@@ -155,6 +155,7 @@
 
 <script>
 import Vue from "vue";
+import tableCache from "./tableCache.js";
 
 export default {
     components: {
@@ -307,9 +308,14 @@ export default {
                     this.comboItems = [];
                     let fields = ["id", this.opts.field];
                     if (this.opts.afterChange) fields = null;
-                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
-                        this.comboItems = response.rows;
-                    });
+                    if (tableCache.tables[this.opts.table]) {
+                        this.comboItems = JSON.parse(JSON.stringify(tableCache.tables[this.opts.table]));
+                    } else {
+                        this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
+                            this.comboItems = response.rows;
+                            //tableCache.tables[this.opts.table] = JSON.parse(JSON.stringify(this.comboItems));
+                        });
+                    }
                 }
             }
 
