@@ -264,7 +264,7 @@
             @change="rowFilterDialog = false"
         />
 
-        <v-navigation-drawer v-model="filterDrawer" right app color="toolbar" class="pa-2" width="300">
+        <v-navigation-drawer v-model="filterDrawer" right app color="toolbar" class="pa-2" width="300"  v-if="showTop">
             <v-btn class="mt-2" color="red" outlined block @click="filterDrawer = false">
                 <v-icon left>close</v-icon>
                 <h1 class="body-1">Закрыть</h1>
