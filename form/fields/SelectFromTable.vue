@@ -28,7 +28,7 @@
         </v-select>
 
         <v-autocomplete
-            v-if="typeSelect == 'autocomplete' || typeSelect == 'tree'"
+            v-if="typeSelect == 'autocomplete' || typeSelect == 'tree' || typeSelect == 'auto'"
             ref="combobox"
             clearable
             @click:clear.prevent="onClear"
@@ -278,7 +278,7 @@ export default {
                 });
             }
 
-            if (this.typeSelect == "combobox") {
+            if (this.typeSelect == "combobox" || this.typeSelect == "auto") {
                 if (!this.values || this.values.length==0) this.values = 0;
                 if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
                 if (this.opts.field.indexOf('[') > -1) {
