@@ -78,7 +78,10 @@ export default {
         this.refresh();
         if (this.rules && this.$parent.$parent.register) this.$parent.$parent.register(this); //for check validate();
     },
-
+    beforeDestroy() {
+        if (this.rules && this.$parent.$parent.register) this.$parent.$parent.unregister(this);
+    },
+    
     methods: {
         refresh() {
             if (typeof this.value == "string") {
