@@ -89,7 +89,10 @@ export default {
             elems.forEach((el)=>{ this.resizeTextArea(el); });
         },100);
     },
-
+    beforeDestroy() {
+        if (this.rules && this.$parent.$parent.register) this.$parent.$parent.unregister(this);
+    },
+    
     methods: {
         refresh() {
             if (typeof this.value == "string") {
