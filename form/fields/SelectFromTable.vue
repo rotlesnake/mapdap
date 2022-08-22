@@ -320,7 +320,10 @@ export default {
             }
 
             if (this.typeSelect == "autocomplete" || this.typeSelect == "tree") {
-                const values = this.row[this.opts.name + "_values"];
+                let values = this.row[this.opts.name + "_values"];
+                if (!values && this.row[this.opts.name + "_text"]) {
+                    values = [{ value: this.row[this.opts.name], text: this.row[this.opts.name + "_text"] }];
+                }
                 if (values && values.length > 0) {
                     this.comboItems = [];
                     this.comboboxSelectedItems = [];
