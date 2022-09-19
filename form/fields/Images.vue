@@ -209,10 +209,28 @@ export default {
             };
             reader.readAsDataURL(fileObject);
         },
-        fileLoaded(data) {
+        async fileLoaded(data) {
             this.filesList[data.index].name = data.name;
-            this.filesList[data.index].src = data.src;
+            this.filesList[data.index].src = await this.resizeDataURL(data.src, 800, 800);
             this.updateItem();
+        },
+        async resizeDataURL(datas, maxW, maxH) {
+            return new Promise((resolve, reject) => {
+                var img = document.createElement("img");
+                img.onload = function() {
+                    let canvas = document.createElement("canvas");
+                    let ctx = canvas.getContext("2d");
+                    let cw = img.width;
+                    let ch = img.height;
+                    let scale = maxH / ch;
+                    canvas.width = cw * scale;
+                    canvas.height = ch * scale;
+                    ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                    const dataURI = canvas.toDataURL("image/jpeg", 0.75);
+                    resolve(dataURI);
+                };
+                img.src = datas;
+            });
         },
 
         showDialogResize(){
