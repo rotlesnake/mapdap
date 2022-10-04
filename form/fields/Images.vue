@@ -223,12 +223,16 @@ export default {
                     let ctx = canvas.getContext("2d");
                     let cw = img.width;
                     let ch = img.height;
-                    let scale = maxH / ch;
-                    canvas.width = cw * scale;
-                    canvas.height = ch * scale;
-                    ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-                    const dataURI = isJpeg ? canvas.toDataURL("image/jpeg", 0.75) : canvas.toDataURL();
-                    resolve(dataURI);
+                    let scale = Math.min(maxW / cw, maxH / ch);
+                    if (scale < 1) {
+                        canvas.width = cw * scale;
+                        canvas.height = ch * scale;
+                        ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
+                        const dataURI = isJpeg ? canvas.toDataURL("image/jpeg", 0.75) : canvas.toDataURL();
+                        resolve(dataURI);
+                    } else {
+                        resolve(datas);
+                    }
                 };
                 img.src = datas;
             });
