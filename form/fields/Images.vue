@@ -215,6 +215,7 @@ export default {
             this.updateItem();
         },
         async resizeDataURL(datas, maxW, maxH) {
+	    let isJpeg = datas.substr(0, 15) == "data:image/jpeg";
             return new Promise((resolve, reject) => {
                 var img = document.createElement("img");
                 img.onload = function() {
@@ -226,7 +227,7 @@ export default {
                     canvas.width = cw * scale;
                     canvas.height = ch * scale;
                     ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-                    const dataURI = canvas.toDataURL("image/jpeg", 0.75);
+                    const dataURI = isJpeg ? canvas.toDataURL("image/jpeg", 0.75) : canvas.toDataURL();
                     resolve(dataURI);
                 };
                 img.src = datas;
