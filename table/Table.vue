@@ -105,6 +105,7 @@
                 <tr :class="{
                         'v-data-table__selected': isSelected,
                         'v-data-table__expanded': isExpanded,
+                        'v-data-table__deleted': item.deleted_at,
                     }"
                     @click="clickOnRow(item)"
                     @dblclick="dblClickOnRow(item)"
@@ -230,6 +231,23 @@
                             </v-btn>
                         </template>
                         <span>Удалить запись</span>
+                    </v-tooltip>
+                    <v-tooltip top color="red">
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                                color="red"
+                                class="mx-2"
+                                v-if="userHasRoles(info.delete) && info.columns.deleted_at"
+                                fab
+                                small
+                                v-on="on"
+                                :disabled="selected.length == 0 || !(selected.length>0 && selected[0].deleted_at)"
+                                @click="restore()"
+                            >
+                                <v-icon dark>mdi-delete-restore</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Восстановить запись</span>
                     </v-tooltip>
 
                     <template v-if="$slots.after_footer_buttons">
@@ -752,6 +770,37 @@ export default {
             });
         },
 
+        restore(){
+            this.$swal
+                .fire({
+                    title: "Восстановление записи",
+                    text: "Восстановить удаленную запись №" + this.selected[0].id + '" ?',
+                    icon: "warning",
+                    reverseButtons: true,
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    cancelButtonText: "Отмена",
+                    confirmButtonText: "Восстановить",
+                })
+                .then((result) => {
+                    if (result.isConfirmed) {
+                        this.$api("table", this.tableName, "restore", this.selected[0].id, {})
+                            .then(async (response) => {
+                                this.$swal.close();
+                                if (response.error !== 0) { 
+                                    this.$swal.toastError(response.message, "center-center"); 
+                                    return; 
+                                }
+                                this.reloadTable();
+                            })
+                            .catch((error) => {
+                                this.$swal.close();
+                            });
+                    }
+                });
+        },
+
         exportToXlsx() {
             let filename = this.tableName+".xlsx";
 
@@ -798,5 +847,9 @@ export default {
 #table .theme--dark.v-data-table .v-data-table__divider {
     border-left: thin solid rgba(200, 200, 200, 0.12);
     border-right: none;
+}
+#table .v-data-table__deleted{
+    color: red;
+    text-decoration: line-through;
 }
 </style>
