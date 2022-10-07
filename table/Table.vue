@@ -224,7 +224,7 @@
                                 fab
                                 small
                                 v-on="on"
-                                :disabled="selected.length == 0"
+                                :disabled="selected.length == 0 || (selected.length>0 && selected[0].deleted_at)"
                                 @click="openEditDialog('delete')"
                             >
                                 <v-icon dark>delete</v-icon>
