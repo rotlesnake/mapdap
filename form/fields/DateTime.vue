@@ -7,6 +7,7 @@
                         v-model="dateEdt"
                         :hide-details="hideDetails"
                         :label="label"
+                        :name="name"
                         :outlined="outlined"
                         :dense="dense"
                         :rules="rules"
@@ -17,6 +18,7 @@
                         persistent-placeholder
                         append-icon="mdi-calendar"
                         @click:append="date_dialog = true"
+                        @click:clear="clearDate"
                         @blur="dateEditFinish"
                         @keyup.enter="dateEditFinish"
                         ref="masked_datetime"
@@ -63,6 +65,7 @@ export default {
     props: {
         type: { type: String, default: "date" },
         label: { type: String, default: null },
+        name: { type: String, default: null },
         value: { required: true },
         min: { type: String, default: null },
         max: { type: String, default: null },
@@ -136,11 +139,18 @@ export default {
             this.dateEdt = this.dateToDate(this.date);
             this.changeDate();
         },
+        clearDate(){
+            console.log("clear date");
+            this.date = "";
+            this.time = "";
+            this.dateEdt = "";
+            this.changeDate();
+        },
 
 
         changeDate() {
             let datetime = this.date;
-            if (this.type == "dateTime" || this.type == "timestamp") datetime += " " + this.time;
+            if (datetime && (this.type == "dateTime" || this.type == "timestamp")) datetime += " " + this.time;
             this.$emit("input", datetime);
         },
     },
