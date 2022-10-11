@@ -1,7 +1,7 @@
 <template>
     <v-card v-if="visible">
         <v-card-text style="padding:20px 20px 10px 20px;">
-            <v-form ref="form" v-model="form_valid" class="d-flex flex-wrap">
+            <v-form ref="form" v-model="form_valid" class="edit-form d-flex flex-wrap">
                 <template v-for="(item, i) in columnsFiltered">
                     <div style="width:100%" v-if="item.divider && item.vifResult">
                         <v-divider class="mt-5"></v-divider>
@@ -70,6 +70,7 @@ export default {
 
     data() {
         return {
+            current_field_name: "",
             pagination: false,
             form_valid: true,
             can_save: false,
@@ -91,16 +92,22 @@ export default {
 
     mounted() {
         this.loadRow();
-        document.addEventListener('keyup', this.onKeyUp);
+        document.addEventListener('keydown', this.onKeyDown);
     },
     beforeDestroy() {
-        document.removeEventListener('keyup', this.onKeyUp);
+        document.removeEventListener('keydown', this.onKeyDown);
     },
 
     methods: {
         loadRow() {
             this.can_save = false;
             if (this.action == "delete") this.can_save = true;
+            if (this.visible && this.current_field_name=="") {
+                setTimeout(()=>{
+                    this.current_field_name = this.columnsFiltered[0].name;
+                    this.focusCurrentField();
+                }, 100);
+            }
 
             this.localRow = this.row || {};
             this.columns = [];
@@ -142,11 +149,13 @@ export default {
         },
 
         fieldChange(name, value, text) {
+            this.current_field_name = name;
             this.can_save = true;
             this.$emit("change");
         },
 
         changeRowField(name, value, text){
+            this.current_field_name = name;
             if (this.localRow[name] == value) return;
             this.localRow[name] = value;
             if (text) this.localRow[name+'_text'] = text;
@@ -160,12 +169,36 @@ export default {
             this.$forceUpdate();
         },
 
-        onKeyUp(event){
+        focusCurrentField() {
+            const el = document.querySelector("form.edit-form input[name='"+this.current_field_name+"']");
+            if (el) el.focus();
+        },
+        focusNextField(){
+            if (this.current_field_name=="") {
+                this.current_field_name = this.columnsFiltered[0].name;
+            } else {
+                for (let key in this.columnsFiltered) {
+                    if (this.columnsFiltered[key].name==this.current_field_name) {
+                        if (this.columnsFiltered[parseInt(key)+1]) { this.current_field_name = this.columnsFiltered[parseInt(key)+1].name; break; } else { this.current_field_name = ""; }
+                    }
+                }
+                if (!this.current_field_name) return this.save();
+            }
+            this.focusCurrentField();
+        },
+
+        onKeyDown(event){
             //console.log(event)
+            let curfld = this.columnsFiltered.find(e=>e.name == this.current_field_name);
             if (event.key=="Escape") {
                 if (!this.can_save) this.$emit("close");
             }
+            if (event.key=="Enter" && curfld && curfld.type!="text") {
+                event.preventDefault();
+                this.focusNextField();
+            }
             if (event.ctrlKey && event.key=="Enter" && this.can_save) {
+                event.preventDefault();
                 this.save();
             }
         },
