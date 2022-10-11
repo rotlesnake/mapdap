@@ -17,7 +17,7 @@
                         placeholder="дд.мм.гггг"
                         persistent-placeholder
                         append-icon="mdi-calendar"
-                        @click:append="date_dialog = true"
+                        @click:append="open"
                         @click:clear="clearDate"
                         @blur="dateEditFinish"
                         @keyup.enter="dateEditFinish"
@@ -100,6 +100,11 @@ export default {
     methods: {
         open(){
             if (this.disabled) return;
+            if (!this.date || this.date=="0000-00-00") {
+                this.date = moment().format("YYYY-MM-DD");
+                this.time = "00:00:00";
+                this.dateEditFinish();
+            }
             this.date_dialog = true;
         },
         refresh() {
@@ -140,7 +145,6 @@ export default {
             this.changeDate();
         },
         clearDate(){
-            console.log("clear date");
             this.date = "";
             this.time = "";
             this.dateEdt = "";
