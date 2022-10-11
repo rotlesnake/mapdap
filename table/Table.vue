@@ -628,7 +628,7 @@ export default {
                 value = parseFloat(value)
                     .toFixed(2)
                     .toString()
-                    .replace(/\d(?=(\d{3})+\.)/g, "$& ");
+                    .replace(/\d(?=(\d{3})+\.)/g, "$&\&nbsp;");
 
             if (head.type == "json") {
                 if (typeof(value) == "string") value = JSON.parse(value);
