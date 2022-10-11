@@ -372,7 +372,7 @@ export default {
                     el = null;
                 }
                 if (this.options.mask=="float") {
-                    Inputmask('decimal', { rightAlign: false }).mask(el);
+                    Inputmask('decimal', { groupSeparator: ' ', radixPoint: '.', autoGroup: true, repeat: 16, rightAlign: false, autoUnmask:true}).mask(el);
                     el = null;
                 }
                 if (this.options.mask=="email") {
@@ -385,6 +385,12 @@ export default {
                 }
 
                 if (el) Inputmask({ mask: this.options.mask, autoUnmask: this.options.unmask, placeholder:this.options.maskplaceholder }).mask(el);
+            } else {
+                if (this.options.type=="float" && this.$refs.inpfld) {
+                    this.options["persistent-placeholder"]=true;
+                    let el = this.$refs.inpfld.$refs.input;
+                    Inputmask('decimal', { groupSeparator: ' ', radixPoint: '.', autoGroup: true, repeat: 16, rightAlign: false, autoUnmask:true}).mask(el);
+                }
             }
         },
 
