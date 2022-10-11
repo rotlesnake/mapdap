@@ -297,6 +297,8 @@ export default {
             let row = {id: current.data.id, parent_id: parent.data.id, sort: 0 };
             if (position == "before") {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort-1; }
             if (position == "after")  {row.parent_id = parent.data.parent_id; row.sort = parent.data.sort+1; }
+            current.data.parent_id = row.parent_id;
+            current.data.sort = row.sort;
 
             if (this.tableParent) {
                 this.tableParent.forEach((e) => {
