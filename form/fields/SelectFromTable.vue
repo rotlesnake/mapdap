@@ -187,6 +187,7 @@ export default {
             this.postRefresh();
         },
         autocompleteSearch(val) {
+            if (this.typeSelect == "auto") return false;
             val && val !== this.values && this.autocompleteQuery(val);
         },
     },
