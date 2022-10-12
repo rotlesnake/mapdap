@@ -169,7 +169,7 @@
         </template>
 
 
-        <template v-if="options.type == 'json' && vifCalc()">
+        <template v-if="options.type == 'json' && !options.form && vifCalc()">
             <json-table
                 v-model="valueLocal"
                 :row="row"
@@ -180,6 +180,18 @@
                 :hidden="false"
                 :name="name"
             ></json-table>
+        </template>
+        <template v-if="options.type == 'json' && options.form=='excel' && vifCalc()">
+            <json-table-excel
+                v-model="valueLocal"
+                :row="row"
+                :options="options"
+                :rules="fieldRules"
+                @input="onInput"
+                :disabled="disabled"
+                :hidden="false"
+                :name="name"
+            ></json-table-excel>
         </template>
 
 
@@ -262,6 +274,7 @@ export default {
         "field-date": () => import("./fields/DateTime.vue"),
         "field-date-range": () => import("./fields/DateRange.vue"),
         "json-table": () => import("./fields/JsonTable.vue"),
+        "json-table-excel": () => import("./fields/JsonTableExcel.vue"),
         VueEditor,
     },
     props: {
