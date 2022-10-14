@@ -297,7 +297,7 @@ export default {
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
                     let fields = ["id", ...this.opts.fields];
                     if (this.opts.afterChange) fields = null;
-                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
+                    this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
                             e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]);
                             return e;
@@ -312,7 +312,7 @@ export default {
                     if (tableCache.tables[this.opts.table]) {
                         this.comboItems = JSON.parse(JSON.stringify(tableCache.tables[this.opts.table]));
                     } else {
-                        this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, filter }).then(response=>{
+                        this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                             this.comboItems = response.rows;
                             //tableCache.tables[this.opts.table] = JSON.parse(JSON.stringify(this.comboItems));
                         });

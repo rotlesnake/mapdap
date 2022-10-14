@@ -26,6 +26,7 @@ export default {
     },
     data() {
         return {
+            table: null,
             rows: [],
         };
     },
@@ -77,9 +78,12 @@ export default {
                         fldParam.visible = this.options.json.columns[fldName].hidden ? false : true;
                         fldParam.headerFilter = false;
 
-                        if (this.options.json.columns[fldName].type == "integer") {
+                        if (this.options.json.columns[fldName].type == "integer" || this.options.json.columns[fldName].type == "double" || this.options.json.columns[fldName].type == "float") {
                             fldParam.sorter = "number";
+                            fldParam.editor = "number";
+                            fldParam.mutator = (value, data)=>{ let val = parseFloat(value); return isNaN(val) ? 0 : val; }
                         }
+
                         if (this.options.json.columns[fldName].type == "select") {
                             fldParam.editor = "list";
                             fldParam.editorParams = {values:this.options.json.columns[fldName].items, clearable:true };
@@ -118,8 +122,7 @@ export default {
             }
 
             this.table = new Tabulator("#json-excel-table", {
-                reactiveData: true,
-
+                reactiveData: false,
              	layout: "fitColumns",
              	height: 90,
              	data: this.rows,
@@ -141,7 +144,8 @@ export default {
         },
 
         change(evt) {
-            this.$emit("input", JSON.stringify(this.rows));
+            //this.$emit("input", JSON.stringify(this.rows));
+            this.$emit("input", this.rows);
         },
     },
 };
