@@ -1,6 +1,6 @@
 <template>
-    <div id="json-table" class="mb-6">
-        <v-card>
+    <div class="json-table" class="mb-6">
+        <v-card v-if="options">
             <v-sheet class="py-1 pl-4 pr-1 body-1" color="primary white--text">
                 <v-card-title class="pa-0">
                     {{ options.label }}
@@ -8,7 +8,7 @@
                     <v-btn v-if="options.multiple && !options.json.readonly" fab x-small color="green" @click="addNewRow"><v-icon>add</v-icon></v-btn>
                 </v-card-title>
             </v-sheet>
-            <div id="json-excel-table" ref="table"></div>
+            <div :id="'json-excel-table-'+options.name" ref="table"></div>
         </v-card>
     </div>
 </template>
@@ -63,6 +63,12 @@ export default {
                 }
             } else {
                 this.rows = this.value || [];
+            }
+
+            if (this.options.json.rows && this.options.json.rows.length > 0 && this.rows.length == 0) {
+                this.options.json.rows.forEach((e) => {
+                    this.addNewRow(e);
+                });
             }
 
             if (this.rows.length == 0) {
@@ -121,7 +127,7 @@ export default {
                 });
             }
 
-            this.table = new Tabulator("#json-excel-table", {
+            this.table = new Tabulator("#json-excel-table-"+this.options.name, {
                 reactiveData: false,
              	layout: "fitColumns",
              	height: 90,
@@ -134,11 +140,11 @@ export default {
             });
         },
 
-        addNewRow() {
+        addNewRow(data) {
             const line = {};
             if (!this.options.json) return;
             this.options.json.columns.forEach((e) => {
-                line[e.name] = "";
+                line[e.name] = data && data[e.name] ? data[e.name] : "";
             });
             this.rows.push(line);
         },
