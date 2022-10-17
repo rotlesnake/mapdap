@@ -1,5 +1,5 @@
 <template>
-    <div class="json-table" class="mb-6">
+    <div class="json-table mb-6">
         <v-card v-if="options">
             <v-sheet class="py-1 pl-4 pr-1 body-1" color="primary white--text">
                 <v-card-title class="pa-0">
