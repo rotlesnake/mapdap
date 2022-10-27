@@ -25,6 +25,8 @@
                     :default-expanded-keys="opened"
                     :draggable="draggable"
                     @node-drop="changeTreeMenu"
+                    @node-expand="opened.push($event.id)"
+                    @node-collapse="collapseNode"
                     :allow-drop="allowDrop"
                     :allow-drag="allowDrag"
                 >
@@ -313,8 +315,9 @@ export default {
             this.$swal.showLoading();
             this.$api("table", "tree/"+this.tableName, "edit", current.data.id, row)
                 .then(async (response) => {
-                    current.data.sort = response.rows[0]["sort"];
-                    console.log(response.rows[0]["sort"])
+                    //current.data.sort = response.rows[0]["sort"];
+                    //console.log(response.rows[0]["sort"])
+                    this.reloadTable();
                     this.$swal.close();
                 })
                 .catch((error) => {
@@ -322,9 +325,12 @@ export default {
                 });
         },
 
-        openAll(){ this.menu_items.forEach((e) => { this.opened.push(e.id) }); },
+        openAll(){ this.opened = []; this.menu_items.forEach((e) => { this.opened.push(e.id) }); },
         closeAll(){ this.opened = []; let arhiv=this.menu_items; this.menu_items=[]; setTimeout(()=>{this.menu_items = arhiv},10); },
 
+        collapseNode(node) {
+            this.opened = this.opened.filter(e=>e!=node.id);
+        }
     }, //methods
 };
 </script>
