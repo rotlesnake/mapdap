@@ -7,7 +7,10 @@
                 <v-spacer></v-spacer>
                 <v-btn color="primary" @click="openEditDialog({ id: 0 }, 'add')">Добавить пункт</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn icon @click="reloadTable()">
+                <v-btn class="mr-2" @click="openAll" fab small><v-icon>mdi-expand-all</v-icon></v-btn>
+                <v-btn class="mr-6" @click="closeAll" fab small><v-icon>mdi-collapse-all</v-icon></v-btn>
+
+                <v-btn fab small @click="reloadTable()" color="primary">
                     <v-icon>cached</v-icon>
                 </v-btn>
             </v-card-title>
@@ -19,7 +22,7 @@
                     :data="menu_items"
                     node-key="id"
                     :empty-text="emptyText"
-                    default-expand-all
+                    :default-expanded-keys="opened"
                     :draggable="draggable"
                     @node-drop="changeTreeMenu"
                     :allow-drop="allowDrop"
@@ -108,6 +111,7 @@ export default {
             menu_items: [],
             info: null,
             columns: [],
+            opened: [],
             editDialog: {
                 visible: false,
                 action: "",
@@ -309,12 +313,17 @@ export default {
             this.$swal.showLoading();
             this.$api("table", "tree/"+this.tableName, "edit", current.data.id, row)
                 .then(async (response) => {
+                    current.data.sort = response.rows[0]["sort"];
+                    console.log(response.rows[0]["sort"])
                     this.$swal.close();
                 })
                 .catch((error) => {
                     this.$swal.close();
                 });
         },
+
+        openAll(){ this.menu_items.forEach((e) => { this.opened.push(e.id) }); },
+        closeAll(){ this.opened = []; let arhiv=this.menu_items; this.menu_items=[]; setTimeout(()=>{this.menu_items = arhiv},10); },
 
     }, //methods
 };
