@@ -519,7 +519,7 @@ export default {
                         if (obj.name==e.field) obj.protected = true;
                     });
                 }
-                if (isTable && ["date", "dateTime", "checkBox", "timestamp", "select", "linkTable"].includes(obj.type)) {
+                if (isTable && ["date", "dateTime", "checkBox", "timestamp", "select", "selectText", "linkTable"].includes(obj.type)) {
                     obj.value = item + "_text";
                     obj.name = item + "_text";
                 }
