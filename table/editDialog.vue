@@ -38,6 +38,7 @@
 
             <v-card-text class="pa-0" v-else>
                 <mdp-edit-form
+                    v-if="tableInfo"
                     ref="mdpEditForm"
                     :action="action"
                     :tableName="tableName"
@@ -115,7 +116,9 @@ export default {
     },
 
     watch: {
-        visible() {},
+        visible() {
+            if (this.visible) this.onShowDialog();
+        },
     },
 
     mounted() {
@@ -124,6 +127,18 @@ export default {
     },
 
     methods: {
+        onShowDialog() {
+            if (this.row && this.tableInfo) return;
+
+            this.$api("table", this.tableName, this.rowId)
+                .then((response) => {
+                    if (response.rows[0]) this.row = response.rows[0];
+                    this.tableInfo = response.info;
+                })
+                .catch((error) => {
+                });
+        },
+
         prevPage(){
             if (this.page <= 1) return;
             this.page = this.page - 1;
