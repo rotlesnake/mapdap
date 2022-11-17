@@ -464,6 +464,13 @@ export default {
                     return true;
                 }
             }
+            var user_acl = this.$store.state.auth.user.acl;
+            for (let aclname of roles) {
+                if (user_acl.includes(aclname)) {
+                    return true;
+                }
+            }
+            
             return false;
         },
 
