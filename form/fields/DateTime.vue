@@ -121,7 +121,9 @@ export default {
             this.time = this.value.substr(11);
             this.dateEditFinish();
         },
-
+        weekdayFormat(val) {
+            return this.weekdays[moment(val).format("d")];
+        },
         dateToSql(dt) {
             dt = dt.replace(/_/g,"");
             dt = dt.replace(/г/g,"");
