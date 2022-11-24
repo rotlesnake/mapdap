@@ -30,6 +30,8 @@
                     no-title
                     :min="min"
                     :max="max"
+                    :first-day-of-week="1"
+                    :weekday-format="weekdayFormat"
                     @input="
                         dateEdt = dateToDate($event);
                         changeDate();
@@ -79,6 +81,7 @@ export default {
     },
     data() {
         return {
+            weekdays: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
             date_dialog: false,
             dateEdt: "",
             date: "",
