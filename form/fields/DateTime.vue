@@ -1,7 +1,7 @@
 <template>
     <div id="field-date" class="mb-1">
         <div class="d-flex">
-            <v-menu ref="date_dialog" v-model="date_dialog" :close-on-content-click="false" transition="scale-transition" offset-y max-width="290px" min-width="auto">
+            <v-menu ref="date_dialog" v-model="date_dialog" :close-on-content-click="false" transition="scale-transition" offset-y :nudge-right="-150" max-width="290px" min-width="auto">
                 <template v-slot:activator="{ on, attrs }">
                     <v-text-field
                         v-model="dateEdt"
@@ -78,6 +78,7 @@ export default {
         disabled: { type: Boolean, default: false },
         rules: { type: Array, default: () => [] },
         step: { type: String, default: "0" },
+        customStyle: { type: Object, default:()=>({})  },
     },
     data() {
         return {
@@ -109,6 +110,11 @@ export default {
                 this.dateEditFinish();
             }
             this.date_dialog = true;
+            setTimeout(()=>{
+               Object.keys(this.customStyle).forEach(key=>{
+                   this.$refs.date_dialog.$refs.content.style[key] = this.customStyle[key];
+               });
+            },100);
         },
         refresh() {
             if (!this.value || this.value.length < 10) {
@@ -121,9 +127,11 @@ export default {
             this.time = this.value.substr(11);
             this.dateEditFinish();
         },
+
         weekdayFormat(val) {
             return this.weekdays[moment(val).format("d")];
         },
+
         dateToSql(dt) {
             dt = dt.replace(/_/g,"");
             dt = dt.replace(/г/g,"");
