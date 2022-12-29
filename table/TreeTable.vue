@@ -325,9 +325,25 @@ export default {
                 });
         },
 
-        openAll(){ this.opened = []; this.menu_items.forEach((e) => { this.opened.push(e.id) }); },
-        closeAll(){ this.opened = []; let arhiv=this.menu_items; this.menu_items=[]; setTimeout(()=>{this.menu_items = arhiv},10); },
-
+        openAll() {
+            this.opened = [];
+            this.menu_items.forEach((e) => {
+                this.opened.push(e.id);
+                if (e.children && e.children.length > 0) {
+                    e.children.forEach((ec) => {
+                        this.opened.push(ec.id);
+                    });
+                }
+            });
+        },
+        closeAll() {
+            this.opened = [];
+            let arhiv = this.menu_items;
+            this.menu_items = [];
+            setTimeout(() => {
+                this.menu_items = arhiv;
+            }, 10);
+        },
         collapseNode(node) {
             this.opened = this.opened.filter(e=>e!=node.id);
         }
