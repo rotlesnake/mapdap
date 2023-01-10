@@ -5,7 +5,7 @@
         </template>
 
         <!-- SIMPLE !-->
-        <template v-if="options.type == 'string' && vifCalc()">
+        <template v-if="options.type == 'string' && !options.form && vifCalc()">
             <v-text-field
                 ref="inpfld"
                 v-model="valueLocal"
@@ -18,6 +18,16 @@
                 @click:append="showTooltip($event, options)"
             ></v-text-field>
         </template>
+        <template v-if="options.type == 'string' && options.form && options.form == 'kladr' && vifCalc()">
+            <kladr-autocomplete 
+                v-model="valueLocal" v-bind="options"
+                @input="onInput" 
+                :disabled="disabled"
+                :hidden="false"
+                :name="name"
+            />
+        </template>
+
 
         <template v-if="options.type == 'text' && vifCalc()">
             <v-textarea
@@ -275,6 +285,7 @@ export default {
         "field-date-range": () => import("./fields/DateRange.vue"),
         "json-table": () => import("./fields/JsonTable.vue"),
         "json-table-excel": () => import("./fields/JsonTableExcel.vue"),
+        "kladr-autocomplete": () => import("./fields/kladr_autocomplete.vue"),
         VueEditor,
     },
     props: {
