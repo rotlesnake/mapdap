@@ -614,7 +614,7 @@ export default {
         renderItem(head, item, isFooter) {
             if (item[head.name] == "undefined" || item[head.name] === null || item[head.name] === false) return "";
             let value = item[head.name];
-            if (head.vif && !this.vifCalc(head.vif, item)) value = "";
+            //if (head.vif && !this.vifCalc(head.vif, item)) value = "";
 
             if (head.type == "password") value = "******";
             if (head.type == "images") {
