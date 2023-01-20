@@ -1,16 +1,22 @@
 <template>
     <v-card>
-        <v-card-text style="padding:20px 20px 10px 20px;">
-            <v-form ref="form" v-model="form_valid">
-                <template v-for="(item, i) in columns">
+        <v-card-text style="padding: 20px 20px 10px 20px">
+            <v-form ref="form" v-model="form_valid" class="d-flex flex-wrap">
+                <template v-for="(item, i) in localColumns">
+                    <div style="width: 100%" v-if="item.divider && item.vifResult">
+                        <v-divider class="mt-5"></v-divider>
+                        <p class="text-center title mb-4">{{ item.divider }}</p>
+                    </div>
                     <mdp-form-field
                         :options="item"
                         :key="i"
                         :name="item.name"
-                        v-model="row[item.name]"
-                        :row="row"
-                        :disabled="item.protected || item.disabled"
+                        v-model="localRow[item.name]"
+                        :row="localRow"
+                        :disabled="item.protected || item.disabled || action == 'view'"
                         @change="fieldChange"
+                        @changeRowField="changeRowField"
+                        @changeFieldOption="changeFieldOption"
                     />
                 </template>
             </v-form>
@@ -41,7 +47,7 @@ export default {
 
     props: {
         action: { type: String, default: "add" },
-        columns: { type: Object, default: null },
+        columns: { type: Array, default: null },
         row: { type: Object, default: null },
         buttons: {
             type: Object,
@@ -55,8 +61,11 @@ export default {
     },
 
     watch: {
+        row() {
+            this.refresh();
+        },
         columns() {
-            this.loadRow();
+            this.refresh();
         },
     },
 
@@ -79,26 +88,29 @@ export default {
             this.can_save = false;
             if (this.action == "delete") this.can_save = true;
 
-            localRow = JSON.parse(JSON.stringify(this.row));
-            localColumns = JSON.parse(JSON.stringify(this.columns));
+            this.localRow = JSON.parse(JSON.stringify(this.row));
+            if (this.columns instanceof Array) {
+                this.localColumns = JSON.parse(JSON.stringify(this.columns));
+            } else {
+                if (this.columns) this.localColumns = JSON.parse(JSON.stringify( Object.values(this.columns) ));
+            }
         },
 
-        convertColumns(columns) {
-            var rez = [];
-            for (let item in columns) {
-                var obj = columns[item];
-                if (obj.protected && !obj.visible) {
-                    continue;
-                }
-                obj.name = item;
-                rez.push(obj);
-                if (!this.row[item]) this.row[item] = null;
-            }
-            return rez;
-        },
 
         fieldChange(name, value, text) {
             this.can_save = true;
+            this.$emit("change");
+        },
+        changeRowField(name, value, text) {
+            this.localRow[name] = value;
+            if (text) this.localRow[name + "_text"] = text;
+            this.$forceUpdate();
+        },
+        changeFieldOption(fld, opt, val) {
+            this.localColumns.forEach((e) => {
+                if (e.name == fld) e[opt] = val;
+            });
+            this.$forceUpdate();
         },
 
         save() {
@@ -107,7 +119,7 @@ export default {
                 this.$swal.toastError("Заполните все поля правильно", "center-center", 1500);
                 return;
             }
-            this.$emit("save", this.row);
+            this.$emit("save", this.localRow);
         },
     },
 };
