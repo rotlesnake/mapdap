@@ -1,9 +1,9 @@
 <template>
-    <section class="ma-4" v-if="columns">
+    <section class="" v-if="columns">
         <div class="tree-table" v-if="columns">
             <div class="table-header">
-                <div v-for="col in activeColumns" :key="col.name" class="header-column" :style="{ ...col.style, ...colStyle(col) }">
-                     <div v-if="col.name == 'name'" style="min-width: 48px; display:inline-block;">
+                <div v-for="(col,ci) in activeColumns" :key="ci" class="header-column" :style="{ ...col.style, ...colStyle(col) }">
+                     <div v-if="col.name == 'name' || col.name == 'field_label'" style="min-width: 48px; display:inline-block;">
                          <v-btn class="mr-1" @click="openAll" icon x-small><v-icon>mdi-expand-all</v-icon></v-btn>
                          <v-btn class="mr-2" @click="closeAll" icon x-small><v-icon>mdi-collapse-all</v-icon></v-btn>
                      </div>
@@ -25,7 +25,7 @@
             >
                 <template #default="{ data }">
                     <div class="table-row" @dblclick="openEditDialog(data, 'edit')">
-                        <div v-for="col in activeColumns" :key="col.name" class="row-column" :style="{ ...col.style, ...colStyle(col, data) }">
+                        <div v-for="(col,ci) in activeColumns" :key="ci" class="row-column" :style="{ ...col.style, ...colStyle(col, data) }">
                             {{ data[col.name + "_text"]==undefined ? data[col.name] : data[col.name + "_text"] }}
                         </div>
 
@@ -66,9 +66,10 @@ export default {
     },
     props: {
         draggable: { type: Boolean, default: true },
+        drag_strict: { type: Boolean, default: false },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
-        tableFilter: { type: Object, default: null },
+        tableFilter: { type: Array, default: null },
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },
         iconFolder: { type: String, default: "mdi-folder-outline" },
@@ -123,7 +124,7 @@ export default {
         loadTreeTable() {
             if (!this.tableName) return;
             this.showLoader(true);
-            this.$api("table", "tree", this.tableName, "get", {})
+            this.$api("table", "tree", this.tableName, "get", {tableParent: this.tableParent})
                 .then((response) => {
                     this.showLoader(false);
                     this.rows = response.rows;
@@ -138,17 +139,17 @@ export default {
 
         colStyle(col, data) {
             let minwidth = 100;
-            if (col.name == "name") minwidth = 250;
+            if (col.name == "name" || col.name == "field_label") minwidth = 250;
             if (col.style && col.style.width) minwidth = col.style.width;
             let style = { "min-width": minwidth + "px" };
 
-            if (data && col.name == "name") {
+            if (data && (col.name == "name" || col.name == "field_label")) {
                 minwidth = minwidth - (data.tree_level + 1) * 18;
                 style["min-width"] = minwidth + "px";
             }
 
-            if (data && data.type == 1) style["background"] = this.folderBackground;
-            if (data && col.name != "name") style["text-align"] = "center";
+            if (data && data.type == 1) { style["background"] = this.folderBackground;  style["border-bottom"] = "1px dashed #ccc"; style["font-weight"] = "600"; }
+            if (data && (col.name == "name" || col.name == "field_label")) { style["text-align"] = "left"; } else { style["text-align"] = "center"; }
 
             style["max-width"] = style["min-width"];
             return style;
@@ -159,8 +160,8 @@ export default {
         },
 
         allowDrop(draggingNode, dropNode, type) {
-            if (type == "inner" && draggingNode.data.type == 1 && dropNode.data.type == 2) return false;
-            if (type == "inner" && draggingNode.data.type == 2 && dropNode.data.type == 2) return false;
+            if (this.drag_strict && type == "inner" && draggingNode.data.type == 1 && dropNode.data.type == 2) return false;
+            if (this.drag_strict && type == "inner" && draggingNode.data.type == 2 && dropNode.data.type == 2) return false;
             return true;
         },
         allowDrag(draggingNode) {
