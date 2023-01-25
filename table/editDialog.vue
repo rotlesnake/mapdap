@@ -38,15 +38,16 @@
 
             <v-card-text class="pa-0" v-else>
                 <mdp-edit-form
-                    v-if="tableInfo"
+                    v-if="localTableInfo"
                     ref="mdpEditForm"
                     :action="action"
                     :tableName="tableName"
-                    :tableInfo="tableInfo"
+                    :tableInfo="localTableInfo"
                     :rowId="rowId"
-                    :row="row"
+                    :row="localRow"
                     :buttons="buttons"
                     :page="page"
+                    :reloadRow="reloadRow"
                     @close="$emit('close')"
                     @change="can_save = true"
                     @setpagination="pagination = $event; page = 1;"
@@ -112,6 +113,9 @@ export default {
             pagination: false,
             page: 1,
             can_save: false,
+            localTableInfo: null,
+            localRow: {},
+            reloadRow: true,
         };
     },
 
@@ -128,12 +132,21 @@ export default {
 
     methods: {
         onShowDialog() {
-            if (this.row && this.tableInfo) return;
+            this.reloadRow = true;
+            this.localTableInfo = null;
+            this.localRow = {};
+
+            if (this.row && this.tableInfo) {
+                this.localTableInfo = JSON.parse(JSON.stringify(this.tableInfo));
+                this.localRow = JSON.parse(JSON.stringify(this.row));
+                return;
+            }
 
             this.$api("table", this.tableName, this.rowId)
                 .then((response) => {
-                    if (response.rows[0]) this.row = response.rows[0];
-                    this.tableInfo = response.info;
+                    if (response.rows[0]) this.localRow = response.rows[0];
+                    this.localTableInfo = response.info;
+                    this.reloadRow = false;
                 })
                 .catch((error) => {
                 });

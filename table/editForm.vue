@@ -42,6 +42,7 @@ export default {
         rowId: { type: Number, default: 0 },
         row: { type: Object, default: null },
         page: { type: Number, default: 1 },
+        reloadRow: { type: Boolean, default: true },
         buttons: {
             type: Object,
             default: () => {
@@ -104,8 +105,10 @@ export default {
             if (this.action == "delete") this.can_save = true;
             if (this.visible && this.current_field_name=="") {
                 setTimeout(()=>{
-                    this.current_field_name = this.columnsFiltered[0].name;
-                    this.focusCurrentField();
+                    if (this.columnsFiltered[0]) {
+                        this.current_field_name = this.columnsFiltered[0].name;
+                        this.focusCurrentField();
+                    }
                 }, 100);
             }
 
@@ -116,7 +119,7 @@ export default {
             this.pagination = parseInt(this.pagination) > 1 ? parseInt(this.pagination) : 0;
             this.$emit("setpagination", this.pagination);
             this.localRow = JSON.parse(JSON.stringify(this.localRow));
-            if (this.rowId == 0) return;
+            if (this.rowId == 0 || this.reloadRow == false) return;
 
             this.isLoading = true;
             this.$api("table", this.tableName, this.rowId + "/?mini=true")
