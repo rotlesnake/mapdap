@@ -17,7 +17,7 @@
             :loading="comboItems.length==0"
         >
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense">
+                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
                     <span>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
