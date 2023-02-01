@@ -299,7 +299,7 @@ export default {
                     if (this.opts.afterChange) fields = null;
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
-                            e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]);
+                            e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]!=undefined ? e[name] : "");
                             return e;
                         });
                     });
