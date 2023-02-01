@@ -37,7 +37,7 @@ import moment from "moment";
 export default {
     components: {},
     props: {
-        value: { type: String, default: "" },
+        value: { required:true },
         isWeek: { type: Boolean, default: false }, //Выбрать неделю
         isMonth: { type: Boolean, default: false }, //Выбрать месяц
         isRange: { type: Boolean, default: false }, //Выбрать диапазон
@@ -84,8 +84,8 @@ export default {
             if (this.isWeek && this.date_selected[0] == this.value) return;
 
             let dt = this.value;
-            if (!dt || dt.length < 10) dt = moment().format("YYYY-MM-DD");
-            if (this.isRange) this.date_selected = [dt, dt];
+            if (this.isRange && !this.isWeek) this.date_selected = [dt[0], dt[1]];
+            if (!this.isRange && !dt || dt.length < 10) dt = moment().format("YYYY-MM-DD");
             if (!this.isRange && !this.isWeek) this.date_selected = dt;
             this.changeDate(dt);
         },
@@ -173,10 +173,10 @@ export default {
 
             this.date_dialog = false;
 
-            if (this.isRange || this.isWeek) {
-                this.$emit("input", this.date_selected[0]);
+            if (this.isWeek) {
+                return this.$emit("input", this.date_selected);
             } else {
-                this.$emit("input", this.date_selected);
+                return  this.$emit("input", this.date_selected);
             }
         },
     }, //methods
