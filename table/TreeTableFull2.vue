@@ -5,13 +5,16 @@
                 <div v-for="(col, ci) in activeColumns" :key="ci" class="header-column" :style="{ ...col.style, ...colStyle(col) }">
                     {{ col.label }}
                 </div>
-                <div class="header-column" style="min-width: 90px; max-width: 90px">История</div>
+                <div class="header-column" style="min-width: 99px; max-width: 99px">
+                     <el-button icon="mdi mdi-plus" circle size="mini" type="success" @click.stop="openEditDialog({ id: 0, type: 1 }, 'add')"></el-button>
+                     Действия 
+                </div>
             </div>
             <el-tree
                 :data="rows"
                 node-key="id"
                 empty-text="Нет данных"
-                default-expand-all
+                :default-expand-all="false"
                 @node-expand="opened.push($event.id)"
                 @node-collapse="collapseNode"
                 :draggable="draggable"
@@ -143,6 +146,8 @@ export default {
                 minwidth = minwidth - (data.tree_level + 1) * 18;
                 style["min-width"] = minwidth - 6 + "px";
             }
+
+            if (data && data.type == 1) { style["background"] = this.folderBackground;  style["font-weight"] = "600"; }
 
             if (data && (col.name == "name" || col.name == "field_label")) {
                 style["text-align"] = "left";
@@ -322,6 +327,10 @@ button.el-button--mini.is-circle {
     min-width: 100px;
     border: 1px solid #999;
     text-align: center;
+    line-height: 22px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--v-primary-base);
 }
 
 .tree-table .el-tree-node__children {
