@@ -163,7 +163,7 @@
             </v-select>
         </template>
 
-        <template v-if="options.type == 'linkTable' && vifCalc()">
+        <template v-if="options.type == 'linkTable' && !options.rest && vifCalc()">
             <field-select-from-table
                 :value="valueLocal"
                 :items="items"
@@ -176,6 +176,18 @@
                 :name="name"
                 :clickAppend="showTooltip"
             ></field-select-from-table>
+        </template>
+        <template v-if="options.type == 'linkTable' && options.rest && vifCalc()">
+            <custom-autocomplete 
+                v-model="valueLocal"
+                :row="row"
+                :options="options"
+                @input="onInput" 
+                :disabled="disabled"
+                :rules="fieldRules"
+                :hidden="false"
+                :name="name"
+            />
         </template>
 
 
@@ -286,6 +298,7 @@ export default {
         "json-table": () => import("./fields/JsonTable.vue"),
         "json-table-excel": () => import("./fields/JsonTableExcel.vue"),
         "kladr-autocomplete": () => import("./fields/kladr_autocomplete.vue"),
+        "custom-autocomplete": () => import("./fields/CustomAutocomplete.vue"),
         VueEditor,
     },
     props: {
