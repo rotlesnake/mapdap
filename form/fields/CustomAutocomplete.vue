@@ -66,10 +66,10 @@ export default {
     methods: {
         changeValue() {
             if (this.options && this.value && this.localValue != this.value) {
-                if (typeof this.value != "object") {
-                    this.localValue = [this.value];
+                if (this.options.multiple) {
+                    if (typeof this.value != "object") { this.localValue = [this.value]; } else { this.localValue = this.value; }
                 } else {
-                    this.localValue = this.value;
+                    if (typeof this.value == "object") { this.localValue = this.value[0]; } else { this.localValue = this.value; }
                 }
 
                 this.$axios.post(this.options.rest.url, {value:this.localValue}).then((response) => {

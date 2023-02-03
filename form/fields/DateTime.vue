@@ -85,6 +85,7 @@ export default {
             weekdays: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
             date_dialog: false,
             dateEdt: "",
+            localValue: "",
             date: "",
             time: "",
         };
@@ -123,8 +124,11 @@ export default {
                 this.dateEditFinish();
                 return;
             }
-            this.date = this.value.substr(0, 10);
-            this.time = this.value.substr(11);
+            if (this.localValue == this.value) return;
+
+            this.localValue = this.value;
+            this.date = this.localValue.substr(0, 10);
+            this.time = this.localValue.substr(11);
             this.dateEditFinish();
         },
 
@@ -151,6 +155,7 @@ export default {
             return val;
         },
         dateEditFinish() {
+            if (this.dateEdt == this.dateToDate(this.date)) return;
             if (this.dateEdt) this.date = this.dateToSql(this.dateEdt);
             if (this.min && this.date < this.min) this.date = "";
             if (this.max && this.date > this.max) this.date = "";
