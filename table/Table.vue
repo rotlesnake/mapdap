@@ -134,6 +134,7 @@
                         <td :class="[{ 'text-center': columnItem.align }, columnItem.class]"
                             :key="columnItem.id"
                             v-if="!columnItem.hidden"
+                            :style="columnItem.style"
                             v-html="renderItem(columnItem, item, false)"
                         ></td>
                     </template>
