@@ -32,7 +32,7 @@
 import common from "@/components/common.js";
 export default {
     props: {
-        value: { type: String, default: "" },
+        value: { required: false },
         options: { type: Object, default: null },
         rules: { type: Array, default: () => [] },
         disabled: { default: false },
