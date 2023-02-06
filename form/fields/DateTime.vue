@@ -30,6 +30,8 @@
                     no-title
                     :min="min"
                     :max="max"
+                    :events="events"
+                    :event-color="eventColor"
                     :first-day-of-week="1"
                     :weekday-format="weekdayFormat"
                     @input="
@@ -79,6 +81,8 @@ export default {
         rules: { type: Array, default: () => [] },
         step: { type: String, default: "0" },
         customStyle: { type: Object, default:()=>({})  },
+        events: { type: Array, default: () => [] },
+        eventColor: { type: String, default: "" },
     },
     data() {
         return {
