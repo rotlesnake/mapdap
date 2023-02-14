@@ -67,6 +67,8 @@
                         @click:clear.prevent="localTextFilter = ''"
                     ></v-text-field>
 
+                    <slot name="after_filter"></slot>
+
                     <v-divider inset vertical class="mx-1" v-if="showNewFilter"></v-divider>
                     <v-tooltip top color="primary" v-if="showNewFilter">
                         <template v-slot:activator="{ on }">
