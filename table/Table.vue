@@ -28,6 +28,7 @@
             :show-expand="tableExpandable"
             :height="calcTableHeight"
             :mobile-breakpoint="0"
+            :dense="dense"
             @click:row="clickOnRow"
             @update:options="changeOptions"
         >
@@ -361,6 +362,7 @@ export default {
         fixedHeader: { type: Boolean, default: true },
         showOldFilter: { type: Boolean, default: false },
         showNewFilter: { type: Boolean, default: true },
+        dense: { type: Boolean, default: false },
         hideDefaultHeader: { type: Boolean, default: false },
         hideDefaultFooter: { type: Boolean, default: false },
         editFormTitle: { type: String, default: "" },
