@@ -57,6 +57,19 @@
                     <v-divider class="mx-2" inset vertical  v-if="showOldFilter"></v-divider>
 
                     <v-text-field
+                        v-model="remoteTextFilter"
+                        append-icon="search"
+                        label="Поиск..."
+                        v-if="tableFilterUrl"
+                        dense
+                        outlined
+                        hide-details
+                        clearable
+                        @input="remoteFilterRequest"
+                        @click:clear.prevent="remoteTextFilter = ''"
+                    ></v-text-field>
+                    <v-text-field
+                        v-else
                         v-model="localTextFilter"
                         append-icon="search"
                         :label="pagination.totalItems > 0 ? 'Используйте ФИЛЬТР' : 'Поиск...'"
@@ -331,6 +344,7 @@
 <script>
 import { mapActions } from "vuex";
 import XLSX from 'xlsx'
+import common from "@/components/common.js";
 
 export default {
     name:"table-editor",
@@ -346,6 +360,7 @@ export default {
         afterReloadTable: { type: Function, default: null },
         customEditDialog: { type: Function, default: null },
         tableRequestUrl: { type: String, default: "" },
+        tableFilterUrl: { type: String, default: "" },
         tableName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         tableFilter: { type: Array, default: null },
@@ -372,6 +387,7 @@ export default {
         return {
             isLoading: false,
             localTextFilter: "",
+            remoteTextFilter: "",
             pagination: { page:1, sortBy:[], sortDesc:[], itemsPerPage:0, totalItems: -1 },
 
             tableExpandable: false,
@@ -435,7 +451,9 @@ export default {
             return "calc(100vh - " + h + "px)";
         },
     },
-
+    created(){
+        this.remoteFilterRequest = common.debounce(this.remoteTableFilterRequest, 500);
+    },
     mounted() {
         this.rowFilterValues = {};
         this.reloadTable();
@@ -538,6 +556,20 @@ export default {
                 rez.push(obj);
             }
             return rez;
+        },
+
+        remoteTableFilterRequest(){
+            this.isLoading = true;
+            this.rows = [];
+            this.$axios.post(this.tableFilterUrl, { search: this.remoteTextFilter })
+                .then((response) => {
+                    this.isLoading = false;
+                    response = response.data;
+                    this.rows = response.rows;
+                })
+                .catch((error) => {
+                    this.isLoading = false;
+                });
         },
 
         onKeyUp(event){
