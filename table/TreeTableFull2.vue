@@ -23,7 +23,7 @@
                 :allow-drag="allowDrag"
             >
                 <template #default="{ data }">
-                    <div class="table-row">
+                    <div class="table-row" @click="$emit('select', data)" @dblclick="$emit('dblSelect', data)">
                         <div v-for="(col, ci) in activeColumns" :key="ci" class="row-column" :style="{ ...col.style, ...colStyle(col, data) }">
                             {{ data[col.name + "_text"] == undefined ? data[col.name] : data[col.name + "_text"] }}
                         </div>
