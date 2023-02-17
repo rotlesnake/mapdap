@@ -75,6 +75,7 @@ export default {
                 this.$axios.post(this.options.rest.url, {value:this.localValue}).then((response) => {
                     this.isLoading = false;
                     this.rest_items = response.data;
+                    if (!this.rest_items) this.rest_items = [];
                 });
             }
         },
@@ -84,6 +85,7 @@ export default {
             this.$axios.post(this.options.rest.url, {text:val, value:this.localValue}).then((response) => {
                 this.isLoading = false;
                 this.rest_items = response.data;
+                if (!this.rest_items) this.rest_items = [];
             });
         },
 

@@ -1,6 +1,6 @@
 {
   "name": "mapdap",
-  "version": "1.6.8",
+  "version": "1.6.7",
   "description": "mapdap frontend components",
   "main": "index.js",
   "scripts": {
