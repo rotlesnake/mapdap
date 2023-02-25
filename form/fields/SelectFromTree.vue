@@ -47,7 +47,7 @@ export default {
     },
     watch: {
         value() {
-            this.selected_tree_items = this.value;
+            this.selected_tree_items = Array.isArray(this.value) ? this.value : [this.value];
         },
         tableName() {
             this.reloadTable();
