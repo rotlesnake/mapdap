@@ -349,6 +349,7 @@ export default {
             this.comboItems = [];
             let filter = this.opts.options && this.opts.options.tableFilter ? this.opts.options.tableFilter : [];
             filter.push({ field: this.opts.field, oper: "like", value: searchValue });
+            if (this.typeSelect == "tree") filter.push({ field: "parent_id", oper: ">", value: 0 });
             this.$api("table", this.opts.table, "get", {
                 fast: true,
                 fields: fields,
