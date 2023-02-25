@@ -81,7 +81,7 @@ export default {
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     this.showLoader(false);
                     this.tree_items = response.rows;
-                    this.selected_tree_items = this.value;
+                    this.selected_tree_items = Array.isArray(this.value) ? this.value : [this.value];
                     this.info = response.info;
                     this.columns = response.info.columns;
                 })
