@@ -14,6 +14,7 @@
             :item-text="opts.field"
             :rules="rules"
             :disabled="disabled"
+            :hidden="disabled"
             :loading="comboItems.length==0"
         >
             <template v-slot:selection="{ item, index }">
