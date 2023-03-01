@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import common from "@/components/common.js";
+import common from "../../common/common.js";
 export default {
     layout: "empty",
     computed: {},

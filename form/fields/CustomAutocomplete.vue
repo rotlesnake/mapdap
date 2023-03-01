@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import common from "@/components/common.js";
+import common from "../../common/common.js";
 export default {
     props: {
         value: { required: false },

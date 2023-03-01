@@ -472,13 +472,20 @@ export default {
 
             if (this.options.defaultFront && this.options.defaultFront.length>0 && !this.valueLocal) {
                 this.valueLocal = this.options.defaultFront;
-                if (typeof this.valueLocal == "string" && this.valueLocal.substr(0,2)=="==") this.valueLocal = eval(this.valueLocal.substr(2));
-
-                if (this.options.type == "select") this.valueLocal = parseInt(this.valueLocal);
-                if (this.options.type == "linkTable" && typeof this.valueLocal == "string") { const val = this.valueLocal.split("."); this.items = [{ value: parseInt(val[0]), text: val[1] }]; this.valueLocal = [parseInt(val[0])]; }
-                if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
-                if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD")+" 00:00:00";
-                this.onInput(this.valueLocal);
+                if (typeof this.valueLocal == "string" && this.valueLocal.substr(0,2)=="==") {
+                    this.valueLocal = eval(this.valueLocal.substr(2));
+                    this.onInput(this.valueLocal);
+                } else {
+                    if (this.options.type == "select") this.valueLocal = parseInt(this.options.defaultFront);
+                    if (this.options.type == "linkTable") {
+                        const val = this.options.defaultFront.split(".");
+                        this.items = [{ value: parseInt(val[0]), text: val[1] }];
+                        this.valueLocal = [parseInt(val[0])];
+                    }
+                    if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
+                    if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD") + " 00:00:00";
+                    this.onInput(this.valueLocal);
+                }
             }
 
             if (this.valueLocal && this.options.afterChange && this.options.afterChange.length > 1) this.afterChangeField(this.name, true);

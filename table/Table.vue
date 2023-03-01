@@ -60,7 +60,7 @@
                         v-model="remoteTextFilter"
                         append-icon="search"
                         label="Поиск..."
-                        v-if="tableFilterUrl"
+                        v-if="filterUrl"
                         dense
                         outlined
                         hide-details
@@ -344,7 +344,7 @@
 <script>
 import { mapActions } from "vuex";
 import XLSX from 'xlsx'
-import common from "@/components/common.js";
+import common from "../common/common.js";
 
 export default {
     name:"table-editor",
@@ -412,6 +412,7 @@ export default {
             filterRow: {},
             rowFilterDialog: false,
             rowFilterValues: {},
+            filterUrl: this.tableFilterUrl,
         };
     },
     watch: {
@@ -421,6 +422,9 @@ export default {
         },
         tableFilter() {
             this.reloadTable();
+        },
+        tableFilterUrl(){
+            this.filterUrl = this.tableFilterUrl;
         },
         tableParent(oldval,newval) {
             if (oldval.field == newval.field && oldval.value == newval.value) return;
@@ -515,6 +519,7 @@ export default {
                     response = response.data;
                     this.isLoading = false;
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
+                    if (!this.filterUrl && response.info.filterUrl) this.filterUrl = response.info.filterUrl;
                     this.pagination = response.pagination;
                     this.rows = response.rows;
                     this.info = JSON.parse(JSON.stringify(response.info));
@@ -561,7 +566,7 @@ export default {
         remoteTableFilterRequest(){
             this.isLoading = true;
             this.rows = [];
-            this.$axios.post(this.tableFilterUrl, { search: this.remoteTextFilter })
+            this.$axios.post(this.filterUrl, { search: this.remoteTextFilter })
                 .then((response) => {
                     this.isLoading = false;
                     response = response.data;
