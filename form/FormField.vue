@@ -459,10 +459,8 @@ export default {
                 if (this.options.multiple) {
                     if (typeof this.valueLocal == 'object') { this.valueLocal = this.valueLocal; } else { this.valueLocal = []; }
                 } else {
-                    this.valueLocal = 0;
-                    if (this.value) {
-                        this.valueLocal = isNaN(parseInt(this.value)) ? this.value : parseInt(this.value);
-                    }
+                    this.valueLocal = this.value;
+                    if (this.options.type == "select") this.valueLocal = parseInt(this.value);
                 }
             }
             if (this.options.type == "linkTable") {
