@@ -445,11 +445,15 @@ export default {
 
             if (this.options.type == "select" || this.options.type == "selectText") {
                 this.items = [];
-                for (let item in this.options.items) {
-                    if (isNaN(parseInt(item))) { 
-                        this.items.push({ value: item, text: this.options.items[item] });
-                    } else {
-                        this.items.push({ value: parseInt(item), text: this.options.items[item] });
+                if (Array.isArray(this.options.items)) {
+                    this.items = this.options.items;
+                } else {
+                    for (let item in this.options.items) {
+                        if (isNaN(parseInt(item))) { 
+                            this.items.push({ value: item, text: this.options.items[item] });
+                        } else {
+                            this.items.push({ value: parseInt(item), text: this.options.items[item] });
+                        }
                     }
                 }
                 if (this.options.multiple) {
