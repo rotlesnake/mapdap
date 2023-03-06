@@ -649,6 +649,12 @@ export default {
                 if (typeof row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+row[name]+"]";
                 return row[name];
             });
+            rules = rules.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
+                if (!row[name]) return 0;
+                if (typeof row[name] == "object" && row[name].length==0) return 0;
+                if (typeof row[name] == "object" && rules.indexOf('IN(')>-1 ) return "["+row[name]+"]";
+                return row[name];
+            });
             rules = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; "+rules;
             return eval(rules);
         },

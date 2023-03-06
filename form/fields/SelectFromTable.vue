@@ -252,6 +252,10 @@ export default {
                                 if (!this.row[name]) return 0;
                                 return this.row[name];
                             });
+                            let value = e.value.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
+                                if (!this.row[name]) return 0;
+                                return this.row[name];
+                            });
                             e.value = value;
                         }
                     });
@@ -266,6 +270,12 @@ export default {
                 this.opts.options.tableFilter = [];
                 let rules = this.opts.tableFilter;
                 rules = rules.replace(/\[(.*?)\]/gi, (match, name) => {
+                    if (!this.row[name]) return 0;
+                    if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
+                    if (typeof this.row[name] == "object" && rules.indexOf("'in'")>-1 ) return "["+this.row[name]+"]";
+                    return this.row[name];
+                });
+                rules = rules.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
                     if (!this.row[name]) return 0;
                     if (typeof this.row[name] == "object" && this.row[name].length==0) return 0;
                     if (typeof this.row[name] == "object" && rules.indexOf("'in'")>-1 ) return "["+this.row[name]+"]";
@@ -294,6 +304,9 @@ export default {
                     this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => {
                         this.opts.fields.push(name);
                     });
+                    this.opts.fieldraw.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
+                        this.opts.fields.push(name);
+                    });
                     let filter = [];
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
                     let fields = ["id", ...this.opts.fields];
@@ -301,6 +314,7 @@ export default {
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
                             e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]!=undefined ? e[name] : "");
+                            e.text = this.opts.fieldraw.replace(/\{\{(.*?)\}\}/gi, (match, name) => e[name]!=undefined ? e[name] : "");
                             return e;
                         });
                     });
@@ -408,6 +422,7 @@ export default {
                         text = item[this.opts.field];
                     } else {
                         text = this.opts.field.replace(/\[(.*?)\]/gi, (match, name) => item[name]);
+                        text = this.opts.field.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
                     }
                     items.push({
                         value: item.id,
