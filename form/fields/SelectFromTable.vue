@@ -252,7 +252,7 @@ export default {
                                 if (!this.row[name]) return 0;
                                 return this.row[name];
                             });
-                            let value = e.value.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
+                            value = value.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
                                 if (!this.row[name]) return 0;
                                 return this.row[name];
                             });
