@@ -346,6 +346,7 @@ export default {
                     let filter = [{field:"id", oper:"in", value:this.values}];
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows;
+                        this.comboboxSelectedItems = JSON.parse(JSON.stringify(this.comboItems));
                     });
                 }
                
@@ -373,7 +374,7 @@ export default {
             this.comboItems = [];
             let filter = this.opts.options && this.opts.options.tableFilter ? this.opts.options.tableFilter : [];
             filter.push({ field: this.opts.field, oper: "like", value: searchValue });
-            if (this.typeSelect == "tree") filter.push({ field: "parent_id", oper: ">", value: 0 });
+            if (this.opts.onlyChilds) filter.push({ field: "parent_id", oper: ">", value: 0 });
             this.$api("table", this.opts.table, "get", {
                 fast: true,
                 fields: fields,
