@@ -60,7 +60,11 @@ export default {
         this.onTextInput = common.debounce(this.onInput, 500);
     },
     mounted() {
-        this.changeValue();
+        if (this.value) {
+           this.changeValue();
+        } else {
+           this.onInput("");
+        }
     },
 
     methods: {
@@ -72,7 +76,7 @@ export default {
                     if (typeof this.value == "object") { this.localValue = this.value[0]; } else { this.localValue = this.value; }
                 }
 
-                this.$axios.post(this.options.rest.url, {value:this.localValue}).then((response) => {
+                this.$axios.post(this.options.rest.url || this.options.rest, {value:this.localValue}).then((response) => {
                     this.isLoading = false;
                     this.rest_items = response.data;
                     if (!this.rest_items) this.rest_items = [];
@@ -82,7 +86,7 @@ export default {
 
         onInput(val) {
             this.isLoading = true;
-            this.$axios.post(this.options.rest.url, {text:val, value:this.localValue}).then((response) => {
+            this.$axios.post(this.options.rest.url || this.options.rest, {text:val, value:this.localValue}).then((response) => {
                 this.isLoading = false;
                 this.rest_items = response.data;
                 if (!this.rest_items) this.rest_items = [];
