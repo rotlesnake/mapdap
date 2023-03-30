@@ -183,6 +183,7 @@
                 :row="row"
                 :options="options"
                 @input="onInput" 
+                @change="linkTableChange"
                 :disabled="disabled"
                 :rules="fieldRules"
                 :hidden="false"

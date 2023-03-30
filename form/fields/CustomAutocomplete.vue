@@ -100,9 +100,15 @@ export default {
             this.$emit("input", this.localValue);
         },
 
-        selectItem(item) {
-            this.localValue = item;
-            this.$emit("input", this.localValue);
+        selectItem(selectedValue) {
+            this.localValue = selectedValue;
+            let items = this.rest_items.filter(e=> this.localValue == e.value);
+
+            if (this.options.multiple) {
+                items = this.rest_items.filter(e=> this.localValue.includes(e.value));
+            }
+
+            this.$emit("change", this.localValue, items, []);
             this.$nextTick(()=>{ this.$refs.combobox.isMenuActive = false; });
         },
     },
