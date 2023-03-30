@@ -17,9 +17,14 @@
             :hidden="disabled"
             :loading="comboItems.length==0"
         >
+            <template v-slot:item="{ item, index }">
+                <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
+                <span v-else>{{ item[opts.field] }}</span>
+            </template>
             <template v-slot:selection="{ item, index }">
                 <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
-                    <span>{{ item[opts.field] }}</span>
+                    <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
+                    <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
             <template v-slot:append v-if="opts['append-icon']">
@@ -46,9 +51,14 @@
             :rules="rules"
             :disabled="disabled"
         >
+            <template v-slot:item="{ item, index }">
+                <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
+                <span v-else>{{ item[opts.field] }}</span>
+            </template>
             <template v-slot:selection="{ item, index }">
                 <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
-                    <span>{{ item[opts.field] }}</span>
+                    <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
+                    <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
             </template>
             <template v-slot:append>
@@ -73,9 +83,14 @@
             :disabled="disabled"
             :deletable-chips="true"
         >
+            <template v-slot:item="{ item, index }">
+                <span v-if="opts.showID">{{ item.value }}. {{ item.text }}</span>
+                <span v-else>{{ item.text }}</span>
+            </template>
             <template v-slot:selection="{ item, index }">
                 <v-chip v-if="item.value || item.text" :small="opts.dense" close @click:close="removeItem($event,item,index)">
-                    <span>{{ item.text }}</span>
+                    <span v-if="opts.showID">{{ item.value }}. {{ item.text }}</span>
+                    <span v-else>{{ item.text }}</span>
                 </v-chip>
             </template>
             <template v-slot:append v-if="opts['append-icon']">

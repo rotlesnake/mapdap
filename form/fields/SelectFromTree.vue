@@ -18,7 +18,8 @@
                     <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
                          <template v-slot:label="{ item }">
                             <slot name="item" v-bind:info="item">
-                                <div class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.name }}</div>
+                                <div v-if="showID" class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.name }}</div>
+                                <div v-else class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.id }}. {{ item.name }}</div>
                             </slot>
                          </template>
                     </v-treeview>
@@ -44,6 +45,7 @@ export default {
         afterReloadTable: { type: Function, default: null },
         expandFirstLevel: { type: Boolean, default: true },
         multiple: { type: Boolean, default: false },
+        showID: { type: Boolean, default: false },
     },
     watch: {
         value() {
