@@ -473,7 +473,7 @@ export default {
                 }
             }
 
-            if (this.options.defaultFront && this.options.defaultFront.length>0 && !this.valueLocal) {
+            if (this.options.defaultFront && String(this.options.defaultFront).length>0 && !this.valueLocal) {
                 this.valueLocal = this.options.defaultFront;
                 if (typeof this.valueLocal == "string" && this.valueLocal.substr(0,2)=="==") {
                     this.valueLocal = eval(this.valueLocal.substr(2));
