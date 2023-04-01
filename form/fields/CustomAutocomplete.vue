@@ -20,7 +20,7 @@
                 </div>
             </template>
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="options.dense" close @click:close="removeItem($event,item,index)">
+                <v-chip :small="options.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span>{{ item.text }}</span>
                 </v-chip>
             </template>
@@ -79,7 +79,11 @@ export default {
                 this.$axios.post(this.options.rest.url || this.options.rest, {value:this.localValue}).then((response) => {
                     this.isLoading = false;
                     this.rest_items = response.data;
-                    if (!this.rest_items) this.rest_items = [];
+                    if (this.rest_items) {
+                        this.selectItem(this.localValue);
+                    } else {
+                        this.rest_items = [];
+                    }
                 });
             }
         },

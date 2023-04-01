@@ -392,6 +392,13 @@ export default {
             this.items = items;
             this.row[this.options.name + "_values"] = items;
             this.row[this.options.name + "_text"] = items[0] ? items[0].text : "";
+            if (this.options.multiple) {
+                this.row[this.options.name + "_text"] = "";
+                let finded = this.items.filter(e=> this.valueLocal.includes(e.value));
+                finded.forEach(e=>{
+                    this.row[this.options.name + "_text"] += e.text+", ";
+                });
+            }
             this.$emit("input", values);
             this.$emit("change", this.name, values, items, rows);
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
@@ -444,6 +451,26 @@ export default {
                 this.options.placeholder = this.options.default;
             }
 
+            if (this.options.defaultFront && String(this.options.defaultFront).length>0 && !this.valueLocal) {
+                this.valueLocal = this.options.defaultFront;
+                if (typeof this.valueLocal == "string" && this.valueLocal.substr(0,2)=="==") {
+                    this.valueLocal = eval(this.valueLocal.substr(2));
+                    this.onInput(this.valueLocal);
+                } else {
+                    if (this.options.type == "select") this.valueLocal = parseInt(this.options.defaultFront);
+                    if (this.options.type == "linkTable") {
+                        const val = this.options.defaultFront.split(".");
+                        if (!val[1]) val[1] = "";
+                        this.items = [{ value: parseInt(val[0]), text: String(val[1]).trim() }];
+                        this.valueLocal = [parseInt(val[0])];
+                        if (!this.row[this.options.name + "_text"]) this.row[this.options.name + "_text"] = String(val[1]).trim();
+                    }
+                    if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
+                    if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD") + " 00:00:00";
+                    this.onInput(this.valueLocal);
+                }
+            }
+
             if (this.options.type == "select" || this.options.type == "selectText") {
                 this.items = [];
                 if (Array.isArray(this.options.items)) {
@@ -463,31 +490,26 @@ export default {
                     this.valueLocal = this.value;
                     if (this.options.type == "select") this.valueLocal = parseInt(this.value);
                 }
-            }
-            if (this.options.type == "linkTable") {
-                this.items = [];
-                if (this.options.multiple) {
-                    this.items = this.row[this.options.name + "_values"];
-                } else {
-                    this.items = [{ value: parseInt(this.value), text: this.row[this.options.name + "_text"] }];
+
+                if (!this.row[this.options.name + "_text"]) {
+                    if (this.options.multiple) {
+                        this.row[this.options.name + "_text"] = "";
+                        let finded = this.items.filter(e=> this.valueLocal.includes(e.value));
+                        finded.forEach(e=>{
+                            this.row[this.options.name + "_text"] += e.text+", ";
+                        });
+                    } else {
+                        let finded = this.items.find(e=> e.value==this.valueLocal);
+                        if (finded) this.row[this.options.name + "_text"] = finded.text;
+                    }
                 }
             }
 
-            if (this.options.defaultFront && String(this.options.defaultFront).length>0 && !this.valueLocal) {
-                this.valueLocal = this.options.defaultFront;
-                if (typeof this.valueLocal == "string" && this.valueLocal.substr(0,2)=="==") {
-                    this.valueLocal = eval(this.valueLocal.substr(2));
-                    this.onInput(this.valueLocal);
+            if (this.options.type == "linkTable") {
+                if (this.options.multiple) {
+                    if (this.row[this.options.name + "_values"] && this.row[this.options.name + "_values"].length>0) this.items = this.row[this.options.name + "_values"];
                 } else {
-                    if (this.options.type == "select") this.valueLocal = parseInt(this.options.defaultFront);
-                    if (this.options.type == "linkTable") {
-                        const val = this.options.defaultFront.split(".");
-                        this.items = [{ value: parseInt(val[0]), text: val[1] }];
-                        this.valueLocal = [parseInt(val[0])];
-                    }
-                    if (this.options.type == "date" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD");
-                    if (this.options.type == "dateTime" && this.options.defaultFront == "now") this.valueLocal = this.$moment().format("YYYY-MM-DD") + " 00:00:00";
-                    this.onInput(this.valueLocal);
+                    if (this.row[this.options.name + "_text"] && this.row[this.options.name + "_text"].length>0) this.items = [{ value: parseInt(this.valueLocal), text: this.row[this.options.name + "_text"] }];
                 }
             }
 

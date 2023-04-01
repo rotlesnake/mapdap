@@ -22,7 +22,7 @@
                 <span v-else>{{ item[opts.field] }}</span>
             </template>
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
+                <v-chip :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
                     <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
@@ -56,7 +56,7 @@
                 <span v-else>{{ item[opts.field] }}</span>
             </template>
             <template v-slot:selection="{ item, index }">
-                <v-chip :small="opts.dense" close @click:close="removeItem($event,item,index)">
+                <v-chip :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
                     <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
@@ -88,7 +88,7 @@
                 <span v-else>{{ item.text }}</span>
             </template>
             <template v-slot:selection="{ item, index }">
-                <v-chip v-if="item.value || item.text" :small="opts.dense" close @click:close="removeItem($event,item,index)">
+                <v-chip v-if="item.value || item.text" :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span v-if="opts.showID">{{ item.value }}. {{ item.text }}</span>
                     <span v-else>{{ item.text }}</span>
                 </v-chip>
@@ -332,6 +332,7 @@ export default {
                             e.text = this.opts.fieldraw.replace(/\{\{(.*?)\}\}/gi, (match, name) => e[name]!=undefined ? e[name] : "");
                             return e;
                         });
+                        this.changeCombobox();
                     });
                 } else {
                     let filter = [];
@@ -345,6 +346,7 @@ export default {
                         this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                             this.comboItems = response.rows;
                             //tableCache.tables[this.opts.table] = JSON.parse(JSON.stringify(this.comboItems));
+                            this.changeCombobox();
                         });
                     }
                 }
@@ -362,7 +364,8 @@ export default {
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows;
                         this.comboboxSelectedItems = JSON.parse(JSON.stringify(this.comboItems));
-                    });
+                        this.changeCombobox();
+                });
                 }
                
                 if (values && values.length > 0) {
