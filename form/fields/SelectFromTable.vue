@@ -459,7 +459,12 @@ export default {
                     this.values.push(item.id);
                 }
 
-            this.$emit("change", this.values, items, this.selected);
+            if (this.opts.multiple) {
+                this.$emit("change", this.values, items, this.selected);
+            } else {
+                this.values = this.values[0];
+                this.$emit("change", this.values, items, this.selected);
+            }
             this.display = false;
         },
     },
