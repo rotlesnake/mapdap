@@ -76,7 +76,7 @@ export default {
                     if (typeof this.value == "object") { this.localValue = this.value[0]; } else { this.localValue = this.value; }
                 }
 
-                this.$axios.post(this.options.rest.url || this.options.rest, {value:this.localValue}).then((response) => {
+                this.$axios.post(this.options.rest.url || this.options.rest, {value:this.localValue, data:this.options.rest.data || {} }).then((response) => {
                     this.isLoading = false;
                     this.rest_items = response.data;
                     if (this.rest_items) {
@@ -90,7 +90,7 @@ export default {
 
         onInput(val) {
             this.isLoading = true;
-            this.$axios.post(this.options.rest.url || this.options.rest, {text:val, value:this.localValue}).then((response) => {
+            this.$axios.post(this.options.rest.url || this.options.rest, {text:val, value:this.localValue, data:this.options.rest.data || {} }).then((response) => {
                 this.isLoading = false;
                 this.rest_items = response.data;
                 if (!this.rest_items) this.rest_items = [];

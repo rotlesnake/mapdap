@@ -194,6 +194,7 @@ export default {
             handler(newVal, oldVal) { this.postRefresh(); }
         },
         options() {
+            if (JSON.stringify(this.options) == JSON.stringify(this.opts)) return;
             this.postRefresh();
         },
         value() {
@@ -223,6 +224,9 @@ export default {
     },
     mounted() {
         this.postRefresh();
+        setTimeout(()=>{
+            if (this.opts && this.opts.table) tableCache.tables[this.opts.table] = null;
+        }, 19000);
     },
     computed: {},
     methods: {
@@ -243,11 +247,12 @@ export default {
            this.display = true;
            this.$nextTick(()=>{ this.$refs.combobox.isMenuActive = false; });
         },
+
         postRefresh() {
             this.needRefresh = true;
-            this.$nextTick(this.refresh);
+            setTimeout(this.refresh, 200);
         },
-        refresh() {
+        async refresh() {
             if (!this.needRefresh) return;
             this.needRefresh = false;
             if (this.opts && this.opts.table != this.options.table) {
@@ -340,12 +345,21 @@ export default {
                     this.comboItems = [];
                     let fields = ["id", this.opts.field];
                     if (this.opts.afterChange) fields = null;
-                    if (tableCache.tables[this.opts.table]) {
+
+                    if (tableCache.tables[this.opts.table] && tableCache.tables[this.opts.table] === true) {
+                        for (let i=0; i<9; i++) {
+                            await new Promise((resolve, reject) => setTimeout(resolve,500) );
+                            if (tableCache.tables[this.opts.table] !== true) break;
+                        }
+                    }
+                    if (tableCache.tables[this.opts.table] && tableCache.tables[this.opts.table] !== true) {
                         this.comboItems = JSON.parse(JSON.stringify(tableCache.tables[this.opts.table]));
-                    } else {
+                    }
+                    if (!tableCache.tables[this.opts.table]) {
+                        tableCache.tables[this.opts.table] = true;
                         this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                             this.comboItems = response.rows;
-                            //tableCache.tables[this.opts.table] = JSON.parse(JSON.stringify(this.comboItems));
+                            tableCache.tables[this.opts.table] = JSON.parse(JSON.stringify(this.comboItems));
                             this.changeCombobox();
                         });
                     }
