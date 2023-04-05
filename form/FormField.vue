@@ -519,6 +519,8 @@ export default {
         },
 
         afterChangeField(fldName, isInit) {
+            if (this.valueLocal == this.valueLocalOldValue) return;
+            this.valueLocalOldValue = this.valueLocal;
             if (this.options.afterChange && this.options.afterChange.length > 1) {
                 let rules = this.options.afterChange;
                 if (isInit && rules.indexOf("{") > 0) return;
@@ -528,7 +530,7 @@ export default {
                     if (typeof this.row[name] == "object" && rules.indexOf("IN(") > -1) return "[" + this.row[name] + "]";
                     return this.row[name];
                 });
-                rules = rules.replace(/\{(.*?)\}/gi, (match, name) => {
+                rules = rules.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
                     if (!this.valueLocalRows || this.valueLocalRows.length == 0) return 0;
                     if (typeof this.valueLocalRows[0][name] == "string") return "'" + this.valueLocalRows[0][name] + "'";
                     return this.valueLocalRows[0][name];

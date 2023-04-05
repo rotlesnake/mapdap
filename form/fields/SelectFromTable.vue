@@ -442,8 +442,13 @@ export default {
         },
         removeItem(evt, item, index) {
             if (isNaN(parseInt(index))) return;
-            if (!this.opts.multiple) { this.values = null; return; }
+            if (!this.opts.multiple) { 
+                this.values = null; 
+                this.changeCombobox(); 
+                return; 
+            }
             this.values.splice(index, 1);
+            this.changeCombobox();
         },
         rowSelected(rows) {
             this.selected = rows;
@@ -472,6 +477,8 @@ export default {
                     });
                     this.values.push(item.id);
                 }
+
+            this.comboboxSelectedItems = this.selected;
 
             if (this.opts.multiple) {
                 this.$emit("change", this.values, items, this.selected);
