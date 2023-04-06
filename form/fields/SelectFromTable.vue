@@ -219,12 +219,13 @@ export default {
             comboboxSelectedItems: [],
             values: [],
             labels: "",
+            table_postfix: "",
         };
     },
     mounted() {
         this.postRefresh();
         setTimeout(()=>{
-            if (this.opts && this.opts.table) tableCache.tables[this.opts.table] = null;
+            if (this.opts && this.opts.table) tableCache.tables[this.opts.table+this.table_postfix] = null;
         }, 19000);
     },
     computed: {},
@@ -341,26 +342,26 @@ export default {
                 } else {
                     let filter = [];
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
-                    let table_postfix = filter.length>0 ? "__"+filter[0].field : "";
+                    this.table_postfix = filter.length>0 ? "__"+filter[0].field : "";
 
                     this.comboItems = [];
                     let fields = ["id", this.opts.field];
                     if (this.opts.afterChange) fields = null;
 
-                    if (tableCache.tables[this.opts.table+table_postfix] && tableCache.tables[this.opts.table+table_postfix] === true) {
+                    if (tableCache.tables[this.opts.table+this.table_postfix] && tableCache.tables[this.opts.table+this.table_postfix] === true) {
                         for (let i=0; i<9; i++) {
                             await new Promise((resolve, reject) => setTimeout(resolve,500) );
-                            if (tableCache.tables[this.opts.table+table_postfix] !== true) break;
+                            if (tableCache.tables[this.opts.table+this.table_postfix] !== true) break;
                         }
                     }
-                    if (tableCache.tables[this.opts.table+table_postfix] && tableCache.tables[this.opts.table+table_postfix] !== true) {
-                        this.comboItems = JSON.parse(JSON.stringify(tableCache.tables[this.opts.table+table_postfix]));
+                    if (tableCache.tables[this.opts.table+this.table_postfix] && tableCache.tables[this.opts.table+this.table_postfix] !== true) {
+                        this.comboItems = JSON.parse(JSON.stringify(tableCache.tables[this.opts.table+this.table_postfix]));
                     }
-                    if (!tableCache.tables[this.opts.table+table_postfix]) {
-                        tableCache.tables[this.opts.table+table_postfix] = true;
+                    if (!tableCache.tables[this.opts.table+this.table_postfix]) {
+                        tableCache.tables[this.opts.table+this.table_postfix] = true;
                         this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                             this.comboItems = response.rows;
-                            tableCache.tables[this.opts.table+table_postfix] = JSON.parse(JSON.stringify(this.comboItems));
+                            tableCache.tables[this.opts.table+this.table_postfix] = JSON.parse(JSON.stringify(this.comboItems));
                             this.changeCombobox();
                         });
                     }
