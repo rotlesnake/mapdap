@@ -37,6 +37,8 @@
             v-if="typeSelect == 'autocomplete' || typeSelect == 'tree' || typeSelect == 'auto'"
             ref="combobox"
             clearable
+            auto-select-first
+            @keydown="onKeyDown"
             @click:clear.prevent="onClear"
             :menu-props="{ bottom: true, offsetY: true }"
             :items="comboItems"
@@ -228,7 +230,8 @@ export default {
             if (this.opts && this.opts.table) tableCache.tables[this.opts.table+this.table_postfix] = null;
         }, 19000);
     },
-    computed: {},
+    computed: {
+    },
     methods: {
         trimStr(str) {
             str = str.replace(/^\s+|\s+$/g,"");
@@ -417,6 +420,26 @@ export default {
             }).then((response) => {
                 this.comboItems = [...this.comboboxSelectedItems, ...response.rows];
             });
+        },
+
+        onKeyDown(evt) {
+            if (this.opts.multiple && evt.keyCode == 32) {
+               evt.preventDefault();
+               let selNdx = this.$refs.combobox.$refs.menu.listIndex;
+               this.$refs.combobox.setMenuIndex(selNdx);
+               this.$refs.combobox.selectItem(this.$refs.combobox.items[selNdx]);
+            }
+            if (this.opts.multiple && evt.keyCode == 13) {
+               this.$nextTick(()=>{ 
+                   this.$refs.combobox.isMenuActive = false; 
+                   let selNdx = this.$refs.combobox.$refs.menu.listIndex;
+                   this.$refs.combobox.setMenuIndex(selNdx);
+                   let selID = this.$refs.combobox.items[selNdx].id;
+                   this.$nextTick(()=>{ 
+                       if (Array.isArray(this.values) && !this.values.includes(selID)) this.$refs.combobox.selectItem(this.$refs.combobox.items[selNdx]);
+                   });
+               });
+            }
         },
 
         changeCombobox() {
