@@ -153,15 +153,14 @@
                 </v-card-text>
                          <v-divider />
                          <v-card-actions class="pa-4">
+                            <v-btn class="float-right mr-4" color="red" @click="display = false">Закрыть</v-btn>
+                            <v-spacer />
                             <v-btn
                                 elevation="4"
                                 color="primary"
                                 @click="finishSelect()"
                                 :disabled="selected.length == 0"
-                                >Выбрать</v-btn
-                            >
-                            <v-spacer />
-                            <v-btn class="float-right mr-4" color="red" @click="display = false">Закрыть</v-btn>
+                                >Выбрать</v-btn>
                          </v-card-actions>
             </v-card>
             <!-- TREE !-->
