@@ -1,26 +1,14 @@
 <template>
-<div id="lv-color-picker">
-    <v-menu v-model="colorPicker" bottom allow-overflow origin="center center" transition="scale-transition" :close-on-content-click="false" z-index="250">
-        <template v-slot:activator="{ on }">
-            <v-card class="my-3">
-                <v-card-title class="py-1 ">
-                    <span class="body-1 pt-1">{{label}}</span>
-                    <v-spacer />
-                    <v-btn :color="value" v-on="on" width="100" elevation="4" :dark="dark">{{value || 'Стандарт'}}</v-btn>
-                </v-card-title>
-            </v-card>
-        </template>
-        <v-card>
-            <v-card-text class="pa-1 d-flex justify-space-around align-center">
-                <v-color-picker :value="value" @update:color="update" mode="hexa"></v-color-picker>
-                <v-btn color="primary" x-large @click.stop="save()">Выбрать</v-btn>
-            </v-card-text>
-        </v-card>
-    </v-menu>
-</div>
+    <div id="lv-color-picker mb-4">
+        <div class="pt-1">Выбор цвета</div>
+        <input ref="color_picker" class="color-picker" :value="color" data-huebee @focus="onFocus" @blur="onBlur" />
+    </div>
 </template>
 
 <script>
+import Huebee from "../libs/huebee/huebee.js";
+import "../libs/huebee/huebee.css";
+
 export default {
     props: {
         label: String,
@@ -35,22 +23,50 @@ export default {
     },
     watch:{
         value(){
-            this.color = this.value;
+            this.updateColor();
         },
     },
 
+    mounted(){
+        this.updateColor();
+        setTimeout(()=>{
+            if (!this.$refs.color_picker) return;
+            this.updateColor();
+            var hueb = new Huebee( this.$refs.color_picker, {
+              setBGColor: true,
+              saturations: 2,
+            });
+
+            hueb.on( 'change', ( color, hue, sat, lum )=>{
+                this.save();
+            })
+
+            hueb.close();
+        }, 300);
+    },
+
     methods: {
-        update(color) {
-			this.color = color.hex;
+        updateColor() {
+            this.color = this.value;
         },
         save() {
-			this.$emit('input', this.color)
-			this.colorPicker = false;
+            this.color = this.$refs.color_picker.value;
+            this.$emit('input', this.color)
+        },
+
+        onFocus(evt){
+            evt.target.style.height='180px';
+        },
+        onBlur(evt){
+            evt.target.style.height='auto';
         },
     },
 }
 </script>
 
 <style>
-
+.color-picker { 
+    border: 1px solid #999;
+    border-radius: 6px;
+ }
 </style>

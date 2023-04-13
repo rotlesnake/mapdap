@@ -1,6 +1,6 @@
 {
   "name": "mapdap",
-  "version": "1.8.6",
+  "version": "1.8.7",
   "description": "mapdap frontend components",
   "main": "index.js",
   "scripts": {
@@ -18,8 +18,10 @@
   "homepage": "https://github.com/rotlesnake/mapdap#readme",
   "dependencies": {
     "inputmask": "^5.0.7",
+    "@riophae/vue-treeselect": "^0.4.0",
     "vue-advanced-cropper": "^1.10.1",
     "vue2-editor": "^2.10.3",
+    "jquery": "^3.6.4",
     "xlsx": "^0.17.5"
   }
 }

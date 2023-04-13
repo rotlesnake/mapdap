@@ -68,6 +68,14 @@
             </template>
         </v-autocomplete>
 
+        <!-- TREE !-->
+        <div v-if="typeSelect == 'tree2'" class="mb-4">
+            <label>{{opts.label}}</label>
+            <vue-treeselect v-model="values" :multiple="opts.multiple" :options="treeItems" :placeholder="opts.placeholder" :disabled="disabled">
+            </vue-treeselect>
+        </div>
+
+
         <v-select
             ref="combobox"
             v-if="typeSelect == 'table'"
@@ -100,6 +108,7 @@
                 <v-btn @click.prevent="open()" fab x-small color="primary"><v-icon color="white">mdi-menu-down</v-icon></v-btn>
             </template>
         </v-select>
+
 
         <v-dialog v-model="display" scrollable fullscreen>
             <!-- TABLE !-->
@@ -173,11 +182,14 @@
 <script>
 import Vue from "vue";
 import tableCache from "./tableCache.js";
+import VueTreeselect from '@riophae/vue-treeselect'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 export default {
     components: {
         "mdp-table": () => import("../../table/Table"),
         "mdp-tree": () => import("./SelectFromTree.vue"),
+        "vue-treeselect": VueTreeselect,
     },
     props: {
         row: { required: true },
@@ -217,6 +229,7 @@ export default {
             selected: [],
             opts: null,
             comboItems: [],
+            treeItems: [],
             autocompleteSearch: null,
             comboboxSelectedItems: [],
             values: [],
@@ -313,7 +326,7 @@ export default {
                 });
             }
 
-            if (this.typeSelect == "combobox" || this.typeSelect == "auto") {
+            if (this.typeSelect == "combobox" || this.typeSelect == "auto" || this.typeSelect == "tree2") {
                 if (!this.values || this.values.length==0) this.values = 0;
                 if (!this.opts.multiple && this.values && this.values.length>0) this.values = this.values[0];
                 if (this.opts.field.indexOf('[') > -1) {
@@ -362,8 +375,12 @@ export default {
                     }
                     if (!tableCache.tables[this.opts.table+this.table_postfix]) {
                         tableCache.tables[this.opts.table+this.table_postfix] = true;
-                        this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
+                        this.$api("table", (this.typeSelect == "tree2"?"tree/":"")+this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                             this.comboItems = response.rows;
+                            if (this.typeSelect == "tree2") {
+                              const treeMap = (e)=>{if (e.children && e.children.length>0) e.children = e.children.map(treeMap); e.label=e[this.opts.field]; return e;};
+                              this.treeItems = response.rows.map(treeMap);
+                            }
                             tableCache.tables[this.opts.table+this.table_postfix] = JSON.parse(JSON.stringify(this.comboItems));
                             this.changeCombobox();
                         });
