@@ -394,14 +394,14 @@ export default {
                     values = [{ value: this.row[this.opts.name], text: this.row[this.opts.name + "_text"] }];
                 }
                 
-                if (this.values.length>0 && (!values || values.length == 0)) {
+                if (this.comboItems.length==0 && this.values.length>0 && (!values || values.length == 0)) {
                     let fields = ["id", this.opts.field];
                     let filter = [{field:"id", oper:"in", value:this.values}];
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows;
                         this.comboboxSelectedItems = JSON.parse(JSON.stringify(this.comboItems));
                         this.changeCombobox();
-                });
+                    });
                 }
                
                 if (values && values.length > 0) {
