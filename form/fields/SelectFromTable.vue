@@ -350,7 +350,7 @@ export default {
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
                             e.text = this.opts.fieldraw.replace(/\[(.*?)\]/gi, (match, name) => e[name]!=undefined ? e[name] : "");
-                            e.text = this.opts.fieldraw.replace(/\{\{(.*?)\}\}/gi, (match, name) => e[name]!=undefined ? e[name] : "");
+                            e.text = e.text.replace(/\{\{(.*?)\}\}/gi, (match, name) => e[name]!=undefined ? e[name] : "");
                             return e;
                         });
                         this.changeCombobox();
@@ -510,8 +510,8 @@ export default {
                     if (this.opts.field.indexOf("[") == -1) {
                         text = item[this.opts.field];
                     } else {
-                        text = this.opts.field.replace(/\[(.*?)\]/gi, (match, name) => item[name]);
-                        text = this.opts.field.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
+                        text = this.opts.field.replace(/\[(.*?)\]/gi, (match, name) => item[name] );
+                        text = text.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
                     }
                     items.push({
                         value: item.id,

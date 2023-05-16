@@ -18,8 +18,8 @@
                     <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
                          <template v-slot:label="{ item }">
                             <slot name="item" v-bind:info="item">
-                                <div v-if="showID" class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.name }}</div>
-                                <div v-else class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.id }}. {{ item.name }}</div>
+                                <div v-if="showID" class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ calcFieldName(item) }}</div>
+                                <div v-else class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.id }}. {{ calcFieldName(item) }}</div>
                             </slot>
                          </template>
                     </v-treeview>
@@ -41,6 +41,8 @@ export default {
     props: {
         value: { required: true },
         tableName: { type: String, default: "" },
+        fieldName: { type: String, default: "name" },
+        fieldAltName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         afterReloadTable: { type: Function, default: null },
         expandFirstLevel: { type: Boolean, default: true },
@@ -72,6 +74,30 @@ export default {
     methods: {
         showLoader(display) {
             this.$store.commit("SHOW_LOADER", display);
+        },
+
+        calcFieldName(item) {
+            let text = "";
+            let text2 = "";
+
+            if (this.fieldName.indexOf("[") == -1) {
+                text = item[this.fieldName];
+            } else {
+                text = this.fieldName.replace(/\[(.*?)\]/gi, (match, name) => item[name] );
+                text = text.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
+            }
+
+            if (this.fieldAltName.indexOf("[") == -1) {
+                text2 = item[this.fieldAltName];
+            } else {
+                text2 = this.fieldAltName.replace(/\[(.*?)\]/gi, (match, name) => item[name] );
+                text2 = text2.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
+            }
+
+            text = text.trim();
+            text2 = text2.trim();
+
+            return text.length>0 ? text : text2;
         },
 
         reloadTable() {

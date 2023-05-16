@@ -567,7 +567,7 @@ export default {
             });
             rules = "function IN(arr,val){ if (typeof arr != 'object') return arr==val;  return arr.indexOf(val)>-1; }; "+rules;
 
-            this.options.vifResult = eval(rules);
+            try { this.options.vifResult = eval(rules); } catch(e) { return true; }
             return this.options.vifResult;
         },
         stringToRules(rulestr) {
