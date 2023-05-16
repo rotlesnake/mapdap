@@ -15,11 +15,11 @@
                     </v-card-title>
                 </v-sheet>
                 <v-card-text>
-                    <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" selectable open-on-click :open="opened" @input="changeSelect">
+                    <v-treeview v-model="selected_tree_items" :items="tree_items" :search="tree_search" :filter="filter_search" selectable open-on-click :open="opened" @input="changeSelect">
                          <template v-slot:label="{ item }">
                             <slot name="item" v-bind:info="item">
-                                <div v-if="showID" class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ calcFieldName(item) }}</div>
-                                <div v-else class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.id }}. {{ calcFieldName(item) }}</div>
+                                <div v-if="showID" class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ item.id }}. {{ calcFieldName(item) }}</div>
+                                <div v-else class="subtitle" style="line-height: 34px" @click="selected_tree_items.push(item.id)">{{ calcFieldName(item) }}</div>
                             </slot>
                          </template>
                     </v-treeview>
@@ -70,7 +70,26 @@ export default {
     mounted() {
         this.reloadTable();
     },
-    computed: {},
+    computed: {
+        filter_search() {
+            return (item, search, textKey) => {
+                search = String(search).toLowerCase();
+                let fields = ["name"];
+                this.fieldName.replace(/\[(.*?)\]/gi, (match, name) => {
+                    fields.push(name);
+                });
+                this.fieldAltName.replace(/\{\{(.*?)\}\}/gi, (match, name) => {
+                    fields.push(name);
+                });
+                let rez = false;
+                fields.forEach(e=>{
+                    if (String(item[e]).toLowerCase().indexOf(search) > -1) rez = true; 
+                });
+
+                return rez;
+            };
+        },
+    },
     methods: {
         showLoader(display) {
             this.$store.commit("SHOW_LOADER", display);
