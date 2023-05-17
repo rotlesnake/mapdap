@@ -157,6 +157,8 @@
                         v-bind="opts.options || {}"
                         :tableCaption="opts.label"
                         :tableName="opts.table"
+                        :fieldName="opts.field"
+                        :fieldAltName="opts.field_alt"
                         :multiple="opts.multiple"
                         @select="rowSelected"
                 >

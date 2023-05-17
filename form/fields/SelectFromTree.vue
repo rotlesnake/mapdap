@@ -113,8 +113,8 @@ export default {
                 text2 = text2.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
             }
 
-            text = text.trim();
-            text2 = text2.trim();
+            text = String(text).trim();
+            text2 = String(text2).trim();
 
             return text.length>0 ? text : text2;
         },
