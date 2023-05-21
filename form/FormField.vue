@@ -146,7 +146,7 @@
                 :rules="fieldRules"
                 item-value="value"
                 item-text="text"
-                @input="onInput"
+                @input="selectChange"
                 :disabled="disabled"
                 :hidden="false"
                 :name="name"
@@ -384,6 +384,20 @@ export default {
         onInput(value) {
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, this.valueLocal);
+            if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
+        },
+        selectChange(value) {
+            let items = this.items.filter(e=>e.value==this.valueLocal);
+            this.row[this.name + "_text"] = items[0] ? items[0].text : "";
+            if (this.options.multiple) {
+                this.row[this.name + "_text"] = "";
+                items = this.items.filter(e=> this.valueLocal.includes(e.value));
+                items.forEach(e=>{
+                    this.row[this.name + "_text"] += e.text+", ";
+                });
+            }
+            this.$emit("input", this.valueLocal);
+            this.$emit("change", this.name, this.valueLocal, items);
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
         linkTableChange(values, items, rows) {
