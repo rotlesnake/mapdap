@@ -133,6 +133,7 @@ export default {
             this.localValue = this.value;
             this.date = this.localValue.substr(0, 10);
             this.time = this.localValue.substr(11);
+            this.dateEdt = this.dateToDate(this.date);
             this.dateEditFinish();
         },
 
