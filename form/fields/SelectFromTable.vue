@@ -187,10 +187,13 @@ import tableCache from "./tableCache.js";
 import VueTreeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
+import mdpTable from "../../table/Table";
+import mdpTree from "./SelectFromTree.vue";
+
 export default {
     components: {
-        "mdp-table": () => import("../../table/Table"),
-        "mdp-tree": () => import("./SelectFromTree.vue"),
+        "mdp-table": mdpTable,
+        "mdp-tree": mdpTree,
         "vue-treeselect": VueTreeselect,
     },
     props: {

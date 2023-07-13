@@ -59,9 +59,11 @@
 </template>
 
 <script>
+import formField from "../FormField";
+
 export default {
     components: {
-        "form-field": () => import("../FormField"),
+        formField,
     },
     props: {
         value: { required: true },

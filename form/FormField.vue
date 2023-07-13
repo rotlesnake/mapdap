@@ -288,18 +288,29 @@ import Vue from "vue";
 import Inputmask from "inputmask";
 import  {  VueEditor  }  from  "vue2-editor" ; 
 
+import fieldColor from "../LV/LvColorPicker.vue";
+import fieldImages from "./fields/Images.vue";
+import fieldFiles from "./fields/Files.vue";
+import fieldSelectFromTable from "./fields/SelectFromTable.vue";
+import fieldDate from "./fields/DateTime.vue";
+import fieldDateRange from "./fields/DateRange.vue";
+import jsonTable from "./fields/JsonTable.vue";
+import jsonTableExcel from "./fields/JsonTableExcel.vue";
+import kladrAutocomplete from "./fields/kladr_autocomplete.vue";
+import customAutocomplete from "./fields/CustomAutocomplete.vue";
+
 export default {
     components: {
-        "field-color": () => import("../LV/LvColorPicker.vue"),
-        "field-images": () => import("./fields/Images.vue"),
-        "field-files": () => import("./fields/Files.vue"),
-        "field-select-from-table": () => import("./fields/SelectFromTable.vue"),
-        "field-date": () => import("./fields/DateTime.vue"),
-        "field-date-range": () => import("./fields/DateRange.vue"),
-        "json-table": () => import("./fields/JsonTable.vue"),
-        "json-table-excel": () => import("./fields/JsonTableExcel.vue"),
-        "kladr-autocomplete": () => import("./fields/kladr_autocomplete.vue"),
-        "custom-autocomplete": () => import("./fields/CustomAutocomplete.vue"),
+        fieldColor,
+        fieldImages,
+        fieldFiles,
+        fieldSelectFromTable,
+        fieldDate,
+        fieldDateRange,
+        jsonTable,
+        jsonTableExcel,
+        kladrAutocomplete,
+        customAutocomplete,
         VueEditor,
     },
     props: {
