@@ -159,6 +159,7 @@
                         :tableName="opts.table"
                         :fieldName="opts.field"
                         :fieldAltName="opts.field_alt"
+                        :fieldThirdName="opts.field_third"
                         :multiple="opts.multiple"
                         @select="rowSelected"
                 >

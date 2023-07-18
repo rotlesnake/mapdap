@@ -43,6 +43,7 @@ export default {
         tableName: { type: String, default: "" },
         fieldName: { type: String, default: "name" },
         fieldAltName: { type: String, default: "" },
+        fieldThirdName: { type: String, default: "" },
         tableCaption: { type: String, default: "" },
         afterReloadTable: { type: Function, default: null },
         expandFirstLevel: { type: Boolean, default: true },
@@ -98,6 +99,7 @@ export default {
         calcFieldName(item) {
             let text = "";
             let text2 = "";
+            let text_third = "";
 
             if (this.fieldName.indexOf("[") == -1) {
                 text = item[this.fieldName];
@@ -113,10 +115,24 @@ export default {
                 text2 = text2.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
             }
 
+            if (this.fieldThirdName) {
+                if (this.fieldThirdName.indexOf("[") == -1) {
+                    text_third = item[this.fieldThirdName];
+                } else {
+                    text_third = this.fieldThirdName.replace(/\[(.*?)\]/gi, (match, name) => item[name] );
+                    text_third = text_third.replace(/\{\{(.*?)\}\}/gi, (match, name) => item[name]);
+                }
+                text_third = String(text_third).trim();
+                if (text_third=="undefined") text_third = "";
+            }
+
             text = String(text).trim();
             text2 = String(text2).trim();
+            let result = text.length>0 ? text : text2;
 
-            return text.length>0 ? text : text2;
+            if (text_third) result += " | " + text_third;
+
+            return result;
         },
 
         reloadTable() {

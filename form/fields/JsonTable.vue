@@ -18,7 +18,7 @@
 
                 <tr v-for="(dataRow,ndx) in dataList" :key="ndx">
                     <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
-                        <form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
+                        <mdp-form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
                         <textarea v-else rows="1" v-model="dataList[ndx][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly || col.disabled" />
                         <div v-if="col.buttons" class="d-flex">
                             <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(ndx, col, btn, $event)">{{btn}}</div>
@@ -39,7 +39,7 @@
                 </tr>
                 <tr>
                     <td v-for="(col,i) in options.json.columns" :key="i">
-                        <form-field v-if="col.type" v-model="dataList[0][col.name]" :row="dataList[0]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
+                        <mdp-form-field v-if="col.type" v-model="dataList[0][col.name]" :row="dataList[0]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
                         <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly || col.disabled" />
                     </td>
                 </tr>
@@ -49,7 +49,7 @@
             <div v-if="!options.multiple && dataList.length > 0 && options.json.columns.length > 8" class="d-flex flex-wrap">
                     <div v-for="(col,i) in options.json.columns" :key="i" class="d-flex flex-wrap ml-2 mr-1 mb-1" style="width:140px">
                         <label>{{col.label}}</label>
-                        <form-field v-if="col.type" v-model="dataList[0][col.name]" :row="dataList[0]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
+                        <mdp-form-field v-if="col.type" v-model="dataList[0][col.name]" :row="dataList[0]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
                         <textarea v-else rows="1" v-model="dataList[0][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly || col.disabled" />
                     </div>
             </div>
@@ -59,11 +59,9 @@
 </template>
 
 <script>
-import formField from "../FormField";
-
 export default {
     components: {
-        formField,
+        "mdp-form-field":() => import("../FormField.vue"),
     },
     props: {
         value: { required: true },
