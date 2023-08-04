@@ -201,6 +201,7 @@ export default {
                 reader.addEventListener('loadend',()=>{
                     item.name = "clipboard_" + itemImage.types[0].replace("/",".");
                     item.src = reader.result;
+                    this.updateItem();
                 });
                 reader.readAsDataURL(file);
             }
