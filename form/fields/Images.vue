@@ -48,8 +48,8 @@
                         <v-text-field class="ml-1" v-model="item.src" label="URL фотографии" hide-details outlined dense @input="updateItem()" :disabled="disabled"></v-text-field>
                     </template>
 
-                    <img :src="item.src" style="max-height: 50px; max-width: 50px; margin: -4px -6px -4px 2px; float: right" />
                     <input v-if="item.src.length > 9" class="comment" placeholder="Комментарий" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
+                    <v-btn v-else icon class="ml-2" @click.stop="pasteFromBuffer(item)"><v-icon>mdi-content-paste</v-icon></v-btn>
                 </template>
             </v-card-title>
 
@@ -191,7 +191,20 @@ export default {
             this.onFileLoad(0);
         },
 
-
+        async pasteFromBuffer(item) {
+            const auth = await navigator.permissions.query( { name: "clipboard-read" } );
+            const clipboard = await navigator.clipboard.read();
+            const itemImage = clipboard.find( citem => citem.types[0].indexOf('image')!==-1 );
+            if (itemImage) {
+                const file = await itemImage.getType( itemImage.types[0] );
+                let reader=new FileReader()
+                reader.addEventListener('loadend',()=>{
+                    item.name = "clipboard_" + itemImage.types[0].replace("/",".");
+                    item.src = reader.result;
+                });
+                reader.readAsDataURL(file);
+            }
+        },
 
         onFileItemChange(index) {
             this.filesList[index].src = "";

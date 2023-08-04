@@ -668,14 +668,16 @@ export default {
             if (head.type == "images") {
                 var images = "";
                 for (let id in value) {
-                    images += "<img src='" + value[id].src + "' height='48'> ";
+                    images += "<img src='" + value[id].src + "' height='48'>";
+                    if (id < value.length-1) images += " &nbsp; ";
                 }
                 value = images;
             }
             if (head.type == "files") {
                 var files = "";
                 for (let id in value) {
-                    files += "<a href='" + value[id].src + "' >" + value[id].name + "</a> | ";
+                    files += "<a href='" + value[id].src + "' >" + value[id].name + "</a>";
+                    if (id < value.length-1) files += " | ";
                 }
                 value = files;
             }
