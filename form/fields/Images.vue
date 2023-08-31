@@ -18,7 +18,7 @@
                     <img :src="item.src" style="max-height: 50px; max-width: 50px; margin: 0 10px 0 0" />
                     <a class="filelink" :href="item.src" target="_blank">{{ item.name }}</a>
                     <v-spacer />
-                    <input class="comment my-2" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
+                    <input v-if="!isMini" class="comment my-2" placeholder="Описание файла" v-model="item.caption" @input="updateItem()" :disabled="disabled" />
                     <v-btn class="mx-2 my-2" small fab color="green" dark @click.stop="cropItem(i)" v-if="!disabled"><v-icon>edit</v-icon></v-btn>
                     <v-divider class="mx-1" vertical />
                     <v-btn class="ml-2 my-2" small fab color="red" dark @click.stop="deleteItem(i)" v-if="!disabled"><v-icon>close</v-icon></v-btn>
@@ -121,6 +121,7 @@ import 'vue-advanced-cropper/dist/style.css';
 export default {
     props: {
         isAvatar: { type: Boolean, default: false },
+        isMini: { type: Boolean, default: false },
         width: { type: String, default: "100%" },
         height: { type: String, default: "100px" },
 
@@ -187,8 +188,14 @@ export default {
 
         avatarSelected(event) {
             if (!event.target.files) return;
-            this.file = event.target.files[0];
-            this.onFileLoad(0);
+
+                let reader=new FileReader()
+                reader.addEventListener('loadend',()=>{
+                    this.filesList[0].name = event.target.files[0].name;
+                    this.filesList[0].src = reader.result;
+                    this.updateItem();
+                });
+                reader.readAsDataURL(event.target.files[0]);
         },
 
         async pasteFromBuffer(item) {
