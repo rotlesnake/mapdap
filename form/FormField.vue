@@ -1,5 +1,5 @@
 <template>
-    <div v-if="options && options.name" :style="(options.formWidth ? 'width:calc('+options.formWidth+' - 12px); margin:0 6px;' : 'width:100%;')">
+    <div v-if="options && options.name && vifCalc()" :style="(options.formWidth ? 'width:calc('+options.formWidth+' - 12px); margin:0 6px;' : 'width:100%;')">
         <template v-if="options.caption && vifCalc()">
             <div class="title mb-1">{{ options.caption }}</div>
         </template>
