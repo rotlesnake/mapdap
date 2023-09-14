@@ -11,15 +11,16 @@
 
             <!-- multi line table !-->
             <table v-if="options.multiple">
-
-<draggable ghost-class="ghost" v-model="dataList" group="*" @start="drag = true" @end="drag = false" handle=".handle" @change="updateSort()">
-                <tr v-for="(dataRow,ndx) in dataList" :key="ndx">
-                    <td class="handle"><v-icon>mdi-menu</v-icon>
-                        <div class="d-flex">
-                        <v-icon small @click="itemUp(ndx)">mdi-arrow-up</v-icon>
-                        <v-icon small @click="itemDown(ndx)">mdi-arrow-down</v-icon>
-                        </div>
-                    </td>
+                <thead> 
+                  <tr slot="header"> 
+                    <th style="width:1px"></th>
+                    <th v-for="(item,i) in options.json.columns" :key="i">{{item.label}}</th>
+                    <th style="width:1px"></th>
+                  </tr>
+                </thead> 
+                <Container tag="tbody" @drop="onDrop" drag-handle-selector=".drag-handle">
+                  <Draggable tag="tr" v-for="(dataRow,ndx) in dataList" :key="ndx" style="display: table-row; background:#fff;">
+                    <td class="drag-handle" style="cursor: pointer;"><v-icon>mdi-menu</v-icon></td>
                     <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
                         <mdp-form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
                         <textarea v-else rows="1" v-model="dataList[ndx][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly || col.disabled" />
@@ -30,14 +31,8 @@
                     <td>
                         <v-btn v-if="!options.json.readonly" fab x-small color="red" @click="deleteRow(ndx)"><v-icon>delete</v-icon></v-btn>
                     </td>
-                </tr>
-                <tr slot="header"> 
-                    <th style="width:1px"></th>
-                    <th v-for="(item,i) in options.json.columns" :key="i">{{item.label}}</th>
-                    <th style="width:1px"></th>
-                </tr>
-</draggable> 
-
+                  </Draggable>
+                </Container>
             </table>
 
             <!-- single line table short !-->
@@ -70,10 +65,13 @@
 
 <script>
 import draggable from "vuedraggable";
+import { Container, Draggable } from "vue-smooth-dnd";
+
 export default {
     components: {
         "mdp-form-field":() => import("../FormField.vue"),
-        draggable,
+        Container,
+        Draggable,
     },
     props: {
         value: { required: true },
@@ -177,25 +175,28 @@ export default {
             return true;
         },
         updateSort() {
-            this.$emit("input", this.dataList);
+            //console.log(this.formFields)
         },
-        itemUp(ndx) {
-            if (ndx==0) return;
-            let item1 = JSON.parse(JSON.stringify(this.dataList[ndx]));
-            let item2 = JSON.parse(JSON.stringify(this.dataList[ndx-1]));
-            this.dataList[ndx-1] = item1;
-            this.dataList[ndx] = item2;
-            this.$forceUpdate();
-            this.updateSort();
+
+        onDrop(dropResult) {
+            this.dataList = this.applyDrag(this.dataList, dropResult);
         },
-        itemDown(ndx) {
-            if (ndx==this.dataList.length-1) return;
-            let item1 = JSON.parse(JSON.stringify(this.dataList[ndx]));
-            let item2 = JSON.parse(JSON.stringify(this.dataList[ndx+1]));
-            this.dataList[ndx+1] = item1;
-            this.dataList[ndx] = item2;
-            this.$forceUpdate();
-            this.updateSort();
+        applyDrag(arr, dragResult) {
+            const { removedIndex, addedIndex, payload } = dragResult;
+            if (removedIndex === null && addedIndex === null) return arr;
+
+            const result = [...arr];
+            let itemToAdd = payload;
+
+            if (removedIndex !== null) {
+                itemToAdd = result.splice(removedIndex, 1)[0];
+            }
+
+            if (addedIndex !== null) {
+                result.splice(addedIndex, 0, itemToAdd);
+            }
+
+            return result;
         },
 
     },
@@ -245,7 +246,7 @@ tr:not(:last-child) {
     font-size: 12px;
     line-height: 16px;
 }
-.handle {
+.drag-handle {
     cursor: pointer;
 }
 </style>
