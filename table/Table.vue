@@ -1,7 +1,8 @@
 <template>
     <section id="table">
         <div class="text-center" style="margin-top:30px;" v-if="!info">
-            <v-progress-circular :size="70" :width="7" color="green" indeterminate></v-progress-circular>
+            <v-progress-circular v-if="!errorMessage" :size="70" :width="7" color="green" indeterminate></v-progress-circular>
+            <div v-else class="text-center title">{{errorMessage}}</div>
         </div>
         <v-data-table
             v-if="info"
@@ -215,6 +216,24 @@
                         </template>
                         <span>Добавить запись</span>
                     </v-tooltip>
+                    <v-tooltip top color="green">
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                                color="green"
+                                class="mx-2"
+                                v-if="userHasRoles(info.add)"
+                                fab
+                                small
+                                v-on="on"
+                                :disabled="selected.length == 0"
+                                @click="openEditDialog('clone')"
+                            >
+                                <v-icon dark>content_copy</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Клонировать запись</span>
+                    </v-tooltip>
+
                     <v-tooltip top color="indigo">
                         <template v-slot:activator="{ on }">
                             <v-btn
@@ -267,6 +286,25 @@
                         <span>Восстановить запись</span>
                     </v-tooltip>
 
+                    <v-tooltip top color="purple">
+                        <template v-slot:activator="{ on }">
+                            <v-btn
+                                color="purple"
+                                class="mx-6"
+                                v-if="userHasRoles(info.edit)"
+                                fab dark
+                                small
+                                v-on="on"
+                                :disabled="selected.length == 0"
+                                @click.stop="showTableHistoryDialog()"
+                            >
+                                <v-icon dark>auto_stories</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>История</span>
+                    </v-tooltip>
+
+
                     <template v-if="$slots.after_footer_buttons">
                         <slot name="after_footer_buttons"></slot>
                     </template>
@@ -282,6 +320,7 @@
             :tableInfo="info"
             :rowId="editDialog.rowId"
             :title="editDialog.title"
+            :row="editDialog.row"
             :titleColor="editDialog.titleColor"
             :buttons="editDialog.buttons"
             @close="editDialog.visible = false"
@@ -338,6 +377,7 @@
             <v-divider class="my-4" />
         </v-navigation-drawer>
 
+        <table-history ref="tableHistoryDialog" />
     </section>
 </template>
 
@@ -353,6 +393,7 @@ export default {
         "mdp-column-filter": () => import("./columnFilterDialog.vue"),
         "mdp-row-filter": () => import("./rowFilterDialog.vue"),
         "mdp-form-field": () => import("../form/FormField.vue"),
+        "table-history": () => import("./TableHistoryDialog.vue"),
     },
 
     props: {
@@ -393,6 +434,7 @@ export default {
             tableExpandable: false,
             caption: "",
             info: null,
+            errorMessage: null,
             localColumns: null,
             columns: null,
 
@@ -518,6 +560,7 @@ export default {
                 .then((response) => {
                     response = response.data;
                     this.isLoading = false;
+                    if (response.error>0) { this.errorMessage = response.message; return; }
                     if (this.afterReloadTable) response = this.afterReloadTable(response);
                     if (!this.filterUrl && response.info.filterUrl) this.filterUrl = response.info.filterUrl;
                     this.pagination = response.pagination;
@@ -538,6 +581,7 @@ export default {
                 })
                 .catch((error) => {
                     this.isLoading = false;
+                    this.errorMessage = error.message;
                 });
         }, //reloadTable
 
@@ -601,6 +645,10 @@ export default {
                     if (ids.indexOf(parseInt(this.rows[item].id)) >= 0) this.selected.push(this.rows[item]);
                 }
             }
+        },
+
+        showTableHistoryDialog() {
+            this.$refs.tableHistoryDialog.show(this.tableName, this.selected[0]);
         },
 
         clickOnRow(row, isMultiple, rowSelected) {
@@ -722,11 +770,16 @@ export default {
                 left: { text: "Отмена", color: "red", icon: "close" },
                 right: { text: "Сохранить", color: "primary", icon: "save" },
             };
-
             if (action == "add") {
                 this.editDialog.rowId = 0;
                 this.editDialog.rowIndex = 0;
-                this.editDialog.row = {};
+                this.editDialog.row = null;
+            }
+            if (action == "clone") {
+                this.editDialog.title = "Клонирование записи";
+                this.editDialog.rowId = 0;
+                this.editDialog.rowIndex = 0;
+                this.editDialog.action = "add";
             }
             if (action == "edit") {
                 this.editDialog.title = this.editFormTitle || "Изменение записи";

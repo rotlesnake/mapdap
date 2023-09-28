@@ -21,7 +21,7 @@
                         </div>
                     </td>
                     <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
-                        <mdp-form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" :disabled="options.json.readonly || col.disabled" />
+                        <mdp-form-field v-if="col.type" v-model="dataList[ndx][col.name]" :row="dataList[ndx]" :options="col" :name="col.name" @change="change" @changeField="changeField($event,ndx,col)" :disabled="options.json.readonly || col.disabled" />
                         <textarea v-else rows="1" v-model="dataList[ndx][col.name]" :placeholder="col.placeholder || col.label" @input="change" :disabled="options.json.readonly || col.disabled" />
                         <div v-if="col.buttons" class="d-flex">
                             <div v-for="(btn,k) in col.buttons" :key="k" class="click-btns" @click="addText(ndx, col, btn, $event)">{{btn}}</div>
@@ -151,10 +151,14 @@ export default {
             this.change();
         },
 
-        change(evt){
+        change(evt, val, txt){
             this.$emit("input", this.dataList);
             if (evt) this.$nextTick(this.resizeTextArea(evt.target));
         },
+        changeField(evt, ndx, col){
+            this.$emit("fieldChange", evt, ndx, col);
+        },
+
         resizeTextArea(el){
             if (!el) return;
             el.style.cssText = "height:auto;";

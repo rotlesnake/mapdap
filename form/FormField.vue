@@ -395,6 +395,7 @@ export default {
         onInput(value) {
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, this.valueLocal);
+            this.$emit("changeField", {name: this.name, value: this.valueLocal, items: this.valueLocal});
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
         selectChange(value) {
@@ -409,6 +410,7 @@ export default {
             }
             this.$emit("input", this.valueLocal);
             this.$emit("change", this.name, this.valueLocal, items);
+            this.$emit("changeField", {name: this.name, value: this.valueLocal, items});
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
         linkTableChange(values, items, rows) {
@@ -426,6 +428,7 @@ export default {
             }
             this.$emit("input", values);
             this.$emit("change", this.name, values, items, rows);
+            this.$emit("changeField", {name: this.name, value: values, items});
             if (this.options.afterChange && this.options.afterChange.length>1) this.afterChangeField(this.name);
         },
 

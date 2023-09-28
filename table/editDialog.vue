@@ -4,7 +4,19 @@
             <v-card-title class="pa-0">
                 <v-toolbar dense :color="titleColor" elevation="0">
                     <v-toolbar-title class="white--text">{{ title }}</v-toolbar-title>
+
                     <v-spacer></v-spacer>
+
+                    <v-divider vertical dark class="mx-2" />
+                    <v-btn icon dark dense small @click="downloadRowToFile()" class="mx-2" title="Скачать в виде файла">
+                        <v-icon>mdi-download</v-icon>
+                    </v-btn>
+                    <v-btn icon dark dense small @click="$refs.fileSelector.$refs.input.click();" class="mx-2" title="Загрузить из файла">
+                        <v-icon>mdi-upload</v-icon>
+                    </v-btn>
+                    <v-file-input style="display: none" ref="fileSelector" show-size v-model="selectedFile" @change="onChangeSelectedFile()" accept=".json"></v-file-input>
+                    <v-divider vertical dark class="mx-2" />
+
                     <v-btn icon dark @click="$emit('close')">
                         <v-icon>close</v-icon>
                     </v-btn>
@@ -110,6 +122,8 @@ export default {
 
     data() {
         return {
+            selectedFile: null,
+            selectedFileData: null,
             pagination: false,
             page: 1,
             can_save: false,
@@ -151,6 +165,34 @@ export default {
                 .catch((error) => {
                 });
         },
+
+        onChangeSelectedFile() {
+            this.localRow = {};
+            this.selectedFileData = {
+                name: this.selectedFile.name,
+                size: this.selectedFile.size,
+                src: "",
+            };
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                this.selectedFileData.src = e.target.result;
+                let fileSrc = decodeURIComponent(escape(window.atob(this.selectedFileData.src.substr(29))));
+                let json = JSON.parse(fileSrc);
+                this.localRow = json;
+                this.selectedFile = null;
+            };
+            reader.readAsDataURL(this.selectedFile);
+        },
+        downloadRowToFile() {
+            const contentType = "application/octet-stream";
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(new Blob([JSON.stringify(this.localRow)], { type: contentType }));
+            link.setAttribute("download", this.rowId + "-" + this.tableName + ".json");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        },
+
 
         prevPage(){
             if (this.page <= 1) return;

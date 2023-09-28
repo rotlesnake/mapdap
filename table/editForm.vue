@@ -67,6 +67,10 @@ export default {
         visible() {
             this.loadRow();
         },
+        row() {
+            this.localRow = this.row
+            this.localRow = JSON.parse(JSON.stringify(this.localRow));
+        },
     },
 
     data() {

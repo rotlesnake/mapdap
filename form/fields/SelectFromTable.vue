@@ -466,7 +466,7 @@ export default {
         },
 
         changeCombobox() {
-            if (this.opts.multiple) {
+            if (this.opts.multiple && Array.isArray(this.values)) {
                 this.comboboxSelectedItems = this.comboItems.filter((e) => this.values.includes(e.id));
             } else {
                 this.comboboxSelectedItems = this.comboItems.filter((e) => this.values == e.id);
