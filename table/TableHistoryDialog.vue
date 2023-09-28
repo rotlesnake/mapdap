@@ -65,7 +65,6 @@ export default {
 
     methods: {
         show(tableName, row) {
-            console.log(tableName, row)
             this.visible = true;
             this.title = "История изменения записи №"+row.id;
             this.rows = [];
