@@ -418,6 +418,7 @@ export default {
             this.valueLocalRows = rows;
             this.items = items;
             this.row[this.options.name + "_values"] = items;
+            this.row[this.options.name + "_rows"] = rows;
             this.row[this.options.name + "_text"] = items[0] ? items[0].text : "";
             if (this.options.multiple) {
                 this.row[this.options.name + "_text"] = "";
