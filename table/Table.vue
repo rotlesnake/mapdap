@@ -783,6 +783,7 @@ export default {
             }
             if (action == "edit") {
                 this.editDialog.title = this.editFormTitle || "Изменение записи";
+                if (!this.userHasRoles(this.info.edit)) { this.editDialog.action = "view"; this.editDialog.title = "Просмотр"; }
             }
             if (action == "delete") {
                 this.editDialog.titleColor = "red";
