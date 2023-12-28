@@ -33,7 +33,7 @@
                 </tr>
                 <tr slot="header"> 
                     <th style="width:1px"></th>
-                    <th v-for="(item,i) in options.json.columns" :key="i">{{item.label}}</th>
+                    <th v-for="(item,i) in options.json.columns" :key="i">{{item.header || item.label}}</th>
                     <th style="width:1px"></th>
                 </tr>
 </draggable> 
@@ -44,7 +44,7 @@
             <table v-if="!options.multiple && dataList.length > 0 && options.json.columns.length <= 8" class="">
                 <tr>
                     <td v-for="(col,i) in options.json.columns" :key="i" :width="col.width">
-                        <label>{{col.label}}</label>
+                        <label>{{col.header || col.label}}</label>
                     </td>
                 </tr>
                 <tr>
