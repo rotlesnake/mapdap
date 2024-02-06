@@ -95,7 +95,7 @@
                     </v-tooltip>
                     <v-divider class="mx-1" inset vertical></v-divider>
 
-                    <v-tooltip top color="primary">
+                    <v-tooltip top color="primary" v-if="showExportXlsx">
                         <template v-slot:activator="{ on }">
                             <v-btn v-on="on" icon @click="exportToXlsx">
                                 <v-icon>mdi-microsoft-excel</v-icon>
@@ -103,7 +103,8 @@
                         </template>
                         <span>Выгрузить в Excel</span>
                     </v-tooltip>
-                    <v-divider inset vertical class="mx-1"></v-divider>
+                    <v-divider inset vertical class="mx-1" v-if="showExportXlsx"></v-divider>
+
                     <v-tooltip top color="indigo">
                         <template v-slot:activator="{ on }">
                             <v-btn v-on="on" icon @click="columnFilterDialog = true">
@@ -418,6 +419,7 @@ export default {
         fixedHeader: { type: Boolean, default: true },
         showOldFilter: { type: Boolean, default: false },
         showNewFilter: { type: Boolean, default: true },
+        showExportXlsx: { type: Boolean, default: true },
         dense: { type: Boolean, default: false },
         hideDefaultHeader: { type: Boolean, default: false },
         hideDefaultFooter: { type: Boolean, default: false },
