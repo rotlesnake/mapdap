@@ -39,6 +39,7 @@
                         changeDate();
                         date_dialog = false;
                     "
+                    @change="$emit('change')"
                 ></v-date-picker>
             </v-menu>
 
@@ -123,10 +124,7 @@ export default {
         },
         refresh() {
             if (!this.value || this.value.length < 10) {
-                this.date = "";
-                this.time = "00:00:00";
-                this.dateEditFinish();
-                return;
+                return this.clearDate();
             }
             if (this.localValue == this.value) return;
 
@@ -164,6 +162,7 @@ export default {
             if (this.dateEdt) this.date = this.dateToSql(this.dateEdt);
             if (this.min && this.date < this.min) this.date = "";
             if (this.max && this.date > this.max) this.date = "";
+            this.localValue = this.date;
             this.dateEdt = this.dateToDate(this.date);
             this.changeDate();
         },
@@ -171,7 +170,9 @@ export default {
             this.date = "";
             this.time = "";
             this.dateEdt = "";
+            this.localValue = "";
             this.changeDate();
+            this.$emit('change');
         },
 
 
@@ -179,6 +180,7 @@ export default {
             let datetime = this.date;
             if (datetime && (this.type == "dateTime" || this.type == "timestamp")) datetime += " " + this.time;
             this.$emit("input", datetime);
+            this.$forceUpdate();
         },
     },
 };
