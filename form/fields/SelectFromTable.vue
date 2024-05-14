@@ -22,11 +22,7 @@
                 <span v-else>{{ item[opts.field] }}</span>
             </template>
             <template v-slot:selection="{ item, index }">
-                <div v-if="opts.noChips">
-                    <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
-                    <span v-else>{{ item[opts.field] }}</span>
-                </div>
-                <v-chip v-else :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
+                <v-chip :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
                     <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
@@ -62,11 +58,7 @@
                 <span v-else>{{ item[opts.field] }}</span>
             </template>
             <template v-slot:selection="{ item, index }">
-                <div v-if="opts.noChips">
-                    <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
-                    <span v-else>{{ item[opts.field] }}</span>
-                </div>
-                <v-chip v-else :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
+                <v-chip :small="opts.dense" :close="!disabled" @click:close="removeItem($event,item,index)">
                     <span v-if="opts.showID">{{ item.id }}. {{ item[opts.field] }}</span>
                     <span v-else>{{ item[opts.field] }}</span>
                 </v-chip>
@@ -359,8 +351,7 @@ export default {
                     });
                     let filter = [];
                     if (this.opts.options && this.opts.options.tableFilter) filter = this.opts.options.tableFilter;
-                    if (!this.opts.addFields) this.opts.addFields = [];
-                    let fields = ["id", ...this.opts.fields, ...this.opts.addFields];
+                    let fields = ["id", ...this.opts.fields];
                     if (this.opts.afterChange) fields = null;
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows.map(e=>{
@@ -376,8 +367,7 @@ export default {
                     this.table_postfix = filter.length>0 ? "__"+filter[0].field : "";
 
                     this.comboItems = [];
-                    if (!this.opts.addFields) this.opts.addFields = [];
-                    let fields = ["id", this.opts.field, ...this.opts.addFields];
+                    let fields = ["id", this.opts.field];
                     if (this.opts.afterChange) fields = null;
 
                     if (tableCache.tables[this.opts.table+this.table_postfix] && tableCache.tables[this.opts.table+this.table_postfix] === true) {
@@ -411,8 +401,7 @@ export default {
                 }
                 
                 if (this.comboItems.length==0 && this.values.length>0 && (!values || values.length == 0)) {
-                    if (!this.opts.addFields) this.opts.addFields = [];
-                    let fields = ["id", this.opts.field, ...this.opts.addFields];
+                    let fields = ["id", this.opts.field];
                     let filter = [{field:"id", oper:"in", value:this.values}];
                     this.$api("table", this.opts.table, "get", {fast:true, mini:true, fields:fields, limit:1000, filter }).then(response=>{
                         this.comboItems = response.rows;
@@ -440,8 +429,7 @@ export default {
 
         autocompleteQuery(searchValue) {
             if (searchValue.length == 0) return;
-            if (!this.opts.addFields) this.opts.addFields = [];
-            let fields = ["id", this.opts.field, ...this.opts.addFields];
+            let fields = ["id", this.opts.field];
             if (this.opts.afterChange) fields = null;
             this.comboItems = [];
             let filter = this.opts.options && this.opts.options.tableFilter ? this.opts.options.tableFilter : [];

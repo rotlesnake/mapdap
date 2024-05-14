@@ -742,9 +742,11 @@ export default {
                 let json = value || [];
                 let values = "";
                 json.forEach(row=>{
-                    values += "<div class='v-chip theme--light v-size--small'>";
-                    Object.keys(row).forEach(key=>{
-                        values += row[key]+";";
+                    values += "<div class='v-chip theme--light v-size--small mr-1'>";
+                    head.json.columns.forEach(col=>{
+                        if (col.hidden) return;
+                        if (row[col.name+"_text"]) { values += row[col.name+"_text"]+"|"; } else { values += row[col.name]+"|"; }
+                        //Object.keys(row).forEach(key=>{ values += row[key]+";"; });
                     });
                     values += "</div>";
                 });
@@ -785,7 +787,6 @@ export default {
             }
             if (action == "edit") {
                 this.editDialog.title = this.editFormTitle || "Изменение записи";
-                if (!this.userHasRoles(this.info.edit)) { this.editDialog.action = "view"; this.editDialog.title = "Просмотр"; }
             }
             if (action == "delete") {
                 this.editDialog.titleColor = "red";
@@ -938,7 +939,7 @@ export default {
             data = [xl_head, ...xl_rows];
 
             let ws = XLSX.utils.aoa_to_sheet(data);
-            XLSX.utils.book_append_sheet(wb, ws, this.caption);
+            XLSX.utils.book_append_sheet(wb, ws, "Данные");
             XLSX.writeFile(wb, filename);
         },
 
