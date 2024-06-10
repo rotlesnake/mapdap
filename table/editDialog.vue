@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="visible" scrollable persistent max-width="990px">
+    <v-dialog v-model="visible" scrollable persistent :max-width="dialogWidth">
         <v-card v-if="visible">
             <v-card-title class="pa-0">
                 <v-toolbar dense :color="titleColor" elevation="0">
@@ -109,6 +109,7 @@ export default {
         tableInfo: { type: Object, default: null },
         rowId: { type: Number, default: 0 },
         row: { type: Object, default: null },
+        dialogWidth: { type: String, default: "990px" },
         buttons: {
             type: Object,
             default: () => {
