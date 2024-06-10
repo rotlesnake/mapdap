@@ -53,7 +53,7 @@
                 :hide-details="hideDetails"
                 :outlined="outlined"
                 :dense="dense"
-                :rules="rules"
+                :rules="timeRules"
                 class="ml-3"
                 style="max-width:150px"
                 :step="step"
@@ -84,9 +84,12 @@ export default {
         customStyle: { type: Object, default:()=>({})  },
         events: { type: Array, default: () => [] },
         eventColor: { type: String, default: "" },
+        timeHours: { type: Array, default: null },
     },
     data() {
         return {
+            timeRules: [],
+            hasError: false,
             weekdays: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
             date_dialog: false,
             dateEdt: "",
@@ -105,6 +108,8 @@ export default {
 
         let el = this.$refs.masked_datetime.$refs.input;
         Inputmask({ mask: "99.99.9999", autoUnmask: false, placeholder:"дд.мм.гггг" }).mask(el);
+    },
+    beforeDestroy() {
     },
 
     methods: {
@@ -127,6 +132,11 @@ export default {
                 return this.clearDate();
             }
             if (this.localValue == this.value) return;
+
+            this.timeRules = [];
+            if (this.timeHours && this.timeHours.length && this.timeHours.length>0) {
+                this.timeRules = [v=> this.timeHours.includes(parseInt( (v.split(':'))[0] )) || 'Недопустимое время'];
+            }
 
             this.localValue = this.value;
             this.date = this.localValue.substr(0, 10);
