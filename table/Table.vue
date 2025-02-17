@@ -824,7 +824,7 @@ export default {
         if (typeof value == "string") value = JSON.parse(value);
         let json = value || [];
         let values = "";
-        if (typeof json == "array") {
+        if (Array.isArray(json)) {
           json.forEach((row) => {
             values += "<div class='v-chip theme--light v-size--small mr-1'>";
             head.json.columns.forEach((col) => {
