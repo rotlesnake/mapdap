@@ -117,7 +117,7 @@ export default {
                 this.dataList = this.value || [];
             }
 
-            if (this.options.json.rows && this.options.json.rows.length > 0 && this.dataList.length == 0) {
+            if (this.options.json && this.options.json.rows && this.options.json.rows.length > 0 && this.dataList.length == 0) {
                 this.options.json.rows.forEach((e) => {
                     this.addNewRow(e);
                 });
